@@ -26,7 +26,7 @@ if( !ini_get('safe_mode') ){
 define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
-$obj->current_version = 11;
+$obj->current_version = 12;
 if ($obj->Deny == false && isset($_POST['urllist'])) $obj->main();
 elseif(isset($_GET['infosv'])) $obj->notice();
 ############################################### Begin Secure ###############################################
@@ -197,7 +197,7 @@ elseif($obj->Deny == false) {
 ?>
 							<form action="javascript:get(document.getElementById('linkform'));" name="linkform" id="linkform">
 								<?php printf($obj->lang['welcome'],$obj->lang['homepage']); ?>
-								<?php if($obj->last_version > $obj->current_version) printf($obj->lang['update'], $obj->last_version); ?>
+								<?php if($obj->isadmin() && $obj->last_version > $obj->current_version) printf($obj->lang['update'], $obj->last_version); ?>
 								<br><font face=Arial size=1><?php printf($obj->lang['maxline']); ?></font><BR>
 								<textarea id='links' style='width:550px;height:100px;' name='links'></textarea><BR>
 								<?php printf($obj->lang['example']); ?><BR>
