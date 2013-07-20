@@ -26,7 +26,7 @@ if( !ini_get('safe_mode') ){
 define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
-$obj->current_version = 12;
+$obj->current_version = 13;
 if ($obj->Deny == false && isset($_POST['urllist'])) $obj->main();
 elseif(isset($_GET['infosv'])) $obj->notice();
 ############################################### Begin Secure ###############################################
@@ -34,7 +34,6 @@ elseif($obj->Deny == false) {
 	if (!isset($_POST['urllist'])) {
 		include ("hosts/hosts.php");
 		asort($host);
-		$obj->last_version = $obj->getversion();
 ?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml"><head profile="http://gmpg.org/xfn/11">
@@ -165,7 +164,7 @@ elseif($obj->Deny == false) {
 												</select>
 											</td>
 											<td>
-												&nbsp; &nbsp; &nbsp; <input type="text" name="accounts" id="accounts" value="" size="50" maxlength="50"><br />
+												&nbsp; &nbsp; &nbsp; <input type="text" name="accounts" id="accounts" value="" size="50"><br />
 											</td>
 											<td>&nbsp; &nbsp; &nbsp; <input type=submit value="<?php printf($obj->lang['sbdonate']); ?>">
 											</td>
@@ -197,7 +196,11 @@ elseif($obj->Deny == false) {
 ?>
 							<form action="javascript:get(document.getElementById('linkform'));" name="linkform" id="linkform">
 								<?php printf($obj->lang['welcome'],$obj->lang['homepage']); ?>
-								<?php if($obj->isadmin() && $obj->last_version > $obj->current_version) printf($obj->lang['update'], $obj->last_version); ?>
+								<?php if($obj->isadmin()){
+									$obj->last_version = $obj->getversion();
+									if($obj->last_version > $obj->current_version) printf($obj->lang['update'], $obj->last_version); 
+								}
+								?>
 								<br><font face=Arial size=1><?php printf($obj->lang['maxline']); ?></font><BR>
 								<textarea id='links' style='width:550px;height:100px;' name='links'></textarea><BR>
 								<?php printf($obj->lang['example']); ?><BR>

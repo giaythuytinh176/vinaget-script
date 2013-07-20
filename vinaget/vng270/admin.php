@@ -142,7 +142,7 @@ elseif($page == 'account'){
 	</select>
 	</td>
 	<td>
-		&nbsp; &nbsp; &nbsp; <input type="text" name="account" id="accounts" value="" size="50" maxlength="50"><br />
+		&nbsp; &nbsp; &nbsp; <input type="text" name="account" id="accounts" value="" size="50"><br />
 	</td>
 	<td>
 		&nbsp; &nbsp; &nbsp; <input type=submit value="Submit">

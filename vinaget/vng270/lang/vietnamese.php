@@ -7,8 +7,8 @@ $lang = array (
 'password'		=> 'Mật khẩu',
 'plugins'		=> 'Host hỗ trợ',
 'premium'		=> 'Tài khoản trả phí :',
-'moreacc'		=> 'Xem thêm tài khoản >>>',
-'lessacc'		=> '<<< Thu nhỏ tài khoản',
+'moreacc'		=> 'Xem thêm >>>',
+'lessacc'		=> '<<< Thu nhỏ',
 'main'			=> 'Giao diện chính',
 'donate'		=> 'Tặng tài khoản',
 'listfile'		=> 'Danh sách tệp tin',
@@ -16,12 +16,12 @@ $lang = array (
 'check'			=> 'Kiểm tra tài khoản',
 'log'			=> 'Thoát',
 'welcome'		=> '<font color="#FF3300"><b><font color="#FFFF66">%s</font> - Nhanh và tạo link không giới hạn!</b></font>',
-'maxline'		=> '(Nhiều nhất 10 liên kết trên 1 lần)',
-'update'		=> '<br><font color="#dbac58"><b>There\'s an update for vng270</b> - <a href="http://www.rapidleech.com/index.php/topic/14663-dev-vinaget-v270-beta/">Get update.R%s.zip</a></font>',
+'maxline'		=> '(Nhiều nhất 10 liên kết trên 1 lần tạo)',
+'update'		=> '<br><font color="#dbac58"><b>Có phiên bản cập nhật cho vng270</b> - <a href="http://www.rapidleech.com/index.php/topic/14663-dev-vinaget-v270-beta/">Get update.R%s.zip</a></font>',
 'example'		=> '<span style="font-familty: Arial; color: #FFFFFF; font-size: 10px">Ví dụ: http://uptobox.com/zh3q7v2uwy6a<font size="3">|</font>password</span>',
 'sbdown'		=> 'Tải',
 'dlhere'		=> 'Tải ở đây:',
-'donations'		=> '<font color="#FF3300">Chúng tôi cần tặng tài khoản. Nếu có thể bạn hãy tặng.<br/>Tặng tài khoản của bạn !</font>',
+'donations'		=> '<font color="#FF3300">Chúng tôi cần tài khoản để tạo liên kết. Nếu có thể bạn hãy tặng.<br/>Tặng tài khoản của bạn !</font>',
 'acctype'		=> 'Loại tài khoản:',
 'sbdonate'		=> 'Tặng tài khoản',
 'invalid'		=> '<img src="images/error.png"> <font color="red"><b>Tài khoản không đúng. Mời kiểm tra lại tài khoản của bạn!</b></font>',
@@ -63,7 +63,7 @@ $lang = array (
 'clickcheck'	=> 'Nhấn vào đây để kiểm tra liên kết',
 'total'			=> 'Tổng',
 'used'			=> 'Bạn đã sử dụng',
-'reset'			=> 'Lặp lại trên',
+'reset'			=> 'Thiết lập lại',
 'canl'			=> 'Hủy bỏ',
 'deld'			=> 'Đã bị xóa!',
 'nname'			=> 'Tên mới',
@@ -108,7 +108,6 @@ $lang = array (
 * Open Source Project
 * Vinaget by ..::[H]::..
 * Version: 2.7.0 Final
-* English Language
 * Language Class By [FZ]
 * Vietnamese language by giaythuytinh176 [20.7.2013]
 */
