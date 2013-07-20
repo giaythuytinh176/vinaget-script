@@ -101,6 +101,10 @@ class getinfo
 	function isadmin(){
 		return isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($this->config['admin']) ? true : $this->admin;
 	}
+	function getversion(){
+		$version = $this->cut_str($this->curl("http://vinaget-script.googlecode.com/svn/", "", ""), "<title>vinaget-script - Revision ",": /</title>");
+		return intval($version);
+	}
 	function notice()
 	{
 		printf($this->lang['notice'], Tools_get::convert_time($this->ttl * 60) , $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60));

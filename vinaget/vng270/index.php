@@ -32,6 +32,8 @@ elseif($obj->Deny == false) {
 	if (!isset($_POST['urllist'])) {
 		include ("hosts/hosts.php");
 		asort($host);
+		$obj->current_version = 2;
+		$obj->last_version = $obj->getversion();
 ?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml"><head profile="http://gmpg.org/xfn/11">
@@ -192,7 +194,9 @@ elseif($obj->Deny == false) {
 						else {
 ?>
 							<form action="javascript:get(document.getElementById('linkform'));" name="linkform" id="linkform">
-								<?php printf($obj->lang['welcome'],$obj->lang['homepage']); ?><br/><font face=Arial size=1><?php printf($obj->lang['maxline']); ?></font><BR>
+								<?php printf($obj->lang['welcome'],$obj->lang['homepage']); ?>
+								<?php if($obj->last_version > $obj->current_version) printf($obj->lang['update'], $obj->last_version); ?>
+								<br><font face=Arial size=1><?php printf($obj->lang['maxline']); ?></font><BR>
 								<textarea id='links' style='width:550px;height:100px;' name='links'></textarea><BR>
 								<?php printf($obj->lang['example']); ?><BR>
 								<input type="submit"  id ='submit' value='<?php printf($obj->lang['sbdown']); ?>'/>&nbsp;&nbsp;&nbsp;
@@ -228,7 +232,7 @@ elseif($obj->Deny == false) {
 						<hr />
 						<script type="text/javascript" language="javascript" src="ajax.js?ver=1.0"></script> 
 					<!-- Copyright please don't remove-->
-						<SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/><a href='http://vinaget.us/'>Powered by <?php printf($obj->lang['version']); ?></a></SPAN><br/>
+						<SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/><a href='http://code.google.com/p/vinaget-script'>Powered by <?php printf($obj->lang['version']); ?> by [FZ]</a></SPAN><br/>
 						<SPAN class='copyright'>Copyright 2009-<?php echo date('Y');?> by <a href='http://vinaget.us/'>http://vinaget.us</a>. All rights reserved. </SPAN><br />
 					<!-- Copyright please don't remove-->	
 					</div>
@@ -321,7 +325,7 @@ else {
 			</form>
 			<br/>
 		<!-- Copyright please don't remove-->
-			<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/><a href='http://vinaget.us/'>Powered by <?php printf($obj->lang['version']); ?></a></SPAN><br/>
+			<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/><a href='http://code.google.com/p/vinaget-script'>Powered by <?php printf($obj->lang['version']); ?> by [FZ]</a></SPAN><br/>
 			<SPAN class='copyright'>Copyright 2009-<?php echo date('Y');?> by <a href='http://vinaget.us/'>http://vinaget.us</a>. All rights reserved. </SPAN><br />
 		<!-- Copyright please don't remove-->	
 		</div>

@@ -16,6 +16,7 @@ $lang = array (
 'check'			=> 'Check Acc',
 'log'			=> 'Log Out',
 'welcome'		=> '<font color="#FF3300"><b><font color="#FFFF66">%s</font> - Fast and unlimited premium link generator</b></font>',
+'update'		=> '<br><font color="#dbac58"><b>There\'s an update for vng270</b> - <a href="https://code.google.com/p/vinaget-script/source/list">Get Revision %s</a></font>',
 'maxline'		=> '(max 10 link for one times)',
 'example'		=> '<span style="font-familty: Arial; color: #FFFFFF; font-size: 10px">Example: http://www.megaupload.com/?d=ABCDEXYZ<font size="3">|</font>password</span>',
 'sbdown'		=> 'Download',

@@ -6,7 +6,7 @@ if( !ini_get('safe_mode') ){
 error_reporting(0); 
 ignore_user_abort(TRUE);
 date_default_timezone_set('Asia/Saigon');
-$data = @json_decode(file_get_contents("data/config.dat"), true);
+$data = json_decode(file_get_contents("data/config.dat"), true);
 if ($_GET['go']=='logout') {
 	setcookie("secureid", "owner", time());
 } 
