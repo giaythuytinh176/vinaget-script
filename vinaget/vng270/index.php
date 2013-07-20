@@ -32,7 +32,7 @@ elseif($obj->Deny == false) {
 	if (!isset($_POST['urllist'])) {
 		include ("hosts/hosts.php");
 		asort($host);
-		$obj->current_version = 5;
+		$obj->current_version = 7;
 		$obj->last_version = $obj->getversion();
 ?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
