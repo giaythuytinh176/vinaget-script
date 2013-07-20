@@ -13,7 +13,9 @@
 * Developed by - ..:: [H] ::..
 			   - [FZ]
 */
-
+$cookie = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'nothing';
+$cookie = isset($_REQUEST['using']) ? $_REQUEST['using'] : $cookie;
+setcookie("using", $cookie);
 ob_start();
 error_reporting(E_ALL);
 ob_implicit_flush (TRUE);
@@ -32,7 +34,7 @@ elseif($obj->Deny == false) {
 	if (!isset($_POST['urllist'])) {
 		include ("hosts/hosts.php");
 		asort($host);
-		$obj->current_version = 7;
+		$obj->current_version = 8;
 		$obj->last_version = $obj->getversion();
 ?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -152,6 +154,7 @@ elseif($obj->Deny == false) {
 												foreach($host as $file => $site) {
 													$class = substr($site, 0, -4);
 													$site = str_replace("_", ".", $class);
+													$class = str_replace("-", "_", $class);
 													$dlclass = "dl_{$class}";
 													$alias = false;
 													require_once ('hosts/' . $host[$file]);

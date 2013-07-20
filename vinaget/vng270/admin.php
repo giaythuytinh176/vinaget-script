@@ -1,5 +1,8 @@
 <?php
-echo '<h3><a href="?id=admin&page=config">Config</a> | <a href="?id=admin&page=account">Account</a> | <a href="?id=admin&page=cookie">Cookie</a></h3>';
+echo '<h3><a href="?id=admin&page=config">Config</a> | 
+	  <a href="?id=admin&page=host">Host</a> | 
+	  <a href="?id=admin&page=account">Account</a> | 
+	  <a href="?id=admin&page=cookie">Cookie</a></h3>';
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'config';
 if($page == 'config'){
@@ -19,21 +22,20 @@ if($page == 'config'){
 		}
 		$obj->config = $newconfig;
 		$obj->save_json($obj->fileconfig, $obj->config);
-		echo "<b>Config Saved!</b>";
+		echo "<b>Config Saved! Need refresh to applied changes</b>";
 	}
 ?>
 	<form method="post">
-		<div>
 <?php
 	include ("config.php");
-	echo '
-		<div>
-			<div><table>';
+	echo '<table id="tableCONFIG" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
+			<tr class="flisttblhdr" valign="bottom">
+				<td align="center" colspan="2"><B>CONFIG</B></td>
+			</tr>
+		';
 	foreach($config as $ckey => $cval){
 		$cval = $obj->config[$ckey] ? $obj->config[$ckey] : $cval;
-		echo '<tr>
-				<td><i><b>'.$ckey.'</b></i></td>
-				<td>:</td><td style="text-align:right">';
+		echo '<tr class="flistmouseoff"><td><i><b>'.$ckey.'</b></i></td><td style="text-align:right">';
 		if(gettype($cval) == 'string' || gettype($cval) == 'integer') echo '<input size="40" type="text" name="config['.$ckey.']" value="'.$cval.'"></td>';
 		elseif(gettype($cval) == 'boolean') echo '<label for="config['.$ckey.'][\'on\']"><input type="radio" id="config['.$ckey.'][\'on\']" value="on" name="config['.$ckey.']"'.($cval ? ' checked="checked"' : '').'/> On</label> <label for="config['.$ckey.'][\'off\']"><input type="radio" id="config['.$ckey.'][\'off\']" value="off" name="config['.$ckey.']"'.(!$cval ? ' checked="checked"' : '').'/> Off</label></td>';
 		elseif(gettype($cval) == 'array') {
@@ -46,12 +48,8 @@ if($page == 'config'){
 		}
 		echo '</tr>';
 	}
-	echo '
-			</table></div>
-		</div>';
-?>
-	</div>
-	<br/>
+	echo "</table>";
+?>	<br/>
 	<center>
 		<input id='submit' type='submit' name="submit" value='Save Config'/>
 	</center>
@@ -110,7 +108,11 @@ elseif($page == 'cookie'){
 }
 elseif($page == 'account'){
 	if(isset($_POST['account'])){
-		if(empty($obj->acc[$_POST['type']])) $obj->acc[$_POST['type']]['max_size'] = $obj->max_size_default;
+		if(empty($obj->acc[$_POST['type']])) {
+			$obj->acc[$_POST['type']]['max_size'] = $obj->max_size_default;
+			$obj->acc[$_POST['type']]['proxy'] = "";
+			$obj->acc[$_POST['type']]['direct'] = false;
+		}
 		$obj->save_account($_POST['type'], $_POST['account']);
 		echo "<b>{$_POST['type']} account added</b>";
 	}
@@ -163,6 +165,36 @@ elseif($page == 'account'){
 		}
 	}
 	echo "</table>";
+}
+elseif($page == 'host'){
+	if(isset($_POST['host'])){
+		foreach($_POST['host'] as $key=>$val){
+			$obj->acc[$key]['max_size'] = $val['max_size'];
+			$obj->acc[$key]['proxy'] = $val['proxy'];
+			$obj->acc[$key]['direct'] = (isset($val['direct']) && $val['direct'] == "ON" ? true : false);
+		}
+		ksort($obj->acc);
+		$obj->save_json($obj->fileaccount, $obj->acc);
+		echo "<b>host setting changed</b>";
+	}
+	echo '<form method="post"><table id="tableHOST" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
+			<tr class="flisttblhdr" valign="bottom">
+				<td align="center"><B>Host</B></td>
+				<td align="center"><B>Max Size</B></td>
+				<td align="center"><B>Proxy</B></td>
+				<td align="center"><B>Direct</B></td>
+			</tr>
+		';
+	foreach ($obj->acc as $ckey=>$val){
+		echo '<tr class="flistmouseoff">
+				<td><B>'.$ckey.'</B></td>
+				<td><input type="text" name="host['.$ckey.'][max_size]" value="'.$val['max_size'].'"/></td>
+				<td><input type="text" name="host['.$ckey.'][proxy]" value="'.$val['proxy'].'"/></td>
+				<td><input type="checkbox" name="host['.$ckey.'][direct]" value="ON" '.($val['direct'] ? 'checked' : '').'/></td>
+			</tr>';
+	}
+	echo "</table>";
+	echo "<input id='submit' type='submit' name='submit' value='Save Changed'/></form>";
 }
 else{
 	echo "<b>Page not available</b>";

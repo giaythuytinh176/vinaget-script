@@ -1,7 +1,14 @@
 <?php
 
 class dl_upfile_vn extends Download {
-	
+
+	public function CheckAcc($cookie){
+		$data = $this->lib->curl("http://upfile.vn/upgrade.html", $cookie, "");
+		if(stristr($data, 'Chuyển về tài khoản Free:')) return array(true, "Until ".$this->lib->cut_str($data, 'Chuyển về tài khoản Free:','</tbody>'));
+		elseif (stristr($data, 'Free User                            </td>')) return array(false, "accfree"); 
+		else return array(false, "accinvalid");
+	}
+
 	public function Login($user, $pass){
 		$data = $this->lib->curl("http://upfile.vn/login.html","","loginUsername={$user}&loginPassword={$pass}&submit=Login&submitme=1");
 		$cookie = $this->lib->GetCookies($data);
@@ -14,4 +21,13 @@ class dl_upfile_vn extends Download {
     }
 
 }
+/*
+* Open Source Project
+* Vinaget by ..::[H]::..
+* Version: 2.7.0
+* Upfile.vn Download Plugin 
+* Downloader Class By [FZ]
+* Add check account By giaythuytinh176
+* Date: 20.7.2013
+*/
 ?>

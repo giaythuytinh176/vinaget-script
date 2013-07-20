@@ -16,8 +16,9 @@ if (!empty($_POST["accounts"])) {
 	$donate = false;
 	if(check_account($type,$account)) die("false duplicate");
 	$class = str_replace(".", "_", $type);
-	$dlclass = "dl_{$class}";
 	require_once ('hosts/' . $class . '.php');
+	$class = str_replace("-", "_", $class);
+	$dlclass = "dl_{$class}";
 	$download = new $dlclass($obj, $type, "");
 	if(method_exists($dlclass, "CheckAcc")) {
 		if (strpos($account, ":")) {
@@ -29,7 +30,11 @@ if (!empty($_POST["accounts"])) {
 		if($status[0]) {
 			echo "true";
 			$update = true;
-			if(empty($obj->acc[$type])) $obj->acc[$type]['max_size'] = $obj->max_size_default;
+			if(empty($obj->acc[$type])){
+				$obj->acc[$type]['max_size'] = $obj->max_size_default;
+				$obj->acc[$type]['proxy'] = "";
+				$obj->acc[$type]['direct'] = false;
+			}
 			$obj->acc[$type]['accounts'][] = $account;
 			$download->save($cookie);
 		}

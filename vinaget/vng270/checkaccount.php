@@ -4,8 +4,9 @@ if (isset($_POST["check"])) {
 	$acc = $obj->acc[$check];
 	if(count($acc["accounts"])>0){
 		$class = str_replace(".", "_", $check);
-		$dlclass = "dl_{$class}";
 		require_once ('hosts/' . $class . '.php');
+		$class = str_replace("-", "_", $class);
+		$dlclass = "dl_{$class}";
 		$download = new $dlclass($obj, $check);
 		echo 
 		'<table id="table-'.$check.'" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
@@ -27,14 +28,13 @@ if (isset($_POST["check"])) {
 				$status = $download->CheckAcc($cookie);
 			}
 			else $status = array(false, "noplugin");
-			if(isset($obj->lang[$status[1]])) $msgs = sprintf($obj->lang[$status[1]]);
-			else $msgs = $status[1];
+			$msgs = isset($obj->lang[$status[1]]) && $obj->lang[$status[1]] != "" ? sprintf($obj->lang[$status[1]], $check) : $status[1];
 			if($status[0]) {
 				$msg = array("<font color='green'><b>{$obj->lang['work']}</b></font>", "<font color='black'><b>{$msgs}</b></font>");
 				$download->save($cookie);
 			}
 			else{
-				if($status[1] == "noplugin") $msg = array("unknown", sprintf($obj->lang[$status[1]], $check));
+				if($status[1] == "noplugin") $msg = array("unknown", $msgs);
 				else{
 					$msg = array("<font color='yellow'><b>{$obj->lang['notwork']}</b></font>", "<font color='black'><b>{$msgs} {$obj->lang['removed']}</b></font>");
 					unset($obj->acc[$check]["accounts"][$i]);

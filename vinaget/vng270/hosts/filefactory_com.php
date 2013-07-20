@@ -1,7 +1,14 @@
 <?php
 
 class dl_filefactory_com extends Download {
-	
+
+	public function CheckAcc($cookie){
+		$data = $this->lib->curl("http://www.filefactory.com/premium/", $cookie, "");
+		if(stristr($data, 'Premium member until')) return array(true, "Until ".$this->lib->cut_str($data, '<p><a href="/premium/">','. Extend</a></p>'));
+		else if(stristr($data, '<p class="greenText">Free member</p>')) return array(false, "accfree");
+		else return array(false, "accinvalid");
+	}
+
 	public function Login($user, $pass){
 		$post["email"] = $user;
 		$post["password"] = $pass;
@@ -33,7 +40,9 @@ class dl_filefactory_com extends Download {
 * Open Source Project
 * Vinaget by ..::[H]::..
 * Version: 2.7.0
-* Filefactory Download Plugin 
+* Filefactory.com Download Plugin by .:[T]:.
 * Downloader Class By [FZ]
+* Date: 16.7.2013
+* Fixed check account: 18.7 
 */
 ?>

@@ -1,6 +1,13 @@
 <?php
 
 class dl_rapidgator_net extends Download {
+
+	public function CheckAcc($cookie){
+		$data = $this->lib->curl("http://rapidgator.net/profile/index", "lang=english;{$cookie}", "");
+		if(stristr($data, '<a href="/article/premium">Free</a>')) return array(false, "accfree");
+		elseif(stristr($data, 'Premium till')) return array(true, "Until ".$this->lib->cut_str($data, 'Premium till ','                    <span style="margin-left:10px;">'));
+		else return array(false, "accinvalid");
+	}
 	
 	public function Login($user, $pass){
 		$data = $this->lib->curl("https://rapidgator.net/auth/login","","LoginForm[email]={$user}&LoginForm[password]={$pass}&LoginForm[rememberMe]=1");
@@ -26,5 +33,6 @@ class dl_rapidgator_net extends Download {
 * Version: 2.7.0
 * Rapidgator Download Plugin 
 * Downloader Class By [FZ]
+* Add check account by giaythuytinh176 19.7.2013
 */
 ?>

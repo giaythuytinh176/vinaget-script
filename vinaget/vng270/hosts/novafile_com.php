@@ -1,7 +1,14 @@
-<?php
+<?php  
 
 class dl_novafile_com extends Download {
-	
+
+	public function CheckAcc($cookie){
+		$data = $this->lib->curl("http://novafile.com/premium.html", $cookie, "");
+		if(stristr($data, 'Premium Account expires')) return array(true, "Premium Account expires ".$this->lib->cut_str($data, 'Premium Account expires  ','	</div>'));
+		else if(stristr($data, 'Your current status: FREE - member')) return array(false, "accfree");
+		else return array(false, "accinvalid");
+	}
+
 	public function Login($user, $pass){
 		$post["login"]= $user;
 		$post["password"]= $pass;
@@ -15,11 +22,14 @@ class dl_novafile_com extends Download {
 	
     public function Leech($url){
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
-		if(preg_match_all('/<input type="hidden" name="(.*)" value="(.*)"/', $this->cut_str($data, "<form", "</form>"), $matches, PREG_SET_ORDER)){
-			foreach($matches as $val) $post .= "&{$val[1]}={$val[2]}";
-			$data = $this->lib->curl($url,$cookie,substr($post,1));
-		}
-		if(preg_match('/href="http(.*)" class="btn/i', $data, $redir)) return trim("http".$redir[1]);
+		if(stristr($data,'<div class="name">File Not Found</div>')) $this->error("dead", true, false, 2);
+		elseif(stristr($data, "Create Download Link")){
+                 $post = $this->parseForm($this->lib->cut_str($data, '<form action="', '</form>'));
+                 $data = $this->lib->curl($url, $this->lib->cookie, $post);
+				 $data = $this->lib->cut_str($data, '<div class="alert alert-success-invert">', '<p>This direct link will be active for your IP for the next 24 hours.</p>');
+                 $link = $this->lib->cut_str($data, '<a href="', '" class="btn btn-green">');
+                 return trim($link);
+          }
 		elseif(stristr($data,"different IP")) $this->error("blockIP", true, false);
 		return false;
     }
@@ -32,5 +42,6 @@ class dl_novafile_com extends Download {
 * Version: 2.7.0
 * Novafile Download Plugin 
 * Downloader Class By [FZ]
+* Fixed download by giaythuytinh176 [20.7.2013]
 */
 ?>

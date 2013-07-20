@@ -255,6 +255,8 @@ class getinfo
 				require_once ('hosts/' . $host[$file]);
 				if(!$alias){
 					$this->acc[$site] = array(
+						'proxy' => "",
+						'direct' => false,
 						'max_size' => $this->max_size_default,
 						'accounts' => array()
 					);
@@ -722,36 +724,38 @@ class stream_get extends getinfo
 		$pass = '';
 		$cookie = '';
 		$report = false;
-
-		$using = isset($_REQUEST['using']) ? $_REQUEST['using'] : isset($_COOKIE['using']) ? $_COOKIE['using'] : 'nothing';
-
-		if ($using == 'simply-debrid') include ("hosts/simply-debrid_com.php");
-		elseif ($using == 'alldebrid') include ("hosts/alldebrid_com.php");
-		elseif ($using == 'mega-rapido') include ("hosts/mega-rapido_net.php");
-		elseif ($using == 'real-debrid') include ("hosts/real-debrid_com.php");
-		else {
-			if (!$link) {
-				include ("hosts/hosts.php");
-				ksort($host);
-				foreach($host as $file => $site) {
-					$class = substr($site, 0, -4);
-					$site = str_replace("_", ".", $class);
-					if (preg_match('%' . $site . '%U', $Original)) {
-						$dlclass = "dl_{$class}";
-						$predefined = "";
-						require_once ('hosts/' . $host[$file]);
-						$download = new $dlclass($this, $site, $predefined);
-						$link = $download->General($url);
-						break;
-					}
+		
+		if (!$link) {
+			$site = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'nothing';
+			if($this->get_account($site) != ""){
+				$class = str_replace(".", "_", $site);
+				$predefined = "";
+				require_once ('hosts/' . $class . '.php');
+				$class = str_replace("-", "_", $class);
+				$dlclass = "dl_{$class}";
+				$download = new $dlclass($this, $site, $predefined);
+				$link = $download->General($url);
+			}
+		}
+		
+		if (!$link) {
+			include ("hosts/hosts.php");
+			ksort($host);
+			foreach($host as $file => $site) {
+				$class = substr($site, 0, -4);
+				$site = str_replace("_", ".", $class);
+				if (preg_match('%' . $site . '%U', $Original)) {
+					$class = str_replace("-", "_", $class);
+					$dlclass = "dl_{$class}";
+					$predefined = "";
+					require_once ('hosts/' . $host[$file]);
+					$download = new $dlclass($this, $site, $predefined);
+					$link = $download->General($url);
+					break;
 				}
 			}
 		}
-
-		if ($report) {
-			return $report;
-		}
-
+		
 		if (!$link) {
 			$size_name = Tools_get::size_name($Original, "");
 			$filesize = $size_name[0];
@@ -814,7 +818,7 @@ class stream_get extends getinfo
 			'owner' => $this->owner,
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'type' => 'direct',
-			'proxy' => $this->proxy == false ? 0 : $this->proxy,
+			'proxy' => $this->proxy == "" ? 0 : $this->proxy,
 			'directlink' => array(
 				'url' => urlencode($link) ,
 				'cookies' => $this->cookie,
@@ -826,7 +830,8 @@ class stream_get extends getinfo
 		$gach = explode('/', $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
 		$sv_name = "";
 		for ($i = 0; $i < count($gach) - 1; $i++) $sv_name.= $gach[$i] . "/";
-		if($this->longurl){
+		if($this->acc[$site]['direct']) $linkdown = $link;
+		elseif($this->longurl){
 			if(function_exists("apache_get_modules") && in_array('mod_rewrite',@apache_get_modules())) $linkdown = 'http://'.$sv_name.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 		}
@@ -842,7 +847,7 @@ class stream_get extends getinfo
 		// ########### End short link  ##########
 
 		else $lik = $linkdown;
-		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl ? "<a href='{$link}'>Direct<a> " : "") . ($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : "") . "</a></b>";
+		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl && !$this->acc[$site]['direct'] ? "<a href='{$link}'>Direct<a> " : "") . ($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : "") . "</a></b>";
 		return $dlhtml;
 	}
 
@@ -1393,6 +1398,7 @@ class Download {
 	public function General($url){
 		$this->url = $url;
 		$this->cookie = "";
+		if($this->lib->acc[$this->site]['proxy'] != "") $this->lib->proxy = $this->lib->acc[$this->site]['proxy'];
 		if(method_exists($this, "PreLeech")) {
 			$this->PreLeech($this->url);
 		}
