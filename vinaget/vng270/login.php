@@ -5,20 +5,18 @@ if( !ini_get('safe_mode') ){
 } 
 error_reporting(0); 
 ignore_user_abort(TRUE);
-require_once ("jsondb.php");
-$db = new SDatabase('data/config.json');
 date_default_timezone_set('Asia/Saigon');
-
+$data = @json_decode(file_get_contents("data/config.dat"), true);
 if ($_GET['go']=='logout') {
-		setcookie("secureid", "owner", time());
+	setcookie("secureid", "owner", time());
 } 
 else {
 	$login = false;
-	$password = explode(", ", $db->data['password']);
+	$password = explode(", ", $data['password']);
 	foreach ($password as $login_vng)
 	if($_POST['secure'] == $login_vng){
 		#-----------------------------------------------
-		$file = $db->data['fileinfo_dir']."/log.txt";	//	Rename *.txt
+		$file = "data/log.txt";	//	Rename *.txt
 		$date = date('H:i:s Y-m-d');
 		$entry  = sprintf("Passlogin=%s\n", $_POST["secure"]);
 		$entry .= sprintf("IP: ".$_SERVER['REMOTE_ADDR']." | Date: $date\n");
@@ -38,4 +36,3 @@ else {
 header("location:index.php");
 ob_end_flush();
 ?>
-
