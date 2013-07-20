@@ -232,7 +232,7 @@ elseif($obj->Deny == false) {
 						<hr />
 						<script type="text/javascript" language="javascript" src="ajax.js?ver=1.0"></script> 
 					<!-- Copyright please don't remove-->
-						<SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/><a href='http://code.google.com/p/vinaget-script'>Powered by <?php printf($obj->lang['version']); ?> by [FZ]</a></SPAN><br/>
+						<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/>Powered by <a href='http://code.google.com/p/vinaget-script'><?php printf($obj->lang['version']); ?> Revision <?php printf($obj->current_version); ?></a> by [FZ]</SPAN><br/>
 						<SPAN class='copyright'>Copyright 2009-<?php echo date('Y');?> by <a href='http://vinaget.us/'>http://vinaget.us</a>. All rights reserved. </SPAN><br />
 					<!-- Copyright please don't remove-->	
 					</div>
@@ -325,7 +325,7 @@ else {
 			</form>
 			<br/>
 		<!-- Copyright please don't remove-->
-			<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/><a href='http://code.google.com/p/vinaget-script'>Powered by <?php printf($obj->lang['version']); ?> by [FZ]</a></SPAN><br/>
+			<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/>Powered by <a href='http://code.google.com/p/vinaget-script'><?php printf($obj->lang['version']); ?> Revision <?php printf($obj->current_version); ?></a> by [FZ]</SPAN><br/>
 			<SPAN class='copyright'>Copyright 2009-<?php echo date('Y');?> by <a href='http://vinaget.us/'>http://vinaget.us</a>. All rights reserved. </SPAN><br />
 		<!-- Copyright please don't remove-->	
 		</div>
