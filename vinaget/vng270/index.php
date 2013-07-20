@@ -26,7 +26,7 @@ if( !ini_get('safe_mode') ){
 define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
-
+$obj->current_version = 10;
 if ($obj->Deny == false && isset($_POST['urllist'])) $obj->main();
 elseif(isset($_GET['infosv'])) $obj->notice();
 ############################################### Begin Secure ###############################################
@@ -34,7 +34,6 @@ elseif($obj->Deny == false) {
 	if (!isset($_POST['urllist'])) {
 		include ("hosts/hosts.php");
 		asort($host);
-		$obj->current_version = 9;
 		$obj->last_version = $obj->getversion();
 ?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -235,7 +234,7 @@ elseif($obj->Deny == false) {
 						<hr />
 						<script type="text/javascript" language="javascript" src="ajax.js?ver=1.0"></script> 
 					<!-- Copyright please don't remove-->
-						<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/>Powered by <a href='http://code.google.com/p/vinaget-script'><?php printf($obj->lang['version']); ?> Revision <?php printf($obj->current_version); ?></a> by [FZ]</SPAN><br/>
+						<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/>Powered by <a href='http://www.rapidleech.com/index.php/topic/14663-dev-vinaget-v270-beta/'><?php printf($obj->lang['version']); ?> Revision <?php printf($obj->current_version); ?></a> by [FZ]</SPAN><br/>
 						<SPAN class='copyright'>Copyright 2009-<?php echo date('Y');?> by <a href='http://vinaget.us/'>http://vinaget.us</a>. All rights reserved. </SPAN><br />
 					<!-- Copyright please don't remove-->	
 					</div>
@@ -328,7 +327,7 @@ else {
 			</form>
 			<br/>
 		<!-- Copyright please don't remove-->
-			<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/>Powered by <a href='http://code.google.com/p/vinaget-script'><?php printf($obj->lang['version']); ?> Revision <?php printf($obj->current_version); ?></a> by [FZ]</SPAN><br/>
+			<STRONG><SPAN class='powered'>Code LeechViet. Developed by ..:: [H] ::..<br/>Powered by <a href='http://www.rapidleech.com/index.php/topic/14663-dev-vinaget-v270-beta/'><?php printf($obj->lang['version']); ?> Revision <?php printf($obj->current_version); ?></a> by [FZ]</SPAN><br/>
 			<SPAN class='copyright'>Copyright 2009-<?php echo date('Y');?> by <a href='http://vinaget.us/'>http://vinaget.us</a>. All rights reserved. </SPAN><br />
 		<!-- Copyright please don't remove-->	
 		</div>
