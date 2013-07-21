@@ -5,7 +5,7 @@ class dl_4share_vn extends Download {
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://up.4share.vn/?control=manager", $cookie, "");
 		if(stristr($data, 'Lý do: Share account!')) return array(false, 'blockAcc');
-		else if(stristr($data, '<td>Loại tài khoản</td><td> <b>VIP FUNNY</b>') && stristr($data, '| Không giới hạn thời gian   |')) return array(true, 'accpremium'));
+		else if(stristr($data, '<td>Loại tài khoản</td><td> <b>VIP FUNNY</b>') && stristr($data, '| Không giới hạn thời gian   |')) return array(true, 'accpremium');
 		else if(stristr($data, '<td>Loại tài khoản</td><td> <b>VIP FUNNY</b>') && stristr($data, '| Đã hết hạn VIP  FUNNY  <strong>')) return array(false, "accfree");
 		else if(stristr($data, '<td>Loại tài khoản</td><td> <b>MEMBER </b>')) return array(false, "accfree");
 		else return array(false, "accinvalid");
