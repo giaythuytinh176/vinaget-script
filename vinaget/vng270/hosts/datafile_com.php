@@ -1,24 +1,24 @@
 <?php
 class dl_datafile_com extends Download {
-   
+  
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("https://www.datafile.com/profile.html", "lang=en;{$cookie}", "");
-		if(stristr($data, '(<a href="/getpremium.html">Prolong</a>)')) return array(true, "Until ".$this->lib->cut_str($data, '<td class="el" >',  '   (<a href="/getpremium.html">Prolong</a>)'));
-		else if(stristr($data, 'Free: (<span class="yellow"><a href="/getpremium.html">Upgrade</a></span>)')) return array(false, "accfree");
-		else return array(false, "accinvalid");
+		$data = $this->lib->curl("https://www.datafile.com/profile.html", $cookie, "");
+		if(stristr($data, '(<a href="/getpremium.html">Prolong</a>)')) return array(true, "Until ".$this->lib->cut_str($data, '<td class="el" >',  '(<a href="/getpremium.html">Prolong</a>)'));
+		else if(stristr($data, 'Free: (<span class="yellow"><a href="/getpremium.html">Upgrade</a></span>)')) return array(false, "accfree"); 
+		else return array(false, "accinvalid"); 
 	}
-   
+  
 	public function Login($user, $pass){
-        $data = $this->lib->curl("https://www.datafile.com/login.html","lang=en","login={$user}&password={$pass}&remember_me=1&submit=login");
-        $cookie = $this->lib->GetCookies($data);
-        return $cookie;
+		$data = $this->lib->curl("https://www.datafile.com/login.html","lang=en","login={$user}&password={$pass}&remember_me=1&submit=login");
+		$cookie = "lang=en;".$this->lib->GetCookies($data);
+		return $cookie;
 	}
-   
+  
 	public function Leech($url) {
-        $data = $this->lib->curl($url,$this->lib->cookie,"");
+		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if($this->isredirect($data)) return trim($this->redirect);
-        elseif(stristr($data,'ErrorCode 0: Invalid Link')) $this->error("dead", true, false, 2);
-        return false;
+		elseif(stristr($data,'ErrorCode 0: Invalid Link')) $this->error("dead", true, false, 2); 
+		return false;
 	}
 }
 /*
@@ -28,5 +28,6 @@ class dl_datafile_com extends Download {
 * DataFile.com Download Plugin by giaythuytinh176
 * Downloader Class By [FZ]
 * Date: 20.7.2013
+* Fix check account by giaythuytinh176 [21.7.2013]
 */
 ?>

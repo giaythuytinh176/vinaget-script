@@ -17,7 +17,7 @@ $cookie = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'nothing';
 $cookie = isset($_REQUEST['using']) ? $_REQUEST['using'] : $cookie;
 setcookie("using", $cookie);
 ob_start();
-error_reporting(E_ALL);
+error_reporting(0);
 ob_implicit_flush (TRUE);
 ignore_user_abort (0);
 if( !ini_get('safe_mode') ){
