@@ -15,8 +15,7 @@ class dl_depositfiles_com extends Download {
 	}
 
     public function Leech($url) {
-		$url = $this->getredirect($url);
-		list($name, $domain) = explode(".", $this->cut_str(str_replace("www.", "", $url), "http://", "/"));
+		list($name, $domain) = explode(".", $this->lib->cut_str(str_replace("www.", "", $url), "http://", "/"));
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if (stristr($data, "You have exceeded the")) $this->error("LimitAcc");
 		elseif(strpos($data,'Please, enter the password for this file')) $this->error("notsupportpass", true, false);
@@ -38,5 +37,6 @@ class dl_depositfiles_com extends Download {
 * Develop by farizemo
 * Plugin Download Class By giaythuytinh176
 * Date: 16.7.2013
+* Fix download by giaythuytinh176 [21.7.2013]
 */
 ?>

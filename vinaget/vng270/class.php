@@ -32,14 +32,18 @@ class getinfo
 		$this->unit = 512;
 		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/12.0';
 		$this->config = $this->load_json($this->fileconfig);
-		if(count($this->config) == 0) {
-			include ("config.php");
+		include ("config.php");
+		if(count($this->config) == 0) {	
 			$this->config = $config;
 			$_GET['id'] = 'admin';
 			$this->Deny = false;
 			$this->admin = true;
 		}
 		else{
+			foreach($config as $key=>$val){
+				if(empty($this->config[$key])) $this->config[$key] = $val;
+			}
+			$this->save_json($this->fileconfig, $this->config);
 			if ($this->config['secure'] == false) $this->Deny = false;
 			$password = explode(", ", $this->config['password']);
 			foreach($password as $login_vng) if (isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($login_vng)) {
@@ -245,25 +249,21 @@ class getinfo
 	function load_account(){
 		if (isset($this->acc)) return;
 		$this->acc = $this->load_json($this->fileaccount);
-		if(count($this->acc) == 0){
-			include ("hosts/hosts.php");
-			ksort($host);
-			foreach($host as $file => $site) {
-				$class = substr($site, 0, -4);
-				$site = str_replace("_", ".", $class);
-				$alias = false;
-				require_once ('hosts/' . $host[$file]);
-				if(!$alias){
-					$this->acc[$site] = array(
-						'proxy' => "",
-						'direct' => false,
-						'max_size' => $this->max_size_default,
-						'accounts' => array()
-					);
-				}
+		include ("hosts/hosts.php");
+		ksort($host);
+		foreach($host as $file => $site) {
+			$class = substr($site, 0, -4);
+			$site = str_replace("_", ".", $class);
+			$alias = false;
+			require_once ('hosts/' . $host[$file]);
+			if(!$alias){
+				if(empty($this->acc[$site]['proxy'])) $this->acc[$site]['proxy'] = "";
+				if(empty($this->acc[$site]['direct'])) $this->acc[$site]['direct'] = false;
+				if(empty($this->acc[$site]['max_size'])) $this->acc[$site]['max_size'] = $this->max_size_default;
+				if(empty($this->acc[$site]['accounts'])) $this->acc[$site]['accounts'] = array();
 			}
-			$this->save_json($this->fileaccount, $this->acc);
 		}
+		$this->save_json($this->fileaccount, $this->acc);
 		
 	}
 	function save_account($service, $acc){
@@ -1444,13 +1444,17 @@ class Download {
 				for ($j=0; $j < 2; $j++){
 					if(($maxacc-$k) == 1 && $j == 1) $this->last = true;
 					if(empty($cookie)) $cookie = $this->lib->get_cookie($this->site);
-					if(empty($cookie)) $cookie = $this->Login($user, $pass);
-					if(empty($cookie)) continue;
+					if(empty($cookie)) {
+						$cookie = false;
+						if(method_exists($this, "Login")) $cookie = $this->Login($user, $pass);
+					}
+					if(!$cookie) continue;
 					$this->save($cookie);
 					if(method_exists($this, "CheckAcc")) $status = $this->CheckAcc($this->lib->cookie);
 					else $status = array(true, "Without Acc Checker");
 					if($status[0]){
-						$link = $this->Leech($this->url);
+						$link = false;
+						if(method_exists($this, "Leech")) $link = $this->Leech($this->url);
 						if($link) {
 							$link = $this->forcelink($link, 3);
 							if($link) return $link;

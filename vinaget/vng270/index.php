@@ -17,7 +17,7 @@ $cookie = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'nothing';
 $cookie = isset($_REQUEST['using']) ? $_REQUEST['using'] : $cookie;
 setcookie("using", $cookie);
 ob_start();
-error_reporting(0);
+error_reporting(E_ALL);
 ob_implicit_flush (TRUE);
 ignore_user_abort (0);
 if( !ini_get('safe_mode') ){
@@ -26,7 +26,7 @@ if( !ini_get('safe_mode') ){
 define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
-$obj->current_version = 16;
+$obj->current_version = 17;
 if ($obj->Deny == false && isset($_POST['urllist'])) $obj->main();
 elseif(isset($_GET['infosv'])) $obj->notice();
 ############################################### Begin Secure ###############################################
