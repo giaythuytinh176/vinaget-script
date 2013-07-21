@@ -26,7 +26,7 @@ if( !ini_get('safe_mode') ){
 define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
-$obj->current_version = 15;
+$obj->current_version = 16;
 if ($obj->Deny == false && isset($_POST['urllist'])) $obj->main();
 elseif(isset($_GET['infosv'])) $obj->notice();
 ############################################### Begin Secure ###############################################

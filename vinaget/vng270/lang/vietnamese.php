@@ -41,7 +41,7 @@ $lang = array (
 'errordl'		=> 'Liên kết của bạn được tạo bởi IP khác!',
 'erroracc'		=> '<font color="red">Tài khoản/Cookie lỗi !!!</font>',
 'svload'		=> 'Tình trạng máy chủ quá tải.',
-'issex'			=> '<b><font color=red>Đây là liên kết sex ??? ==&#9658;</font> <a href=http://www.google.com/search?q=%s><font color=#00CC00>%s</font></a><br/><font color=#FFCC00>Nếu không ==&#9658; Gửi lại:</font> <font color=#0066CC>%s</font><font color=#FF3300>|</font><font color=#ff9999 face=Arial>not3x</font></b><br/>',
+'issex'			=> '<b><font color=red>Đây là liên kết sex ??? ==&#9658;</font> <a href=http://www.google.com/search?q=%1$s><font color=#00CC00>%1$s</font></a><br/><font color=#FFCC00>Nếu không ==&#9658; Gửi lại:</font> <font color=#0066CC>%1$s</font><font color=#FF3300>|</font><font color=#ff9999 face=Arial>not3x</font></b><br/>',
 'errorlink'		=> '==&#9658; Liên kết không đúng !',
 'manyjob'		=> 'Qua nhiều lần tải.',
 'countMBIP'		=> '<center><b><i><font color=red>Bạn chỉ có thể tải %s trên %s ! Mời đợi <font color=green size=4>%s</font></font></i></b></center>',
