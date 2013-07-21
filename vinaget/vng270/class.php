@@ -44,7 +44,7 @@ class getinfo
 		}
 		else{
 			foreach($config as $key=>$val){
-				if(empty($this->config[$key])) $this->config[$key] = $val;
+				if(!isset($this->config[$key])) $this->config[$key] = $val;
 			}
 			if ($this->config['secure'] == false) $this->Deny = false;
 			$password = explode(", ", $this->config['password']);

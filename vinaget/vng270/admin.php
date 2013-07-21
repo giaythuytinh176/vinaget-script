@@ -7,22 +7,15 @@ echo '<h3><a href="?id=admin&page=config">Config</a> |
 $page = isset($_GET['page']) ? $_GET['page'] : 'config';
 if($page == 'config'){
 	if(isset($_POST['submit'])){
-		$newconfig = array();
 		foreach($_POST['config'] as $ckey => $cval){
-			if($cval == 'on' || $cval == 'off') $newconfig[$ckey] = ($cval == 'on' ? true : false);
-			elseif(is_numeric($cval)) $newconfig[$ckey] = intval($cval);
-			elseif(gettype($cval) == 'array') {
-				foreach($cval as $cckey => $ccval){
-					if($ccval == 'on' || $ccval == 'off') $newconfig[$ckey][$cckey] = ($ccval == 'on' ? true : false);
-					elseif(is_numeric($ccval)) $newconfig[$ckey][$cckey] = intval($ccval);
-					else $newconfig[$ckey][$cckey] = $ccval;
-				}
-			}
-			else $newconfig[$ckey] = $cval;
+			if($cval == 'on' || $cval == 'off') $cval = $cval == 'on' ? true : false;
+			elseif(is_numeric($cval)) $cval = intval($cval);
+			else $cval = $cval;
+			$obj->config[$ckey] = $cval;
 		}
-		$obj->config = $newconfig;
 		$obj->save_json($obj->fileconfig, $obj->config);
-		echo "<b>Config Saved! Need refresh to applied changes</b>";
+		echo "<b>Config Saved! Redirecting...</b>";
+		echo "<script>setTimeout('window.location = \"index.php\"', 1000);</script>";
 	}
 ?>
 	<form method="post">
@@ -33,20 +26,11 @@ if($page == 'config'){
 				<td align="center" colspan="2"><B>CONFIG</B></td>
 			</tr>
 		';
-	foreach($config as $ckey => $cval){
-		$cval = $obj->config[$ckey] ? $obj->config[$ckey] : $cval;
+	foreach($obj->config as $ckey => $cval){
 		echo '<tr class="flistmouseoff"><td><i><b>'.$ckey.'</b></i></td><td style="text-align:right">';
-		if(gettype($cval) == 'string' || gettype($cval) == 'integer') echo '<input size="40" type="text" name="config['.$ckey.']" value="'.$cval.'"></td>';
-		elseif(gettype($cval) == 'boolean') echo '<label for="config['.$ckey.'][\'on\']"><input type="radio" id="config['.$ckey.'][\'on\']" value="on" name="config['.$ckey.']"'.($cval ? ' checked="checked"' : '').'/> On</label> <label for="config['.$ckey.'][\'off\']"><input type="radio" id="config['.$ckey.'][\'off\']" value="off" name="config['.$ckey.']"'.(!$cval ? ' checked="checked"' : '').'/> Off</label></td>';
-		elseif(gettype($cval) == 'array') {
-			foreach($cval as $cckey => $ccval){
-				echo ' <b>'.$cckey.'</b>';
-				if(gettype($ccval) == 'string' || gettype($ccval) == 'integer') echo '<input size="15" type="text" name="config['.$ckey.']['.$cckey.']" value="'.$ccval.'">';
-				elseif(gettype($ccval) == 'boolean') echo '<td><label for="config['.$ckey.']['.$cckey.'][\'on\']"><input type="radio" id="config['.$ckey.']['.$cckey.'][\'on\']" value="on" name="config['.$ckey.']['.$cckey.']"'.($ccval ? ' checked="checked"' : '').'/> On</label> <label for="config['.$ckey.']['.$cckey.'][\'off\']"><input type="radio" id="config['.$ckey.']['.$cckey.'][\'off\']" value="off" name="config['.$ckey.']['.$cckey.']"'.(!$ccval ? ' checked="checked"' : '').'/> Off</label></td>';
-			}
-			echo '</td>';
-		}
-		echo '</tr>';
+		if(gettype($cval) == 'string' || gettype($cval) == 'integer') echo '<input size="40" type="text" name="config['.$ckey.']" value="'.$cval.'">';
+		elseif(gettype($cval) == 'boolean') echo '<label for="config['.$ckey.'][\'on\']"><input type="radio" id="config['.$ckey.'][\'on\']" value="on" name="config['.$ckey.']"'.($cval ? ' checked="checked"' : '').'/> On</label> <label for="config['.$ckey.'][\'off\']"><input type="radio" id="config['.$ckey.'][\'off\']" value="off" name="config['.$ckey.']"'.(!$cval ? ' checked="checked"' : '').'/> Off</label>';
+		echo '</td></tr>';
 	}
 	echo "</table>";
 ?>	<br/>
