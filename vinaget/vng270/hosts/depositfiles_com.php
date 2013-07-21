@@ -15,6 +15,7 @@ class dl_depositfiles_com extends Download {
 	}
 
     public function Leech($url) {
+		$url = $this->getredirect($url);
 		list($name, $domain) = explode(".", $this->cut_str(str_replace("www.", "", $url), "http://", "/"));
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if (stristr($data, "You have exceeded the")) $this->error("LimitAcc");

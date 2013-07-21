@@ -84,7 +84,7 @@ class getinfo
 		$this->max_size_default = $this->config['max_size_default'];
 		$this->zlink = $this->config['ziplink'];
 		$this->link_zip = $this->config['apiadf'];
-		$this->badword = $this->config['badword'];
+		$this->badword = explode(", ", $this->config['badword']);
 		$this->act = array('rename' => $this->config['rename'], 'delete' => $this->config['delete']);
 		$this->listfile = $this->config['listfile'];
 		$this->checkacc = $this->config['checkacc'];
@@ -652,28 +652,52 @@ class stream_get extends getinfo
 				$check3x = false;
 				if (strpos($url, "|not3x")) $url = str_replace("|not3x", "", $url);
 				else {
-					$data = $this->curl("http://www.google.com/search?q=$url", "", "");
-					$totalbadword = count($this->badword);
-					for ($i = 0; $i < $totalbadword; $i++) {
-						if (stristr($data, $this->badword[$i])) {
-							$check3x = true;
-							break;
+					$data = strtolower($this->google($url));
+					if(strlen($data) > 1){
+						foreach($this->badword as $bad){
+							if(stristr($data, " {$bad}") || stristr($data, "_{$bad}") || stristr($data, ".{$bad}") || stristr($data, "-{$bad}")){
+								$check3x = $bad;
+								break;
+							}
 						}
 					}
 				}
 
 				if ($check3x == false) $dlhtml = $this->get($url);
 				else {
-					$dlhtml = printf($this->lang['issex'], $url, $url, $url);
+					$dlhtml = printf($this->lang['issex'], $url);
 					unset($check3x);
 				}
-
 				// ################## CHECK 3X #########################
 
 			}
 		}
 		else $dlhtml = "<b><a href=" . $url . " style='TEXT-DECORATION: none'><font color=red face=Arial size=2><s>" . $url . "</s></font></a> <img src=images/chk_error.png width='15' alt='errorlink'> <font color=#ffcc33><B>" . $this->lang['errorlink'] . "</B></font><br />";
 		echo $dlhtml;
+	}
+	
+	function google($q){
+		$q = urldecode($q);
+		$q = str_replace(' ', '+', $q);
+		$oldagent = $this->UserAgent;
+		$this->UserAgent = "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0; NOKIA; Lumia 800)";
+		$data = $this->curl("http://www.google.com/search?q={$q}&hl=en", '', '', 0);
+		$this->UserAgent = $oldagent;
+		$parsing = $this->cut_str($data, '<ol>', '</ol>');
+		$new = "<ol>{$parsing}</ol>";
+		$new = str_replace('<ol><li class="g">', "", $new);
+		$new = str_replace('</li><li class="g">', "\n\n\n", $new);
+		$new = str_replace('</li></ol>', "", $new);
+		$new = preg_replace ('%<a(.*?)href[^<>]+>|</a>%s', "", $new);
+		$new = preg_replace ('%<b>|</b>%s', "", $new);
+		$new = preg_replace ('%<h3 class="r">|</h3>%s', "", $new);
+		$new = preg_replace ('%<div class="s"><div class="kv" style="margin-bottom:2px"><cite>[^<]+</cite></div><span class="st">%s', " ", $new);
+		$new = str_replace(' ...', "", $new);
+		$new = strip_tags($new);
+		$new = str_replace('â€Ž', '', $new);
+		$new = str_replace('', '', $new);
+		$new = htmlspecialchars_decode($new);
+		return $new;
 	}
 	
 	function getsize($link, $cookie=""){
@@ -744,7 +768,8 @@ class stream_get extends getinfo
 			foreach($host as $file => $site) {
 				$class = substr($site, 0, -4);
 				$site = str_replace("_", ".", $class);
-				if (preg_match('%' . $site . '%U', $Original)) {
+				$domain = explode("/", $Original);
+				if (preg_match('%' . $site . '%U', $domain[2])) {
 					$class = str_replace("-", "_", $class);
 					$dlclass = "dl_{$class}";
 					$predefined = "";

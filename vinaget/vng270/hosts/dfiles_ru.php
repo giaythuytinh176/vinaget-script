@@ -1,11 +1,8 @@
 <?php
-if(isset($url)){
-	$head = get_headers($url, 1);	
-	$url = trim($head['Location']);
-}
-$dlclass = "dl_depositfiles_com";
-$site = "depositfiles.com";
+
 $alias = true;
+$site = "depositfiles.com";
+$dlclass = "dl_depositfiles_com";
 require_once("depositfiles_com.php");
 
 /*

@@ -1,9 +1,7 @@
 <?php
-if(isset($url)){
-	$head = get_headers($url, 1);	
-	$url = trim($head['Location']);
-}
+
 $alias = true;
+$site = "uploaded.net";
 $dlclass = "dl_uploaded_net";
 require_once("uploaded_net.php");
 
