@@ -7,10 +7,22 @@ class dl_putlocker_com extends Download {
 		return false;
 	}
 	
+	public function FreeLeech($url){
+		$data = $this->lib->curl($url, "", "");
+		$this->save($this->lib->GetCookies($data));
+		$hash = $this->lib->cut_str($data, '<input type="hidden" value="','" name="hash">');
+		sleep(2);
+		$data = $this->lib->curl($url, "", "hash={$hash}&confirm=Continue as Free User");
+		$id = $this->lib->cut_str($data, '<a href="/get_file.php?id=','"');
+		$data = $this->lib->curl("http://www.putlocker.com/get_file.php?id=".trim($id),$this->lib->cookie,"");
+		if($this->isredirect($data)) return trim($this->redirect);
+		return false;
+	}
+	
     public function Leech($url) {
-		$data =  $this->curl($url, $this->lib->cookie, "");
-		$redir = $this->cut_str($data1, '<a href="/get_file.php?id=', '" class="download_file_link_big"');
-		$data = $this->curl("http://www.putlocker.com/get_file.php?id=".trim($redir),$this->lib->cookie,"");
+		$data =  $this->lib->curl($url, $this->lib->cookie, "");
+		$id = $this->lib->cut_str($data1, '<a href="/get_file.php?id=', '"');
+		$data = $this->lib->curl("http://www.putlocker.com/get_file.php?id=".trim($id),$this->lib->cookie,"");
 		if($this->isredirect($data)) return trim($this->redirect);
 		return false;
     }

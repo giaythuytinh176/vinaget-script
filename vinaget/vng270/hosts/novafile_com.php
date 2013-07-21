@@ -24,12 +24,12 @@ class dl_novafile_com extends Download {
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if(stristr($data,'<div class="name">File Not Found</div>')) $this->error("dead", true, false, 2);
 		elseif(stristr($data, "Create Download Link")){
-                 $post = $this->parseForm($this->lib->cut_str($data, '<form action="', '</form>'));
-                 $data = $this->lib->curl($url, $this->lib->cookie, $post);
-				 $data = $this->lib->cut_str($data, '<div class="alert alert-success-invert">', '<p>This direct link will be active for your IP for the next 24 hours.</p>');
-                 $link = $this->lib->cut_str($data, '<a href="', '" class="btn btn-green">');
-                 return trim($link);
-          }
+			$post = $this->parseForm($this->lib->cut_str($data, '<form action="', '</form>'));
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			$data = $this->lib->cut_str($data, '<div class="alert alert-success-invert">', '<p>This direct link will be active for your IP for the next 24 hours.</p>');
+			$link = $this->lib->cut_str($data, '<a href="', '" class="btn btn-green">');
+			return trim($link);
+		}
 		elseif(stristr($data,"different IP")) $this->error("blockIP", true, false);
 		return false;
     }

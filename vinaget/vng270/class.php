@@ -32,6 +32,9 @@ class getinfo
 		$this->unit = 512;
 		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/12.0';
 		$this->config = $this->load_json($this->fileconfig);
+		include ("hosts/hosts.php");
+		ksort($host);
+		$this->list_host = $host;
 		include ("config.php");
 		if(count($this->config) == 0) {	
 			$this->config = $config;
@@ -43,7 +46,6 @@ class getinfo
 			foreach($config as $key=>$val){
 				if(empty($this->config[$key])) $this->config[$key] = $val;
 			}
-			$this->save_json($this->fileconfig, $this->config);
 			if ($this->config['secure'] == false) $this->Deny = false;
 			$password = explode(", ", $this->config['password']);
 			foreach($password as $login_vng) if (isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($login_vng)) {
@@ -101,6 +103,7 @@ class getinfo
 		$this->proxy = $this->config['proxy'];
 		$this->directdl = $this->config['showdirect'];
 		$this->longurl = $this->config['longurl'];
+		$this->display_error = $this->config['display_error'];
 	}
 	function isadmin(){
 		return isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($this->config['admin']) ? true : $this->admin;
@@ -249,22 +252,18 @@ class getinfo
 	function load_account(){
 		if (isset($this->acc)) return;
 		$this->acc = $this->load_json($this->fileaccount);
-		include ("hosts/hosts.php");
-		ksort($host);
-		foreach($host as $file => $site) {
+		foreach($this->list_host as $file => $site) {
 			$class = substr($site, 0, -4);
 			$site = str_replace("_", ".", $class);
 			$alias = false;
-			require_once ('hosts/' . $host[$file]);
+			require_once ('hosts/' . $this->list_host[$file]);
 			if(!$alias){
 				if(empty($this->acc[$site]['proxy'])) $this->acc[$site]['proxy'] = "";
 				if(empty($this->acc[$site]['direct'])) $this->acc[$site]['direct'] = false;
 				if(empty($this->acc[$site]['max_size'])) $this->acc[$site]['max_size'] = $this->max_size_default;
 				if(empty($this->acc[$site]['accounts'])) $this->acc[$site]['accounts'] = array();
 			}
-		}
-		$this->save_json($this->fileaccount, $this->acc);
-		
+		}		
 	}
 	function save_account($service, $acc){
 		foreach ($this->acc[$service]['accounts'] as $value) if ($acc == $value) return false; 
@@ -763,9 +762,7 @@ class stream_get extends getinfo
 		}
 		
 		if (!$link) {
-			include ("hosts/hosts.php");
-			ksort($host);
-			foreach($host as $file => $site) {
+			foreach($this->list_host as $file => $site) {
 				$class = substr($site, 0, -4);
 				$site = str_replace("_", ".", $class);
 				$domain = explode("/", $Original);
@@ -773,7 +770,7 @@ class stream_get extends getinfo
 					$class = str_replace("-", "_", $class);
 					$dlclass = "dl_{$class}";
 					$predefined = "";
-					require_once ('hosts/' . $host[$file]);
+					require_once ('hosts/' . $this->list_host[$file]);
 					$download = new $dlclass($this, $site, $predefined);
 					$link = $download->General($url);
 					break;
@@ -1390,10 +1387,16 @@ class Download {
 	}
 	
 	public function parseForm($data){
-		$post = "";
-		if(preg_match_all('/<input type="hidden" name="(.*)" value="(.*)"/', $data, $matches, PREG_SET_ORDER)){
-			foreach($matches as $val) $post .= "&{$val[1]}={$val[2]}";
-			$post = substr($post,1);
+		$post = array();
+		if(preg_match_all('/<input(.*)>/U', $data, $matches)){
+			foreach($matches[0] as $input){
+				if(!stristr($input, "name=")) continue;
+				if(preg_match('/name=(".*"|\'.*\')/U', $input, $name)){
+					$key = substr($name[1], 1, -1);
+					if(preg_match('/value=(".*"|\'.*\')/U', $input, $value)) $post[$key] = substr($value[1], 1, -1);
+					else $post[$key] = "";
+				}
+			}
 		}
 		return $post;
 	}

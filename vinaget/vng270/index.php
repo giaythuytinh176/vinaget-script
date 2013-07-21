@@ -17,7 +17,6 @@ $cookie = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'nothing';
 $cookie = isset($_REQUEST['using']) ? $_REQUEST['using'] : $cookie;
 setcookie("using", $cookie);
 ob_start();
-error_reporting(E_ALL);
 ob_implicit_flush (TRUE);
 ignore_user_abort (0);
 if( !ini_get('safe_mode') ){
@@ -26,13 +25,14 @@ if( !ini_get('safe_mode') ){
 define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
-$obj->current_version = 17;
+$obj->current_version = 18;
+error_reporting($obj->display_error ? E_ALL : 0);
 if ($obj->Deny == false && isset($_POST['urllist'])) $obj->main();
 elseif(isset($_GET['infosv'])) $obj->notice();
 ############################################### Begin Secure ###############################################
 elseif($obj->Deny == false) {
 	if (!isset($_POST['urllist'])) {
-		include ("hosts/hosts.php");
+		$host = $obj->list_host;
 		asort($host);
 ?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
