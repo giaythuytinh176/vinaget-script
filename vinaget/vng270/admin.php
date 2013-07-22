@@ -58,13 +58,10 @@ elseif($page == 'cookie'){
 	<?php printf($obj->lang['acctype']); ?> 
 		<select name='type' id='type'>
 	<?php
-		foreach($host as $file => $site) {
-			$class = substr($site, 0, -4);
-			$site = str_replace("_", ".", $class);
-			$alias = false;
-			require_once ('hosts/' . $host[$file]);
-			if(!$alias){
-				echo "<option value='{$site}'>{$site}</option>";
+		foreach($host as $key => $val) {
+			if(!$val['alias']){
+				require_once ('hosts/' . $val['file']);
+				if(method_exists($val['class'], "CheckAcc")) echo "<option value='{$key}'>{$key}</option>";
 			}
 		}
 	?>
@@ -113,13 +110,10 @@ elseif($page == 'account'){
 	<?php printf($obj->lang['acctype']); ?> 
 		<select name='type' id='type'>
 	<?php
-		foreach($host as $file => $site) {
-			$class = substr($site, 0, -4);
-			$site = str_replace("_", ".", $class);
-			$alias = false;
-			require_once ('hosts/' . $host[$file]);
-			if(!$alias){
-				echo "<option value='{$site}'>{$site}</option>";
+		foreach($host as $key => $val) {
+			if(!$val['alias']){
+				require_once ('hosts/' . $val['file']);
+				if(method_exists($val['class'], "CheckAcc")) echo "<option value='{$key}'>{$key}</option>";
 			}
 		}
 	?>

@@ -19,7 +19,6 @@ class getinfo
 {
 	function config()
 	{
-
 		$this->self = 'http://' . $_SERVER['HTTP_HOST'] . preg_replace('/\?.*$/', '', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF']);
 		$this->Deny = true;
 		$this->admin = false;
@@ -32,9 +31,6 @@ class getinfo
 		$this->unit = 512;
 		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/12.0';
 		$this->config = $this->load_json($this->fileconfig);
-		include ("hosts/hosts.php");
-		ksort($host);
-		$this->list_host = $host;
 		include ("config.php");
 		if(count($this->config) == 0) {	
 			$this->config = $config;
@@ -252,12 +248,8 @@ class getinfo
 	function load_account(){
 		if (isset($this->acc)) return;
 		$this->acc = $this->load_json($this->fileaccount);
-		foreach($this->list_host as $file => $site) {
-			$class = substr($site, 0, -4);
-			$site = str_replace("_", ".", $class);
-			$alias = false;
-			require_once ('hosts/' . $this->list_host[$file]);
-			if(!$alias){
+		foreach($this->list_host as $site=>$host) {
+			if(!$host['alias']){
 				if(empty($this->acc[$site]['proxy'])) $this->acc[$site]['proxy'] = "";
 				if(empty($this->acc[$site]['direct'])) $this->acc[$site]['direct'] = false;
 				if(empty($this->acc[$site]['max_size'])) $this->acc[$site]['max_size'] = $this->max_size_default;
@@ -353,13 +345,18 @@ class stream_get extends getinfo
 	function stream_get()
 	{
 		$this->config();
-		$this->load_account();
 		$this->max_size_other_host = 10240;
 		$this->load_jobs();
 		$this->load_cookies();
 		$this->cookie = '';
 		if (preg_match('%^(http.+.index.php)/(.*?)/(.*?)/%U', $this->self, $redir)) $this->download($redir[3]);
 		elseif (isset($_REQUEST['file'])) $this->download($_REQUEST['file']);
+		else{
+			include ("hosts/hosts.php");
+			ksort($host);
+			$this->load_account();
+			$this->list_host = $host;
+		}
 		if (isset($_COOKIE['owner'])) {
 			$this->owner = $_COOKIE['owner'];
 		}
@@ -751,30 +748,20 @@ class stream_get extends getinfo
 		if (!$link) {
 			$site = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'nothing';
 			if($this->get_account($site) != ""){
-				$class = str_replace(".", "_", $site);
-				$predefined = "";
-				require_once ('hosts/' . $class . '.php');
-				$class = str_replace("-", "_", $class);
-				$dlclass = "dl_{$class}";
-				$download = new $dlclass($this, $site, $predefined);
+				require_once ('hosts/' . $this->list_host[$site]['file']);
+				$download = new $this->list_host[$site]['class']($this, $this->list_host[$site]['site']);
 				$link = $download->General($url);
 			}
 		}
 		
 		if (!$link) {
-			foreach($this->list_host as $file => $site) {
-				$class = substr($site, 0, -4);
-				$site = str_replace("_", ".", $class);
-				$domain = explode("/", $Original);
-				if (preg_match('%' . $site . '%U', $domain[2])) {
-					$class = str_replace("-", "_", $class);
-					$dlclass = "dl_{$class}";
-					$predefined = "";
-					require_once ('hosts/' . $this->list_host[$file]);
-					$download = new $dlclass($this, $site, $predefined);
-					$link = $download->General($url);
-					break;
-				}
+			$domain = explode("/", $Original);
+			$domain = strtolower(str_replace("www.", "", $domain[2]));
+			if(isset($this->list_host[$domain])){
+				require_once ('hosts/' . $this->list_host[$domain]['file']);
+				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);
+				$link = $download->General($url);
+				$site = $this->list_host[$domain]['site'];
 			}
 		}
 		
@@ -1327,10 +1314,9 @@ class Download {
 	
 	public $last = false;
 	
-	public function __construct ($lib, $site, $pre = "") {
+	public function __construct ($lib, $site) {
 		$this->lib = $lib;
 		$this->site = $site;
-		$this->pre = $pre;
 	}
 	
 	public function error($msg, $force = false, $delcookie = true, $type = 1){
@@ -1381,9 +1367,12 @@ class Download {
 	}
 	
 	public function getredirect($link, $cookie=""){
-		$data = $this->lib->curl($link,$cookie,"");
-		if (preg_match('/ocation: (.*)/',$data,$match)) return trim($match[1]);
-		else $link;
+		$headers = get_headers($link,1);
+		if(isset($headers["Location"])) $link = $headers["Location"];
+		return $link;
+		// $data = $this->lib->curl($link,$cookie,"",0);
+		// if (preg_match('/ocation: (.*)/',$data,$match)) return trim($match[1]);
+		// else $link;
 	}
 	
 	public function parseForm($data){

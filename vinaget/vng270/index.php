@@ -25,7 +25,7 @@ if( !ini_get('safe_mode') ){
 define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
-$obj->current_version = 20;
+$obj->current_version = 21;
 error_reporting($obj->display_error ? E_ALL : 0);
 if ($obj->Deny == false && isset($_POST['urllist'])) $obj->main();
 elseif(isset($_GET['infosv'])) $obj->notice();
@@ -33,7 +33,6 @@ elseif(isset($_GET['infosv'])) $obj->notice();
 elseif($obj->Deny == false) {
 	if (!isset($_POST['urllist'])) {
 		$host = $obj->list_host;
-		asort($host);
 ?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml"><head profile="http://gmpg.org/xfn/11">
@@ -91,10 +90,8 @@ elseif($obj->Deny == false) {
 								<tr><td height="100%" style="padding:3px;">
 									<div dir="rtl" align="left" style="overflow-y:scroll; height:150px; padding-left:20px;">
 									<?php
-										foreach ($host as $file => $site){
-											$site = substr($site,0,-4);
-											$site = str_replace("_",".",$site) ;
-											echo "<span class='plugincollst'>" .$site."</span><br />";
+										foreach ($host as $key => $val){
+											echo "<span class='plugincollst'>" .$key."</span><br />";
 										}
 									?>
 									</div><br />
@@ -149,15 +146,10 @@ elseif($obj->Deny == false) {
 												<?php printf($obj->lang['acctype']); ?> 
 												<select name='type' id='type'>
 												<?php
-												foreach($host as $file => $site) {
-													$class = substr($site, 0, -4);
-													$site = str_replace("_", ".", $class);
-													$class = str_replace("-", "_", $class);
-													$dlclass = "dl_{$class}";
-													$alias = false;
-													require_once ('hosts/' . $host[$file]);
-													if(!$alias && method_exists($dlclass, "CheckAcc")){
-														echo "<option value='{$site}'>{$site}</option>";
+												foreach($host as $key => $val) {
+													if(!$val['alias']){
+														require_once ('hosts/' . $val['file']);
+														if(method_exists($val['class'], "CheckAcc")) echo "<option value='{$key}'>{$key}</option>";
 													}
 												}
 												?>

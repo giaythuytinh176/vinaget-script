@@ -15,12 +15,9 @@ if (!empty($_POST["accounts"])) {
 	$account = trim($_POST['accounts']);
 	$donate = false;
 	if(check_account($type,$account)) die("false duplicate");
-	$class = str_replace(".", "_", $type);
-	require_once ('hosts/' . $class . '.php');
-	$class = str_replace("-", "_", $class);
-	$dlclass = "dl_{$class}";
-	$download = new $dlclass($obj, $type, "");
-	if(method_exists($dlclass, "CheckAcc")) {
+	require_once ('hosts/' . $obj->list_host[$type]['file']);
+	$download = new $obj->list_host[$type]['class']($obj, $type);
+	if(method_exists($download, "CheckAcc")) {
 		if (strpos($account, ":")) {
 			list($user, $pass) = explode(':',$account);
 			$cookie = $download->Login($user, $pass);

@@ -3,11 +3,10 @@ if (isset($_POST["check"])) {
 	$check = $_POST["check"];
 	$acc = $obj->acc[$check];
 	if(count($acc["accounts"])>0){
+		$check
 		$class = str_replace(".", "_", $check);
-		require_once ('hosts/' . $class . '.php');
-		$class = str_replace("-", "_", $class);
-		$dlclass = "dl_{$class}";
-		$download = new $dlclass($obj, $check);
+		require_once ('hosts/' . $obj->list_host[$check]['file']);
+		$download = new $obj->list_host[$check]['class']($obj, $check);
 		echo 
 		'<table id="table-'.$check.'" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
 			<tr class="flisttblhdr" valign="bottom">
