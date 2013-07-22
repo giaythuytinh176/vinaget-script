@@ -3,8 +3,6 @@ if (isset($_POST["check"])) {
 	$check = $_POST["check"];
 	$acc = $obj->acc[$check];
 	if(count($acc["accounts"])>0){
-		$check
-		$class = str_replace(".", "_", $check);
 		require_once ('hosts/' . $obj->list_host[$check]['file']);
 		$download = new $obj->list_host[$check]['class']($obj, $check);
 		echo 
