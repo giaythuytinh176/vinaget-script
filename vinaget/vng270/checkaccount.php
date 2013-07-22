@@ -16,7 +16,7 @@ if (isset($_POST["check"])) {
 		$i = 0;
 		foreach($acc["accounts"] as $account){
 			$type = stristr($account,':') ? "account" : "cookie";
-			if(method_exists($dlclass, "CheckAcc")) {
+			if(method_exists($download, "CheckAcc")) {
 				if ($type == "account") {
 					list($user, $pass) = explode(':',$account);
 					$cookie = $download->Login($user, $pass);
