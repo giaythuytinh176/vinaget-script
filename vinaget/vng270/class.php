@@ -248,7 +248,7 @@ class getinfo
 	function load_account(){
 		if (isset($this->acc)) return;
 		$this->acc = $this->load_json($this->fileaccount);
-		foreach($this->list_host as $site=>$host) {
+		foreach($this->list_host as $site => $host) {
 			if(!$host['alias']){
 				if(empty($this->acc[$site]['proxy'])) $this->acc[$site]['proxy'] = "";
 				if(empty($this->acc[$site]['direct'])) $this->acc[$site]['direct'] = false;
@@ -354,8 +354,8 @@ class stream_get extends getinfo
 		else{
 			include ("hosts/hosts.php");
 			ksort($host);
-			$this->load_account();
 			$this->list_host = $host;
+			$this->load_account();
 		}
 		if (isset($_COOKIE['owner'])) {
 			$this->owner = $_COOKIE['owner'];
