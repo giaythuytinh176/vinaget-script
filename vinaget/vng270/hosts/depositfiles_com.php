@@ -3,8 +3,7 @@
 class dl_depositfiles_com extends Download {
 
 	public function CheckAcc($cookie){
-		$url = $this->getredirect("http://depositfiles.com/gold/payment_history.php");
-		$data = $this->lib->curl($url, "lang_current=en;".$cookie, "");
+		$data = $this->lib->curl("http://depositfiles.com/gold/payment_history.php", "lang_current=en;{$cookie}", "");
 		if(stristr($data, 'You have Gold access until:')) return array(true, "Until ".$this->lib->cut_str($data, '<div class="access">You have Gold access until: <b>','</b></div>'));
 		else if(stristr($data, 'Your current status: FREE - member')) return array(false, "accfree");
 		else return array(false, "accinvalid");
@@ -40,5 +39,6 @@ class dl_depositfiles_com extends Download {
 * Plugin Download Class By giaythuytinh176
 * Date: 16.7.2013
 * Fix download by giaythuytinh176 [21.7.2013]
+* Fixed check account by giaythuytinh176 [24.7.2013]
 */
 ?>

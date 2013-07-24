@@ -178,6 +178,10 @@ function checkacc(type){
 }
 
 function donate(obj){
+	var errinvalid = '<img src="images/error.png"> <font color="red"><b>'+lang["invalid"]+'</b></font>';
+	var suc1 = '<font color="#FF3300">'+lang["success"]+'</font>';
+	var suc2 = '<img src="images/success.png"><br/><b><font color="#86a5d5">'+suc2+'</font></b>';
+	var loading = '<img src="images/loading.gif"><br/>'+lang["getloading"];
 	if($("#accounts").val().length > 10) {
 		$("#wait").html(lang["getloading"]);
 		$.ajax({
@@ -190,28 +194,17 @@ function donate(obj){
 					$('#accounts').val("");
 					$("#wait").fadeOut(1100, 'swing');
 					$("#wait").fadeOut(1100, function(){
-						$("#wait").html(lang["dsuccess"]);
-						$("#wait").html(lang["success"]);                        	
+						$("#wait").html(suc2);
+						$("#wait").html(suc1);                        	
 					});
-					$("#wait").html(lang["dsuccess"]);
+					$("#wait").html(suc2);
 					$("#wait").fadeIn(800);
 				}
-				else if(html == 'add') {
-					$("#wait").html('');
-					$('#accounts').val("");
-					$("#wait").fadeOut(1100, 'swing');
-					$("#wait").fadeOut(1100, function(){
-						$("#wait").html(lang["dsuccess"]);
-						$("#wait").html(d_succ3);                        	
-					});
-					$("#wait").html(lang["dsuccess"]);
-					$("#wait").fadeIn(800);
-				}
-				else $("#wait").html(lang["invalid"]);	
+				else $("#wait").html(errinvalid);	
 			}
 		});
 	}
-	else $("#wait").html(lang["invalid"]);
+	else $("#wait").html(errinvalid);
 }
 
 function makelist(data){

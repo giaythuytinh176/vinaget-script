@@ -18,19 +18,16 @@ class dl_ryushare_com extends Download {
     public function Leech($url) {
 		$data = $this->lib->curl($url,"{$this->lib->cookie};lang=english;","");
 		if(preg_match('/ocation: *(.*)/i', $data, $redir)) return str_replace(" ","%20",trim($redir[1]));
-		elseif (stristr($data,'403 Forbidden')) 
-				$this->error("<font color=red><b>Your IP is banned!</b></font>", true, false);
-		elseif (stristr($data,'<div class="err">You have reached the download-limit: 88888 Mb for last 1 days</div>'))
-				$this->error("<font color=red>You have reached the download-limit: 88888 Mb for last 1 days</b></font>", true, false);
-		elseif (stristr($data,'This server is in maintenance mode. Refresh this page in some minutes.')) 
-				$this->error("<font color=red>This server is in maintenance mode. Refresh this page in some minutes.</b></font>", true, false);
-		elseif(stristr($data, "Create Download Link")){
-                 $post = $this->parseForm($this->lib->cut_str($data, '<form name="F1" method="POST"', '</form>'));
-                 $data = $this->lib->curl($url, $this->lib->cookie, $post);
-				 $data = $this->lib->cut_str($data, '<center><span style="background:#f9f9f9;border:1px dotted #bbb;padding:7px;">', '</span></center>');
-                 $link = $this->lib->cut_str($data, '<a href="', '">Click here to download</a>');
-                 return trim($link);
-          }
+		elseif (stristr($data,'403 Forbidden')) $this->error("blockIP", true, false);
+		elseif (stristr($data,'You have reached the download-limit')) $this->error("LimitAcc", true, false);
+		elseif (stristr($data,'This server is in maintenance mode. Refresh this page in some minutes.')) $this->error("Ryushare Under Maintenance", true, false);
+		elseif (stristr($data, "Create Download Link")){
+			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1" method="POST"', '</form>'));
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			$data = $this->lib->cut_str($data, '<center><span style="background:#f9f9f9;border:1px dotted #bbb;padding:7px;">', '</span></center>');
+			$link = $this->lib->cut_str($data, '<a href="', '">Click here to download</a>');
+			return trim($link);
+		}
 		elseif (stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
 		return false;
     }

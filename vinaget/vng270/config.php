@@ -31,4 +31,5 @@ $config['apiadf'] = "http://api.adf.ly/api.php?key=94793cf6c45d36ed3d008d098fcfb
 $config['proxy'] = "";
 $config['badword'] = "porn, sex, hentai";
 $config['language'] = "english";
+$config['skin'] = "default";
 ?>

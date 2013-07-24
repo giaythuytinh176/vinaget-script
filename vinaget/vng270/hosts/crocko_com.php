@@ -4,7 +4,7 @@ class dl_crocko_com extends Download {
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://www.crocko.com/accounts", $cookie, "");
-		if(stristr($data, 'Premium membership: Active<br />')) return array(true, "Until ".$this->lib->cut_str($data, 'Ends:  ',', in'));
+		if(stristr($data, 'Premium membership: Active<br />') || stristr($data, 'Premium membership: Expiring<br />')) return array(true, "Until ".$this->lib->cut_str($data, 'Ends:  ',', in'));
 		else if(stristr($data, '<h4>Premium account <strong>active</strong></h4>')) return array(true, "Until ".$this->lib->cut_str($data, 'End time:  ',', in'));
 		else if(stristr($data, 'Premium membership: No premium')) return array(false, "accfree");
 		else return array(false, "accinvalid");
@@ -36,5 +36,6 @@ class dl_crocko_com extends Download {
 * Fix by [FZ]
 * Downloader Class By [FZ]
 * Date: 18.7.2013
+* Fixed problem with login by giaythuytinh176 [22.7.2013]
 */
 ?>

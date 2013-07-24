@@ -3,7 +3,7 @@ class dl_filestay_com extends Download {
     
     public function CheckAcc($cookie){
          $data = $this->lib->curl("http://filestay.com/?op=my_account", $cookie, "");
-         if(stristr($data, '<dt>Premium until</dt>')) return array(true, "Until ".$this->lib->cut_str($data, '<dt>Premium until</dt>','<dd class="ddeditbtn"><a href="http://filestay.com/?op=payments">Extend</a></dd>'));
+         if(stristr($data, '<dt>Premium until</dt>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, '<dt>Premium until</dt>','<dd class="ddeditbtn">'), '<dd>', '</dd>'));
          else if(stristr($data, '<dd>Normal</dd>')) return array(false, "accfree");
          else return array(false, "accinvalid");
     }

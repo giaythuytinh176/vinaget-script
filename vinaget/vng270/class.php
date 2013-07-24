@@ -44,6 +44,7 @@ class getinfo
 			}
 			if ($this->config['secure'] == false) $this->Deny = false;
 			$password = explode(", ", $this->config['password']);
+			$password[] = $this->config['admin'];
 			foreach($password as $login_vng) if (isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($login_vng)) {
 				$this->Deny = false;
 				break;
@@ -75,6 +76,7 @@ class getinfo
 		include("lang/{$this->config['language']}.php");
 		$this->lang = $lang;
 		$this->Secure = $this->config['secure'];
+		$this->skin = $this->config['skin'];
 		$this->download_prefix = $this->config['download_prefix'];
 		$this->limitMBIP = $this->config['limitMBIP'];
 		$this->ttl = $this->config['ttl'];
@@ -108,39 +110,22 @@ class getinfo
 		$version = $this->cut_str($this->curl("https://code.google.com/p/vinaget-script/source/list", "", ""), '"detail?r=','"');
 		return intval($version);
 	}
-	function notice()
+	function notice($id="notice")
 	{
-		printf($this->lang['notice'], Tools_get::convert_time($this->ttl * 60) , $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60));
-		$this->CheckMBIP();
-		$MB1IP = Tools_get::convertmb($this->countMBIP * 1024 * 1024);
-		$thislimitMBIP = Tools_get::convertmb($this->limitMBIP * 1024 * 1024);
-		$maxsize = Tools_get::convertmb($this->max_size_other_host * 1024 * 1024);
-		printf($this->lang['yourjobs'], $_SERVER['REMOTE_ADDR'], $this->lookup_ip($_SERVER['REMOTE_ADDR']) , $this->max_jobs_per_ip, $MB1IP, $thislimitMBIP);
-		printf($this->lang['status'], $maxsize, count($this->jobs) , $this->max_jobs, $this->get_load() , $this->max_load, Tools_get::useronline());
-	}
-	function showplugin()
-	{
-		foreach($this->acc as $host => $value) {
-			$xout = array(
-				''
-			);
-			$xout = $this->acc[$host]['accounts'];
-			$max_size = $this->acc[$host]['max_size'];
-			if (empty($xout[0]) == false && empty($host) == false) {
-				$hosts[] = '<span class="plugincollst">' . $host . ' ' . count($xout) . '</span><br/>';
-			}
+		if($id=="notice") return sprintf($this->lang['notice'], Tools_get::convert_time($this->ttl * 60) , $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60));
+		else {
+			$this->CheckMBIP();
+			$MB1IP = Tools_get::convertmb($this->countMBIP * 1024 * 1024);
+			$thislimitMBIP = Tools_get::convertmb($this->limitMBIP * 1024 * 1024);
+			$maxsize = Tools_get::convertmb($this->max_size_other_host * 1024 * 1024);
+			if($id=="yourip") return sprintf($this->lang['yourip'], $_SERVER['REMOTE_ADDR']);
+			if($id=="yourjob") return sprintf($this->lang['yourjob'], $this->lookup_ip($_SERVER['REMOTE_ADDR']) , $this->max_jobs_per_ip);
+			if($id=="youused") return sprintf($this->lang['youused'], $MB1IP, $thislimitMBIP);
+			if($id=="sizelimit") return sprintf($this->lang['sizelimit'], $maxsize);
+			if($id=="totjob") return sprintf($this->lang['totjob'], count($this->jobs) , $this->max_jobs);
+			if($id=="serverload") return sprintf($this->lang['serverload'], $this->get_load() , $this->max_load);
+			if($id=="uonline") return sprintf($this->lang['uonline'], Tools_get::useronline());
 		}
-		if (isset($hosts)) {
-			if (count($hosts) > 4) {
-				for ($i = 0; $i < 5; $i++) echo "$hosts[$i]";
-				echo "<div id=showacc style='display: none;'>";
-				for ($i = 5; $i < count($hosts); $i++) echo "$hosts[$i]";
-				echo "</div>";
-			}
-			else for ($i = 0; $i < count($hosts); $i++) echo "$hosts[$i]";
-			if (count($hosts) > 4) echo "<a onclick=\"showOrHide();\" href=\"javascript:void(0)\" style='TEXT-DECORATION: none'><font color=#FF6600><div id='moreacc'>" . $this->lang['moreacc'] . "</div></font></a>";
-		}
-		return false;
 	}
 	function load_jobs()
 	{
@@ -389,7 +374,7 @@ class stream_get extends getinfo
 		if (!$link) {
 			sleep(15);
 			header("HTTP/1.1 404 Not Found");
-			die($this->lang['erroracc']);
+			$this->error1('erroracc');
 		}
 		$range = '';
 		if (isset($_SERVER['HTTP_RANGE'])) {
@@ -531,15 +516,21 @@ class stream_get extends getinfo
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_HEADER, $header);
 		if ($json == 1) {
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json','X-Requested-With: XMLHttpRequest'));
+			$head[] = "Content-type: application/json";
+			$head[] = "X-Requested-With: XMLHttpRequest";
 		}
 		if ($xml == 1) {
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-Requested-With: XMLHttpRequest'));
+			$head[] = "X-Requested-With: XMLHttpRequest";
 		}
+		$head[] = "Connection: keep-alive";
+		$head[] = "Keep-Alive: 300";
+		$head[] = "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7";
+		$head[] = "Accept-Language: en-us,en;q=0.5";
 		if ($cookies) curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 		curl_setopt($ch, CURLOPT_USERAGENT, $this->UserAgent);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_REFERER, $ref == 0 ? $url : $ref);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
 		if ($post) {
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
@@ -711,28 +702,21 @@ class stream_get extends getinfo
 		$this->CheckMBIP();
 		$dlhtml = '';
 		if (count($this->jobs) >= $this->max_jobs) {
-			$dlhtml = '<center><b><i><font color=red>' . $this->lang['manyjob'] . '</font></i></b></center>';
-			return $dlhtml;
+			$this->error1('manyjob');
 		}
-
 		if ($this->countMBIP >= $this->limitMBIP) {
-			printf($this->lang['countMBIP'], Tools_get::convertmb($this->limitMBIP * 1024 * 1024) , Tools_get::convert_time($this->ttl * 60) , Tools_get::convert_time($this->timebw));
-			return $dlhtml;
+			$this->error1('countMBIP', Tools_get::convertmb($this->limitMBIP * 1024 * 1024) , Tools_get::convert_time($this->ttl * 60) , Tools_get::convert_time($this->timebw));
 		}
-
 		/* check 1 */
 		$checkjobs = $this->Checkjobs();
 		$heute = $checkjobs[0];
 		$lefttime = $checkjobs[1];
 		if ($heute >= $this->limitPERIP) {
-			printf($this->lang['limitPERIP'], $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60) , $lefttime);
-			return $dlhtml;
+			$this->error1('limitPERIP', $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60) , $lefttime);
 		}
-
 		/* /check 1 */
 		if ($this->lookup_ip($_SERVER['REMOTE_ADDR']) >= $this->max_jobs_per_ip) {
-			$dlhtml = '<center><b><i><font color=red>' . $this->lang['limitip'] . '</font></i></b></center>';
-			return $dlhtml;
+			$this->error1('limitip');
 		}
 
 		$url = trim($url);
@@ -746,7 +730,7 @@ class stream_get extends getinfo
 		$report = false;
 		
 		if (!$link) {
-			$site = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'nothing';
+			$site = $this->using;
 			if($this->get_account($site) != ""){
 				require_once ('hosts/' . $this->list_host[$site]['file']);
 				$download = new $this->list_host[$site]['class']($this, $this->list_host[$site]['site']);
@@ -756,7 +740,8 @@ class stream_get extends getinfo
 		
 		if (!$link) {
 			$domain = explode("/", $Original);
-			$domain = strtolower(str_replace("www.", "", $domain[2]));
+			$ex = explode(".", $domain[2]);
+			$domain = strtolower($ex[count($ex)-2].".".$ex[count($ex)-1]);
 			if(isset($this->list_host[$domain])){
 				require_once ('hosts/' . $this->list_host[$domain]['file']);
 				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);
@@ -771,10 +756,7 @@ class stream_get extends getinfo
 			$filename = $size_name[1];
 			$this->max_size = $this->max_size_other_host;
 			if ($size_name[0] > 1024 * 100) $link = $url;
-			else {
-				printf($this->lang['error2'], $this->lang['notsupport'], $Original);
-				return $dlhtml;
-			}
+			else $this->error2('notsupport', $Original);
 		}
 		else{
 			$size_name = Tools_get::size_name($link, $this->cookie);
@@ -784,25 +766,22 @@ class stream_get extends getinfo
 
 		$hosting = Tools_get::site_hash($Original);
 		if (!isset($filesize)) {
-			printf($this->lang['notdl'], $Original, $Original);
-			return $dlhtml;
+			$this->error2('notsupport', $Original);
 		}
 
 		if (!isset($this->max_size)) $this->max_size = $this->max_size_other_host;
 		$msize = Tools_get::convertmb($filesize);
 		$hash = md5($_SERVER['REMOTE_ADDR'] . $Original);
 		if ($hash === false) {
-			return $this->lang['cantjob'];
+			$this->error1('cantjob');
 		}
 
 		if ($filesize > $this->max_size * 1024 * 1024) {
-			printf($this->lang['filebig'], $Original, $msize, Tools_get::convertmb($this->max_size * 1024 * 1024));
-			return $dlhtml;
+			$this->error2('filebig', $Original, $msize, Tools_get::convertmb($this->max_size * 1024 * 1024));
 		}
 
 		if (($this->countMBIP + $filesize / (1024 * 1024)) >= $this->limitMBIP) {
-			printf($this->lang['countMBIP'], Tools_get::convertmb($this->limitMBIP * 1024 * 1024) , Tools_get::convert_time($this->ttl * 60) , Tools_get::convert_time($this->timebw));
-			return $dlhtml;
+			$this->error1('countMBIP', Tools_get::convertmb($this->limitMBIP * 1024 * 1024) , Tools_get::convert_time($this->ttl * 60) , Tools_get::convert_time($this->timebw));
 		}
 
 		/* check 2 */
@@ -810,10 +789,8 @@ class stream_get extends getinfo
 		$heute = $checkjobs[0];
 		$lefttime = $checkjobs[1];
 		if ($heute >= $this->limitPERIP) {
-			printf($this->lang['limitPERIP'], $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60) , $lefttime);
-			return $dlhtml;
+			$this->error1('limitPERIP', $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60) , $lefttime);
 		}
-
 		/* /check 2 */
 		$job = array(
 			'hash' => substr(md5($hash) , 0, 10) ,
@@ -846,15 +823,12 @@ class stream_get extends getinfo
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
 		// #########Begin short link ############
-
 		if (empty($this->zlink) == false && empty($this->link_zip) == false && empty($link) == false) {
 			$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
 			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
 			else $lik = $linkdown;
 		}
-
 		// ########### End short link  ##########
-
 		else $lik = $linkdown;
 		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl && !$this->acc[$site]['direct'] ? "<a href='{$link}'>Direct<a> " : "") . ($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : "") . "</a></b>";
 		return $dlhtml;
@@ -1078,6 +1052,16 @@ class stream_get extends getinfo
 			$this->fulllist();
 		}
 	}
+	function error1($msg, $a = "", $b = "", $c = "", $d = ""){
+		if(isset($this->lang[$msg])) $msg = sprintf($this->lang[$msg], $a, $b, $c, $d);
+		$msg = sprintf($this->lang["error1"], $msg);
+		die($msg);
+	}
+	function error2($msg, $a = "", $b = "", $c = "", $d = ""){
+		if(isset($this->lang[$msg])) $msg = sprintf($this->lang[$msg], $a, $b, $c, $d);
+		$msg = sprintf($this->lang["error2"], $msg, $a);
+		die($msg);
+	}
 }
 
 // #################################### End class stream_get ###################################
@@ -1283,29 +1267,6 @@ class Tools_get extends getinfo
 		else $time = $time . " " . $this->lang['sec'];
 		return $time;
 	}
-
-	function report($url, $reason)
-	{
-		if ($reason == "dead") {
-			$report = '<b><a href=' . $url . ' style="TEXT-DECORATION: none"><font color=red face=Arial size=2><s>' . $url . '</s></font></a> <img src=images/chk_error.png width="15" alt="errorlink"> <font color=#ffcc33 face=Arial size=2>' . $this->lang['dead'] . '</font></b><br />';
-			return $report;
-		}
-		elseif ($reason == "erroracc") {
-			$report = '<center><B><a href=' . $link . ' style="TEXT-DECORATION: none"><font color=#00FF00 face=Arial size=2>' . $link . '</font></a> <img src=images/chk_good.png width="13" alt="g&#1086;&#1086;d_l&#1110;nk"> | <font color=#ffcc33 face=Arial size=2>' . $matches[1] . '</font><font color=red face=Arial size=2> ' . $this->lang['notwork'] . '</font></B></center>';
-			return $report;
-		}
-		elseif ($reason == "svload") {
-			$report = '<b><a href=' . $url . ' style="TEXT-DECORATION: none" title="please try again"><font color=#969696 face=Arial size=2>' . $url . '</font></a> <img src=images/chk_error.png width="15" alt="errorlink"></b> <font color=#ffcc33 face=Arial >' . $this->lang['again'] . '</font>';
-			return $report;
-		}
-		elseif ($reason == "Unavailable") $reason = $this->lang['navailable'];
-		elseif ($reason == "disabletrial") $reason = $this->lang['disabletrial'];
-		elseif ($reason == "Adult") $reason = $this->lang['adult'];
-		elseif ($reason == "youtube_captcha") $reason = $this->lang['ytb_captcha'];
-		elseif ($reason == "ErrorLocating") $reason = $this->lang['ytb_Error'];
-		$report = '<b><a href=' . $url . ' style="TEXT-DECORATION: none"><font color=red face=Arial size=2>' . $url . '</font></a> <img src=images/chk_error.png width="15" alt="errorlink"> <font color=#ffcc33 face=Arial size=2>' . $reason . '</font></b><br />';
-		return $report;
-	}
 }
 // #################################### End class Tools_get #####################################
 
@@ -1368,7 +1329,10 @@ class Download {
 	
 	public function getredirect($link, $cookie=""){
 		$headers = get_headers($link,1);
-		if(isset($headers["Location"])) $link = $headers["Location"];
+		if(isset($headers["Location"])) {
+			$link = $headers["Location"];
+			while(is_array($link)) $link = $link[0];
+		}
 		return $link;
 		// $data = $this->lib->curl($link,$cookie,"",0);
 		// if (preg_match('/ocation: (.*)/',$data,$match)) return trim($match[1]);

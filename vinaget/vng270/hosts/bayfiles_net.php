@@ -24,6 +24,7 @@ class dl_bayfiles_net extends Download {
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
   		if (stristr($data,"<p>Invalid security token. Please check your link.</p>"))   $this->error("dead", true, false, 2);
+		elseif (stristr($data,"<p>The requested file could not be found.</p>"))   $this->error("dead", true, false, 2);
 		else{
 			$data = $this->lib->cut_str($data, '<div style="text-align: center;">', '</div>');
 			$link = $this->lib->cut_str($data, '<a class="highlighted-btn" href="', '">Premium Download</a>');
@@ -41,6 +42,7 @@ class dl_bayfiles_net extends Download {
 * Bayfiles.net Download Plugin 
 * Downloader Class By [FZ]
 * Plugin By giaythuytinh176
-* Date: 22.7.2013 
+* Date: 22.7.2013
+* Fix check file not avaiable by giaythuytinh176 [23.7.2013] 
 */
 ?>

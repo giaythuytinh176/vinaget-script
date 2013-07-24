@@ -25,7 +25,7 @@ class dl_4shared_com extends Download {
 		if (stristr($data,'The file link that you requested is not valid')) $this->error("dead", true, false, 2);
 		elseif(preg_match ( '/a id="btnLink" href="(.*)" class/i', $data, $linkpre)) return trim ($linkpre[1]);
 		elseif($this->isredirect()) return trim ($this->redirect);
-		elseif(stristr($data, 'Please enter a password to access this file')) $this->error("filepass", true, false);
+		elseif(stristr($data, 'Please enter a password to access this file')) $this->error("reportpass", true, false);
 		return false;
     }
 
