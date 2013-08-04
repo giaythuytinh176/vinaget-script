@@ -26,6 +26,7 @@ DirectoryIndex index.php index.html index.htm
 	#
 	## End 
 </IfModule>
+
 <files ~ "\.(php|php.*|sphp|php3|php4|php5|phtml|cgi|pl|shtml|dhtml|html|htm|txt|dat)$">
 deny from all
 </files>
@@ -39,6 +40,10 @@ allow from all
 </files>
 
 <files login.php>
+allow from all
+</files>
+
+<files proccess.php>
 allow from all
 </files>
 

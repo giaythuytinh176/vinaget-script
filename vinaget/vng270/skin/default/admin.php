@@ -4,22 +4,10 @@ echo '<h3><a href="?id=admin&page=config">Config</a> |
 	  <a href="?id=admin&page=account">Account</a> | 
 	  <a href="?id=admin&page=cookie">Cookie</a></h3>';
 
-$page = isset($_GET['page']) ? $_GET['page'] : 'config';
+$page = isset($_GET['page']) ? $_GET['page'] : 'config';]
+echo "<form method='POST' action='proccess.php?page={$page}'>";
+if($obj->msg) echo "<b>{$obj->msg}</b>";
 if($page == 'config'){
-	if(isset($_POST['submit'])){
-		foreach($_POST['config'] as $ckey => $cval){
-			if($cval == 'on' || $cval == 'off') $cval = $cval == 'on' ? true : false;
-			elseif(is_numeric($cval)) $cval = intval($cval);
-			else $cval = $cval;
-			$obj->config[$ckey] = $cval;
-		}
-		$obj->save_json($obj->fileconfig, $obj->config);
-		echo "<b>Config Saved! Redirecting...</b>";
-		echo "<script>setTimeout('window.location = \"index.php\"', 1000);</script>";
-	}
-?>
-	<form method="post">
-<?php
 	include ("config.php");
 	echo '<table id="tableCONFIG" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
 			<tr class="flisttblhdr" valign="bottom">
@@ -63,20 +51,10 @@ if($page == 'config'){
 		<input id='submit' type='submit' name="submit" value='Save Config'/>
 	</center>
 	<br/>
-</form>
 <?php
 }
 elseif($page == 'cookie'){
-	if(isset($_POST['cookie'])){
-		$obj->save_cookies($_POST['type'], $_POST['cookie']);
-		echo "<b>{$_POST['type']} cookie added</b>";
-	}
-	elseif(isset($_GET['del'])){
-		$obj->save_cookies($_GET['del'], "");
-		echo "<b>{$_GET['del']} cookie deleted</b>";
-	}
 ?>
-<form method="POST" name="donateform" id="donateform">
 	<table>
 	<tr>
 	<td>
@@ -100,7 +78,6 @@ elseif($page == 'cookie'){
 	</td>
 	</tr>
 	</table>
-</form>
 <?php
 	echo '<table id="tableCOOKIE" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
 			<tr class="flisttblhdr" valign="bottom">
@@ -108,27 +85,12 @@ elseif($page == 'cookie'){
 			</tr>
 		';
 	foreach ($obj->cookies as $ckey=>$cookies){
-		if($cookies['cookie'] != "") echo '<tr class="flistmouseoff"><td><B>'.$ckey.'</B></td><td>'.$cookies['cookie'].'</td><td><a style="color: black;" href="?id=admin&page=cookie&del='.$ckey.'">[X]</a></td></tr>';
+		if($cookies['cookie'] != "") echo '<tr class="flistmouseoff"><td><B>'.$ckey.'</B></td><td>'.$cookies['cookie'].'</td><td><a style="color: black;" href="proccess.php?page=cookie&del='.$ckey.'">[X]</a></td></tr>';
 	}
 	echo "</table>";
 }
 elseif($page == 'account'){
-	if(isset($_POST['account'])){
-		if(empty($obj->acc[$_POST['type']])) {
-			$obj->acc[$_POST['type']]['max_size'] = $obj->max_size_default;
-			$obj->acc[$_POST['type']]['proxy'] = "";
-			$obj->acc[$_POST['type']]['direct'] = false;
-		}
-		$obj->save_account($_POST['type'], $_POST['account']);
-		echo "<b>{$_POST['type']} account added</b>";
-	}
-	elseif(isset($_GET['del']) && isset($_GET['host'])){
-		unset($obj->acc[$_GET['host']]['accounts'][$_GET['del']]);
-		$obj->save_json($obj->fileaccount, $obj->acc);
-		echo "<b>Account deleted</b>";
-	}
 ?>
-<form method="POST" name="donateform" id="donateform">
 	<table>
 	<tr>
 	<td>
@@ -137,8 +99,7 @@ elseif($page == 'account'){
 	<?php
 		foreach($host as $key => $val) {
 			if(!$val['alias']){
-				require_once ('hosts/' . $val['file']);
-				if(method_exists($val['class'], "CheckAcc")) echo "<option value='{$key}'>{$key}</option>";
+				echo "<option value='{$key}'>{$key}</option>";
 			}
 		}
 	?>
@@ -152,7 +113,6 @@ elseif($page == 'account'){
 	</td>
 	</tr>
 	</table>
-</form>
 <?php
 	echo '<table id="tableAccount" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
 			<tr class="flisttblhdr" valign="bottom">
@@ -163,24 +123,14 @@ elseif($page == 'account'){
 		$max = count($val['accounts']);
 		if($max != 0){
 			for($i=0;$i<$max;$i++){
-				echo '<tr class="flistmouseoff"><td><B>'.$ckey.'</B></td><td>'.$val['accounts'][$i].'</td><td><a style="color: black;" href="?id=admin&page=account&del='.$i.'&host='.$ckey.'">Delete</a></td></tr>';
+				echo '<tr class="flistmouseoff"><td><B>'.$ckey.'</B></td><td>'.$val['accounts'][$i].'</td><td><a style="color: black;" href="proccess.php?page=account&del='.$i.'&host='.$ckey.'">Delete</a></td></tr>';
 			}
 		}
 	}
 	echo "</table>";
 }
 elseif($page == 'host'){
-	if(isset($_POST['host'])){
-		foreach($_POST['host'] as $key=>$val){
-			$obj->acc[$key]['max_size'] = $val['max_size'];
-			$obj->acc[$key]['proxy'] = $val['proxy'];
-			$obj->acc[$key]['direct'] = (isset($val['direct']) && $val['direct'] == "ON" ? true : false);
-		}
-		ksort($obj->acc);
-		$obj->save_json($obj->fileaccount, $obj->acc);
-		echo "<b>host setting changed</b>";
-	}
-	echo '<form method="post"><table id="tableHOST" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
+	echo '<table id="tableHOST" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%">
 			<tr class="flisttblhdr" valign="bottom">
 				<td align="center"><B>Host</B></td>
 				<td align="center"><B>Max Size</B></td>
@@ -197,9 +147,10 @@ elseif($page == 'host'){
 			</tr>';
 	}
 	echo "</table>";
-	echo "<input id='submit' type='submit' name='submit' value='Save Changed'/></form>";
+	echo "<input id='submit' type='submit' name='submit' value='Save Changed'/>";
 }
 else{
 	echo "<b>Page not available</b>";
 }
+echo "</form>":
 ?>

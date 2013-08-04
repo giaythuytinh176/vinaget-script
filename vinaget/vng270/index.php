@@ -24,7 +24,12 @@ define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
 $obj->using = $using;
-$obj->current_version = 26;
+$obj->current_version = 27;
+$obj->msg = false;
+if(isset($_COOKIE['msg'])) {
+	$obj->msg = $_COOKIE['msg'];
+	setcookie("msg", "");
+}
 $host = $obj->list_host;
 $skin = "skin/{$obj->skin}";
 error_reporting($obj->display_error ? E_ALL : 0);

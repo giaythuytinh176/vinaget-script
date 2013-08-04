@@ -11,18 +11,19 @@ class dl_ryushare_com extends Download {
 	
 	public function Login($user, $pass){
 		$data = $this->lib->curl("http://ryushare.com/","lang=english","op=login&redirect=http%3A%2F%2Fryushare.com%2F&login={$user}&password={$pass}&loginFormSubmit=Login");
-		$cookie = $this->lib->GetCookies($data);
+		$cookie = "lang=english;".$this->lib->GetCookies($data);
 		return $cookie;
 	}
 	
     public function Leech($url) {
-		$data = $this->lib->curl($url,"{$this->lib->cookie};lang=english;","");
-		if(preg_match('/ocation: *(.*)/i', $data, $redir)) return str_replace(" ","%20",trim($redir[1]));
+		$data = $this->lib->curl($url,$this->lib->cookie,"");
+		if (preg_match('/ocation: *(.*)/i', $data, $redir)) return str_replace(" ","%20",trim($redir[1]));
 		elseif (stristr($data,'403 Forbidden')) $this->error("blockIP", true, false);
 		elseif (stristr($data,'You have reached the download-limit')) $this->error("LimitAcc", true, false);
 		elseif (stristr($data,'This server is in maintenance mode. Refresh this page in some minutes.')) $this->error("Ryushare Under Maintenance", true, false);
 		elseif (stristr($data, "Create Download Link")){
-			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1" method="POST"', '</form>'));
+			$this->save($this->lib->GetCookies($data), false);
+			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			$data = $this->lib->cut_str($data, '<center><span style="background:#f9f9f9;border:1px dotted #bbb;padding:7px;">', '</span></center>');
 			$link = $this->lib->cut_str($data, '<a href="', '">Click here to download</a>');

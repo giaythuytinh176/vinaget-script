@@ -5,7 +5,7 @@ if( !ini_get('safe_mode') ){
 } 
 error_reporting(0); 
 ignore_user_abort(TRUE);
-date_default_timezone_set('Asia/Saigon');
+date_default_timezone_set('Asia/Jakarta');
 $data = json_decode(file_get_contents("data/config.dat"), true);
 if ($_GET['go']=='logout') {
 	setcookie("secureid", "owner", time());
@@ -13,6 +13,7 @@ if ($_GET['go']=='logout') {
 else {
 	$login = false;
 	$password = explode(", ", $data['password']);
+	$password[] = $data['admin'];
 	foreach ($password as $login_vng)
 	if($_POST['secure'] == $login_vng){
 		#-----------------------------------------------
@@ -30,7 +31,7 @@ else {
 		setcookie("secureid",md5($login_vng),time()+3600*24*7);
 		$login = true;
 	}
-	if($login == false) die("<SCRIPT language='Javascript'>alert(\"Wrong password !\");</SCRIPT><SCRIPT language='Javascript'> history.go(-1)</SCRIPT>");
+	if($login == false) die("<script>alert(\"Wrong password !\"); history.go(-1)</script>");
 }
 
 header("location:index.php");

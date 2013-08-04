@@ -4,7 +4,8 @@ class dl_upfile_vn extends Download {
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://upfile.vn/upgrade.html", $cookie, "");
-		if(stristr($data, 'Chuyển về tài khoản Free:')) return array(true, "Until ".$this->lib->cut_str($data, 'Chuyển về tài khoản Free:','</tbody>'));
+		if(stristr($data, 'Chuyển về tài khoản Free:'))
+			return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Chuyển về tài khoản Free:','</tr>'), '<td>', '</td>'));
 		elseif (stristr($data, 'Free User                            </td>')) return array(false, "accfree"); 
 		else return array(false, "accinvalid");
 	}
@@ -27,7 +28,8 @@ class dl_upfile_vn extends Download {
 * Version: 2.7.0
 * Upfile.vn Download Plugin 
 * Downloader Class By [FZ]
-* Add check account By giaythuytinh176
+* Add check account by giaythuytinh176
 * Date: 20.7.2013
+* Fix check account by giaythuytinh176 [23.7.2013]
 */
 ?>

@@ -98,10 +98,10 @@ class getinfo
 		$this->colorfn = $this->config['colorfilename'];
 		$this->colorfs = $this->config['colorfilesize'];
 		$this->title = $this->config['title'];
-		$this->proxy = $this->config['proxy'];
 		$this->directdl = $this->config['showdirect'];
 		$this->longurl = $this->config['longurl'];
 		$this->display_error = $this->config['display_error'];
+		$this->proxy = false;
 	}
 	function isadmin(){
 		return isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($this->config['admin']) ? true : $this->admin;
@@ -118,13 +118,19 @@ class getinfo
 			$MB1IP = Tools_get::convertmb($this->countMBIP * 1024 * 1024);
 			$thislimitMBIP = Tools_get::convertmb($this->limitMBIP * 1024 * 1024);
 			$maxsize = Tools_get::convertmb($this->max_size_other_host * 1024 * 1024);
-			if($id=="yourip") return sprintf($this->lang['yourip'], $_SERVER['REMOTE_ADDR']);
-			if($id=="yourjob") return sprintf($this->lang['yourjob'], $this->lookup_ip($_SERVER['REMOTE_ADDR']) , $this->max_jobs_per_ip);
-			if($id=="youused") return sprintf($this->lang['youused'], $MB1IP, $thislimitMBIP);
-			if($id=="sizelimit") return sprintf($this->lang['sizelimit'], $maxsize);
-			if($id=="totjob") return sprintf($this->lang['totjob'], count($this->jobs) , $this->max_jobs);
-			if($id=="serverload") return sprintf($this->lang['serverload'], $this->get_load() , $this->max_load);
-			if($id=="uonline") return sprintf($this->lang['uonline'], Tools_get::useronline());
+			if($id=="yourip") return $this->lang['yourip'];
+			if($id=="yourjob") return $this->lang['yourjob'];
+			if($id=="userjobs") return' '.$this->lookup_ip($_SERVER['REMOTE_ADDR']).' (max '.$this->max_jobs_per_ip.') ';
+			if($id=="youused") return sprintf($this->lang['youused']);
+			if($id=="used") return' '.$MB1IP.' (max '.$thislimitMBIP.') ';
+			if($id=="sizelimit") return $this->lang['sizelimit'];
+			if($id=="maxsize") return $maxsize;
+			if($id=="totjob") return $this->lang['totjob'];
+			if($id=="totjobs") return' '.count($this->jobs).' (max '.$this->max_jobs.') ';
+			if($id=="serverload") return $this->lang['serverload'];
+			if($id=="maxload") return' '.$this->get_load().' (max '.$this->max_load.') ';
+			if($id=="uonline") return $this->lang['uonline'];
+			if($id=="useronline") return Tools_get::useronline();
 		}
 	}
 	function load_jobs()
@@ -731,6 +737,7 @@ class stream_get extends getinfo
 		
 		if (!$link) {
 			$site = $this->using;
+			if($this->acc[$site]['proxy'] != "") $this->proxy = $this->acc[$site]['proxy'];
 			if($this->get_account($site) != ""){
 				require_once ('hosts/' . $this->list_host[$site]['file']);
 				$download = new $this->list_host[$site]['class']($this, $this->list_host[$site]['site']);
@@ -739,18 +746,21 @@ class stream_get extends getinfo
 		}
 		
 		if (!$link) {
+			$this->proxy = false;
 			$domain = explode("/", $Original);
 			$ex = explode(".", $domain[2]);
 			$domain = strtolower($ex[count($ex)-2].".".$ex[count($ex)-1]);
 			if(isset($this->list_host[$domain])){
 				require_once ('hosts/' . $this->list_host[$domain]['file']);
 				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);
-				$link = $download->General($url);
 				$site = $this->list_host[$domain]['site'];
+				if($this->acc[$site]['proxy'] != "") $this->proxy = $this->acc[$site]['proxy'];
+				$link = $download->General($url);
 			}
 		}
 		
 		if (!$link) {
+			$this->proxy = false;
 			$size_name = Tools_get::size_name($Original, "");
 			$filesize = $size_name[0];
 			$filename = $size_name[1];
@@ -1307,10 +1317,9 @@ class Download {
 		return $cookies;
 	}
 	
-	public function save($cookies = ""){
-		$precook = $this->lib->cookie ? $this->lib->cookie.";" : "";
-		$cookie = $cookies != "" ? $this->filter_cookie("{$precook};{$cookies}") : "";
-		$this->lib->save_cookies($this->site, $cookie);
+	public function save($cookies = "", $save = true){
+		$cookie = $cookies != "" ? $this->filter_cookie(($this->lib->cookie ? $this->lib->cookie.";" : "").$cookies) : "";
+		if($save) $this->lib->save_cookies($this->site, $cookie);
 		$this->lib->cookie = $cookie;
 	}
 	
@@ -1328,15 +1337,19 @@ class Download {
 	}
 	
 	public function getredirect($link, $cookie=""){
-		$headers = get_headers($link,1);
-		if(isset($headers["Location"])) {
-			$link = $headers["Location"];
-			while(is_array($link)) $link = $link[0];
+		if($cookie == ""){
+			$headers = get_headers($link,1);
+			if(isset($headers["Location"])) {
+				$link = $headers["Location"];
+				while(is_array($link)) $link = $link[0];
+			}
+		}
+		else{
+			$data = $this->lib->curl($link,$this->lib->cookie,"");
+			if (preg_match('/ocation: (.*)/',$data,$match)) $link = trim($match[1]);
+			$this->lib->cookie = $this->lib->GetCookies($data);
 		}
 		return $link;
-		// $data = $this->lib->curl($link,$cookie,"",0);
-		// if (preg_match('/ocation: (.*)/',$data,$match)) return trim($match[1]);
-		// else $link;
 	}
 	
 	public function parseForm($data){
@@ -1368,11 +1381,12 @@ class Download {
 	public function forcelink($link, $a){
 		$link = str_replace(" ", "%20", $link);
 		for($i=0;$i<$a;$i++){
-			if($this->lib->getsize($link, $this->lib->cookie) <= 0) $link = $this->getredirect($link, $this->lib->cookie);
+			if($this->lib->getsize($link, $this->lib->cookie) <= 0) {
+				$link = $this->getredirect($link, $this->lib->cookie);
+			}
 			else return $link;
 		}
 		$this->error("cantconnect", false, false); 
-		
 		return false;
 	}
 	

@@ -179,11 +179,11 @@ function checkacc(type){
 
 function donate(obj){
 	var errinvalid = '<img src="images/error.png"> <font color="red"><b>'+lang["invalid"]+'</b></font>';
-	var suc1 = '<font color="#FF3300">'+lang["success"]+'</font>';
-	var suc2 = '<img src="images/success.png"><br/><b><font color="#86a5d5">'+suc2+'</font></b>';
+	var suc1 = '<b><font color="#FF3300">'+lang["success"]+'</font></b>';
+	var suc2 = '<b><font color="#86a5d5">'+lang["dsuccess"]+'</font></b>';
 	var loading = '<img src="images/loading.gif"><br/>'+lang["getloading"];
 	if($("#accounts").val().length > 10) {
-		$("#wait").html(lang["getloading"]);
+		$("#wait").html(loading);
 		$.ajax({
 			type: "POST",
 			url: "add.php?rand="+ Math.random(),

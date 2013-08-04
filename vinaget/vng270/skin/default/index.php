@@ -102,8 +102,8 @@
 						else if (isset($_GET['id']) && $_GET['id']=='donate') { 
 ?>
 							<div align="center">
-								<div id="wait"><font color="#FF3300"><?php printf($obj->lang['donations1']); ?><br/><?php printf($obj->lang['donations2']); ?></font></div><BR>
-								<form action="javascript:donate(document.getElementById('donateform'));" name="donateform" id="donateform">
+								<BR><div id="wait"><font color="#FF3300"><?php printf($obj->lang['donations1']); ?><br/><?php printf($obj->lang['donations2']); ?></font></div>
+								<BR><form action="javascript:donate(document.getElementById('donateform'));" name="donateform" id="donateform">
 									<table>
 										<tr>
 											<td>
@@ -127,7 +127,7 @@
 										</tr>
 									</table>
 								</form>
-								<div id="check"><font color=#FF6600>user:pass</font> or <font color=#FF6600>cookie</font></div>
+								<div id="check"><font color=#FF6600>user:pass</font> or <font color=#FF6600>cookie</font></div><BR><BR>
 							</div>
 <?php					
 						}

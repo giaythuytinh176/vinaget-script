@@ -3,8 +3,8 @@ function showStat(){
 	global $obj;
 	echo "<div id='server_stats'>";
 	echo "<font color='#cbac57'>{$obj->notice("notice")}</font><br/>";
-	echo "{$obj->notice("yourip")} {$obj->notice("yourjob")} {$obj->notice("youused")}<br/>";
-	echo "{$obj->notice("sizelimit")} {$obj->notice("totjob")} {$obj->notice("serverload")} {$obj->notice("uonline")}<br/>";
+	echo "{$obj->notice("yourip")} {$_SERVER['REMOTE_ADDR']}. {$obj->notice("yourjob")} {$obj->notice("userjobs")}. {$obj->notice("youused")} {$obj->notice("used")}.<br/>";
+	echo "{$obj->notice("sizelimit")} {$obj->notice("maxsize")}. {$obj->notice("totjob")} {$obj->notice("totjobs")}. {$obj->notice("serverload")} {$obj->notice("maxload")}. {$obj->notice("uonline")} {$obj->notice("useronline")}.<br/>";
 	echo "</div>";
 }
 function showPlugin(){

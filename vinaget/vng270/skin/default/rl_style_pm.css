@@ -24,7 +24,7 @@ body {
 	padding: 0px;
 }
 .showlistlink {
-	background:url(/images/bglist.png);
+	background:url(../../images/bglist.png);
 	height:100%;
 	width:100%;
 	color:#FFFFFF;
@@ -193,7 +193,7 @@ th {
 	color: #FFC500;
 	text-align: center;
 	line-height: 27px;
-	background: url(/images/button_bg2.gif);
+	background: url(../../images/button_bg2.gif);
 	background-position: center;
 	background-repeat: no-repeat;
 }
@@ -209,7 +209,7 @@ th {
 	color: #FFAD00;
 	text-align: center;
 	border: 0px solid;
-	background: #17668C url(/images/button_bg3.gif);
+	background: #17668C url(../../images/button_bg3.gif);
 	background-position: center;
 	background-repeat: no-repeat;
 	cursor: pointer;
@@ -252,7 +252,7 @@ th {
 	font-size: 10px;
 	color: #FFC500;
 	text-align: center;
-	background: #17668C url(/images/button_bg1.gif);
+	background: #17668C url(../../images/button_bg1.gif);
 	background-position: center;
 	background-repeat: no-repeat;
 	cursor: pointer;

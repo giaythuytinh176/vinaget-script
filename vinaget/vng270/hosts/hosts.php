@@ -1,12 +1,11 @@
 <?php
-$host = array(); $alias = array();
+$host = array(); $alias = array(); 
 $alias['dfiles.eu'] = 'depositfiles.com';
 $alias['dfiles.ru'] = 'depositfiles.com';
 $alias['depositfiles.net'] = 'depositfiles.com';
 $alias['depositfiles.org'] = 'depositfiles.com';
 $alias['ul.to'] = 'uploaded.net';
 $alias['uploaded.to'] = 'uploaded.net';
-
 $folderhost = opendir ( "hosts/" );
 while ( $hostname = readdir ( $folderhost ) ) {		
 	if($hostname == "." || $hostname == ".." || strpos($hostname,"bak") || $hostname == "hosts.php") {continue;}
