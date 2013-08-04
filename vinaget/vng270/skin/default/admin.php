@@ -4,7 +4,7 @@ echo '<h3><a href="?id=admin&page=config">Config</a> |
 	  <a href="?id=admin&page=account">Account</a> | 
 	  <a href="?id=admin&page=cookie">Cookie</a></h3>';
 
-$page = isset($_GET['page']) ? $_GET['page'] : 'config';]
+$page = isset($_GET['page']) ? $_GET['page'] : 'config';
 echo "<form method='POST' action='proccess.php?page={$page}'>";
 if($obj->msg) echo "<b>{$obj->msg}</b>";
 if($page == 'config'){
@@ -152,5 +152,5 @@ elseif($page == 'host'){
 else{
 	echo "<b>Page not available</b>";
 }
-echo "</form>":
+echo "</form>";
 ?>
