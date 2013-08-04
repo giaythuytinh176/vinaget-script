@@ -12,6 +12,8 @@
 			<script type="text/javascript" src="images/ZeroClipboard.js"></script>
 			<script type="text/javascript" src="images/sprintf.js"></script>
 			<script type="text/javascript" language="javascript">
+				var loadimg = "loading_black.gif";
+				var loadcolor = "#FFFF99";
 				var title = '<?php echo $obj->title; ?>';
 				var colorname = '<?php echo $obj->colorfn; ?>';
 				var colorfile = '<?php echo $obj->colorfs; ?>';

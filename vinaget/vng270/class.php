@@ -737,7 +737,7 @@ class stream_get extends getinfo
 		
 		if (!$link) {
 			$site = $this->using;
-			if($this->acc[$site]['proxy'] != "") $this->proxy = $this->acc[$site]['proxy'];
+			$this->proxy = isset($this->acc[$site]['proxy']) ? $this->acc[$site]['proxy'] : false;
 			if($this->get_account($site) != ""){
 				require_once ('hosts/' . $this->list_host[$site]['file']);
 				$download = new $this->list_host[$site]['class']($this, $this->list_host[$site]['site']);
@@ -746,7 +746,6 @@ class stream_get extends getinfo
 		}
 		
 		if (!$link) {
-			$this->proxy = false;
 			$domain = explode("/", $Original);
 			$ex = explode(".", $domain[2]);
 			$domain = strtolower($ex[count($ex)-2].".".$ex[count($ex)-1]);
@@ -754,7 +753,7 @@ class stream_get extends getinfo
 				require_once ('hosts/' . $this->list_host[$domain]['file']);
 				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);
 				$site = $this->list_host[$domain]['site'];
-				if($this->acc[$site]['proxy'] != "") $this->proxy = $this->acc[$site]['proxy'];
+				$this->proxy = isset($this->acc[$site]['proxy']) ? $this->acc[$site]['proxy'] : false;
 				$link = $download->General($url);
 			}
 		}

@@ -64,7 +64,7 @@ function get(obj) {
 	if(linkdown.length == 0)return;
 	for (i=0;i< linkdown.length;i++){
 		if (i === 10) break;
-		showlink = showlink+"<div id='link"+i+"'><font color=#FFFF99><b>"+linkdown[i]+"</b></font> <img src='images/loading2.gif' /></div>";
+		showlink = showlink+"<div id='link"+i+"'><font color="+loadcolor+"><b>"+linkdown[i]+"</b></font> <img src='images/"+loadimg+"' /></div>";
 		ajaxget(i,linkdown[i],'get');
 	}
 	if(document.getElementById("autoreset").checked === true) {
@@ -95,10 +95,10 @@ function ajaxget(id,url,type){
 	var param = $("form[name=formlink]").serialize();
 	captcha = 'none';
 	if (type =='reget'){
-		$("#link"+id).html("<font color=#FFFF99><b>"+url+"</b></font> <img src='images/loading2.gif' />"); 
+		$("#link"+id).html("<font color=#FFFF99><b>"+url+"</b></font> <img src='images/"+loadimg+"' />"); 
 	}
 	else if (type !=='get'){
-		$("#link"+id).html("reload captcha... <img src='images/loading2.gif' />"); 
+		$("#link"+id).html("reload captcha... <img src='images/"+loadimg+"' />"); 
 		captcha = 'reload';
 	}
 	if(i > 4 && type == 'get') time = (Math.round(i/5)*3000);
@@ -163,7 +163,7 @@ function reseturl() {
 }
 
 function checkacc(type){
-	$("table[id='table-"+type+"'] td[id^='unknown']").html('<img src="images/unknownload.gif" />');
+	$("table[id='table-"+type+"'] td[id^='unknown']").html('Loading..');
 	$.ajax({
 		type: "POST",
 		url: "index.php?id=check&rand="+ Math.random(),

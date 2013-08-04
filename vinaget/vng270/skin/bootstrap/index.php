@@ -13,6 +13,8 @@
 			<script type="text/javascript" src="<?php echo $skin;?>/js/bootstrap.min.js"></script>
 			<script type="text/javascript" src="images/sprintf.js"></script>
 			<script type="text/javascript" language="javascript">
+				var loadimg = "loading_white.gif";
+				var loadcolor = "#3a87ad";
 				var title = '<?php echo $obj->title; ?>';
 				var colorname = '<?php echo $obj->colorfn; ?>';
 				var colorfile = '<?php echo $obj->colorfs; ?>';
@@ -55,7 +57,8 @@
 				<div class="modal-body">
 				<?php
 				foreach ($host as $key => $val){
-					$plugin[$val['site']] .= "{$key}\n";
+					if(isset($plugin[$val['site']])) $plugin[$val['site']] .= "{$key}\n";
+					else $plugin[$val['site']] = "{$key}\n";
 				}
 				foreach($plugin as $key=>$val){
 					$val = substr($val, 0, -1);
@@ -200,11 +203,10 @@
 										echo '<br><font color="#dbac58"><b>'.sprintf($obj->lang['update1']).'</b> - <a href="http://www.rapidleech.com/index.php/topic/14663-dev-vinaget-v270-beta/">'.sprintf($obj->lang['update2'],$obj->last_version).'</a></font>'; 
 								}
 								?>
-								<br /><?php printf($obj->lang['homepage']);?></font> - <?php printf($obj->lang['welcome']);?>
-
-								<br><font face=Arial size=1><span style="font-familty: Arial; color: #FFFFFF; font-size: 10px">Example: http://www.megaupload.com/?d=ABCDEXYZ<font size="3">|</font>password</span></font><BR>
+								<br /><?php printf($obj->lang['homepage']);?></font> - <?php printf($obj->lang['welcome']);?><br>
 								<textarea id='links' style='width:550px;height:100px;' name='links'></textarea><BR>
-								 <button class="btn btn-primary" id="submit" type="submit"><?php printf($obj->lang['sbdown']); ?></button>&nbsp;&nbsp;&nbsp;
+								<font face=Arial size=1><span style="font-familty: Arial; color: #000000; font-size: 10px">Example: http://www.megaupload.com/?d=ABCDEXYZ<font size="3">|</font>password</span></font><BR>
+								<button class="btn btn-primary" id="submit" type="submit"><?php printf($obj->lang['sbdown']); ?></button>&nbsp;&nbsp;&nbsp;
 								<button class="btn" onclick="reseturl();return false;">Reset</button>&nbsp;&nbsp;&nbsp;
 								<input type="checkbox" name="autoreset" id="autoreset" checked>&nbsp;Auto reset&nbsp;&nbsp;&nbsp;
 							</form><BR><BR>

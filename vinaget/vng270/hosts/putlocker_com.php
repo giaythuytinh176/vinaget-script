@@ -8,6 +8,7 @@ class dl_putlocker_com extends Download {
 	}
 	
 	public function FreeLeech($url){
+		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, "", "");
 		$this->lib->cookie = $this->lib->GetCookies($data);
 		$hash = $this->lib->cut_str($data, '<input type="hidden" value="','" name="hash">');

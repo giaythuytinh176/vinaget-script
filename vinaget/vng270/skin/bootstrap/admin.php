@@ -79,10 +79,10 @@ elseif($page == 'cookie'){
 	</table>
 <?php
 	echo '<table id="tableCOOKIE" class="table table-bordered">
-			<tr>
+			<thead><tr>
 				<td><B>SERVER</B></td>
-				<td><B>COOKIE</B></td>
-			</tr>
+				<td colspan="2"><B>COOKIE</B></td>
+			</tr></thead>
 		';
 	foreach ($obj->cookies as $ckey=>$cookies){
 		if($cookies['cookie'] != "") echo '<tr class="flistmouseoff"><td><B>'.$ckey.'</B></td><td>'.$cookies['cookie'].'</td><td><a style="color: black;" href="proccess.php?page=cookie&del='.$ckey.'">[X]</a></td></tr>';
@@ -115,11 +115,10 @@ elseif($page == 'account'){
 	</table>
 <?php
 	echo '<table id="tableAccount" class="table table-bordered">
-			<tr class="flisttblhdr" valign="bottom">
+			<thead><tr class="flisttblhdr" valign="bottom">
 				<td><B>Server</B></td>
-				<td><B>Account/Pass</B></td>
-				<td><B>Action</B></td>
-			</tr>
+				<td colspan="2"><B>Account</B></td>
+			</tr></thead>
 		';
 	foreach ($obj->acc as $ckey=>$val){
 		$max = count($val['accounts']);
@@ -133,12 +132,12 @@ elseif($page == 'account'){
 }
 elseif($page == 'host'){
 	echo '<table id="tableHOST" class="table table-bordered">
-			<tr>
+			<thead><tr>
 				<td align="center"><B>Host</B></td>
 				<td align="center"><B>Max Size</B></td>
 				<td align="center"><B>Proxy</B></td>
 				<td align="center"><B>Direct</B></td>
-			</tr>
+			</tr></thead>
 		';
 	foreach ($obj->acc as $ckey=>$val){
 		echo '<tr class="flistmouseoff">
