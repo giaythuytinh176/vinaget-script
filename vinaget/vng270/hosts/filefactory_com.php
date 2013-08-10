@@ -19,6 +19,10 @@ class dl_filefactory_com extends Download {
 	}
 	
     public function Leech($url) {
+		if(!stristr($url, "www")) {
+			$ex = explode("filefactory.com", $url);
+			$url = "http://www.filefactory.com".$ex[1];
+		}
 		if(!stristr($url, "/n/")) {
 			$ex =  explode("/", $url); 
 			$url = "http://www.filefactory.com/file/".$ex[4]."/n/".$ex[5];
@@ -29,7 +33,7 @@ class dl_filefactory_com extends Download {
 			$post["password"] = $pass;
 			$post["action"] = "password";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($data,'Incorrect password.')) 	$this->error("reportpass", true, false);
+			if(stristr($data,'Incorrect password.')) $this->error("reportpass", true, false);
 			elseif($this->isredirect($data)) return trim($this->redirect);
 			elseif(preg_match('%(http:\/\/.+filefactory\.com/dlp/.+)">Download with F%U', $data, $redir2)) 
 			return trim($redir2[1]);
