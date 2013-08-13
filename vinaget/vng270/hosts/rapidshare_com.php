@@ -1,4 +1,5 @@
 <?php
+
 class dl_rapidshare_com extends Download {
     
     public function CheckAcc($cookie){
@@ -6,17 +7,17 @@ class dl_rapidshare_com extends Download {
 		 	$exc =  explode("=", $cookie); 
 			$ckc = $exc[1];
 		 } 
-         $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "", "sub=getaccountdetails&withcookie=1&withpublicid=1&withsession=1&cookie={$ckc}&cbf=RSAPIDispatcher&cbid=1");	
+         $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "lang=en", "sub=getaccountdetails&withcookie=1&withpublicid=1&withsession=1&cookie={$ckc}&cbf=RSAPIDispatcher&cbid=1");	
          if(stristr($data, '\nbilleduntil=0\\')) return array(false, "accfree");
 		 elseif(preg_match('/nbilleduntil=([0-9]+)/', $data, $giay)) return array(true, "Until ".date('H:i:s Y-m-d',$giay[1])."");
-         else return array(false, "accinvalid");
+		 else return array(false, "accinvalid");
     }
     
     public function Login($user, $pass){
-         $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "", "sub=getaccountdetails&withcookie=1&withpublicid=1&login={$user}&cbf=RSAPIDispatcher&cbid=2&password={$pass}");
+         $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "lang=en", "sub=getaccountdetails&withcookie=1&withpublicid=1&login={$user}&cbf=RSAPIDispatcher&cbid=2&password={$pass}");
 		 $thuytinh = $this->lib->cut_str($data, '\ncookie=', '\n"');
-		 $cookie = "enc={$thuytinh};{$this->lib->GetCookies($data)}";
-         return $cookie;
+		 $cookie = "enc={$thuytinh};lang=en;{$this->lib->GetCookies($data)}";
+		 return $cookie;
     }
 
     public function Leech($url) {

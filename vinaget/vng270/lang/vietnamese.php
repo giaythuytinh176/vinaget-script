@@ -89,13 +89,13 @@ $lang = array (
 'invert'		=> 'Chọn ngược lại',
 'error1'		=> '<b><font color=red> %1$s </font></b>',
 'error2'		=> '<b><a href="%2$s" style="text-decoration:none"><font color="red" face="Arial" size="2"><s>%2$s</s></font></a> <img src=images/chk_error.png width="15" alt="errorlink"> <font color=#ffcc33 face=Arial size=2>==&#9658; %1$s</font></b>',
-'pluginerror'	=> 'Host %1$s hỗ trợ bị lỗi. Liên hệ Admin!</font>',
+'pluginerror'	=> 'Host %1$s bị lỗi. Liên hệ Admin!</font>',
 'noaccount'		=> 'Không có tài khoản %1$s trong website. Liên hệ Admin!</font>',
 'cantconnect'	=> 'Máy chủ không thể kết nối đến %1$s',
 'accfree'		=> 'Tài khoản %1$s là miễn phí',
 'accinvalid'	=> 'Tài khoản %1$s không đúng',
-'blockCountry'	=> 'Đất nước này đã bị khóa bởi %1$s',
-'blockIP'		=> 'IP này đã bị khóa bởi %1$s',
+'blockCountry'	=> 'Đất nước của bạn đã bị khóa bởi %1$s',
+'blockIP'		=> 'IP của bạn đã bị khóa bởi %1$s',
 'blockAcc'		=> 'Tài khoản %1$s đã bị khóa',
 'LimitAcc'		=> 'Tài khoản %1$s đã sử dụng quá giới hạn băng thông',
 'dead'			=> 'Liên kết không tồn tại !!!',
@@ -116,6 +116,6 @@ $lang = array (
 * Vinaget by ..::[H]::..
 * Version: 2.7.0 Final
 * Language Class By [FZ]
-* Vietnamese language by giaythuytinh176 [8.8.2013][r29]
+* Vietnamese language by giaythuytinh176 [13.8.2013][r36]
 */
 ?>

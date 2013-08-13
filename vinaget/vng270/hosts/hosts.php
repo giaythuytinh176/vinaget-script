@@ -6,6 +6,7 @@ $alias['depositfiles.net'] = 'depositfiles.com';
 $alias['depositfiles.org'] = 'depositfiles.com';
 $alias['ul.to'] = 'uploaded.net';
 $alias['uploaded.to'] = 'uploaded.net';
+$alias['up.4share.vn'] = '4share.vn';
 $folderhost = opendir ( "hosts/" );
 while ( $hostname = readdir ( $folderhost ) ) {		
 	if($hostname == "." || $hostname == ".." || strpos($hostname,"bak") || $hostname == "hosts.php") {continue;}

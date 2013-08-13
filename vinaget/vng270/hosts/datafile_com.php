@@ -1,15 +1,16 @@
 <?php
+
 class dl_datafile_com extends Download {
   
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("https://www.datafile.com/profile.html", $cookie, "");
+		$data = $this->lib->curl("https://www.datafile.com/profile.html", "lang=en;{$cookie}", "");
 		if(stristr($data, '(<a href="/getpremium.html">Prolong</a>)')) return array(true, "Until ".$this->lib->cut_str($data, '<td class="el" >',  '(<a href="/getpremium.html">Prolong</a>)'));
-		else if(stristr($data, 'Free: (<span class="yellow"><a href="/getpremium.html">Upgrade</a></span>)')) return array(false, "accfree"); 
+		else if(stristr($data, '(<span class="yellow"><a href="/getpremium.html">Upgrade</a></span>)')) return array(false, "accfree"); 
 		else return array(false, "accinvalid"); 
 	}
   
 	public function Login($user, $pass){
-		$data = $this->lib->curl("https://www.datafile.com/login.html","lang=en","login={$user}&password={$pass}&remember_me=1&submit=login");
+		$data = $this->lib->curl("https://www.datafile.com/login.html", "lang=en", "login={$user}&password={$pass}&remember_me=1");
 		$cookie = "lang=en;".$this->lib->GetCookies($data);
 		return $cookie;
 	}
@@ -29,5 +30,6 @@ class dl_datafile_com extends Download {
 * Downloader Class By [FZ]
 * Date: 20.7.2013
 * Fix check account by giaythuytinh176 [21.7.2013]
+* Fix check account by giaythuytinh176 [6.8.2013]
 */
 ?>

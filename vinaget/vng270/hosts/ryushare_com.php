@@ -10,29 +10,38 @@ class dl_ryushare_com extends Download {
 	}
 	
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://ryushare.com/","lang=english","op=login&redirect=http%3A%2F%2Fryushare.com%2F&login={$user}&password={$pass}&loginFormSubmit=Login");
+		$data = $this->lib->curl("http://ryushare.com/", "lang=english", "op=login&redirect=http%3A%2F%2Fryushare.com%2F&login={$user}&password={$pass}&loginFormSubmit=Login");
 		$cookie = "lang=english;".$this->lib->GetCookies($data);
 		return $cookie;
 	}
 	
     public function Leech($url) {
-		$data = $this->lib->curl($url,$this->lib->cookie,"");
-		if (preg_match('/ocation: *(.*)/i', $data, $redir)) return str_replace(" ","%20",trim($redir[1]));
-		elseif (stristr($data,'403 Forbidden')) $this->error("blockIP", true, false);
-		elseif (stristr($data,'You have reached the download-limit')) $this->error("LimitAcc", true, false);
-		elseif (stristr($data,'This server is in maintenance mode. Refresh this page in some minutes.')) $this->error("Ryushare Under Maintenance", true, false);
+		list($url, $pass) = $this->linkpassword($url);
+		$data = $this->lib->curl($url, $this->lib->cookie, "");
+		if($pass) {
+			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
+			$post["password"] = $pass;
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if(stristr($data,'Wrong password')) $this->error("reportpass", true, false);
+			elseif($this->isredirect($data)) return trim($this->redirect);
+			$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span></center>'), '<a href="', '">Click');
+			return trim($giay);
+		}
+		if($this->isredirect($data)) return trim($this->redirect);
+		elseif (stristr($data,'<input type="password" name="password" class="myForm">')) $this->error("reportpass", true, false);
 		elseif (stristr($data, "Create Download Link")){
-			$this->save($this->lib->GetCookies($data), false);
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			$data = $this->lib->cut_str($data, '<center><span style="background:#f9f9f9;border:1px dotted #bbb;padding:7px;">', '</span></center>');
-			$link = $this->lib->cut_str($data, '<a href="', '">Click here to download</a>');
-			return trim($link);
+			$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span></center>'), '<a href="', '">Click');
+			return trim($giay);
 		}
+		elseif (stristr($data,'403 Forbidden')) $this->error("blockIP", true, false);
+		elseif (stristr($data,'You have reached the download-limit')) $this->error("LimitAcc", true, false);
 		elseif (stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+		elseif (stristr($data,'This server is in maintenance mode. Refresh this page in some minutes.')) $this->error("Ryushare Under Maintenance", true, false);
 		return false;
     }
-
+	
 }
   
 /*
@@ -42,5 +51,6 @@ class dl_ryushare_com extends Download {
 * Ryushare Download Plugin 
 * Downloader Class By [FZ]
 * Check account, fixed small error by giaythuytinh176 [18.7.2013]
+* Support file password by giaythuytinh176 [29.7.2013]
 */
 ?>

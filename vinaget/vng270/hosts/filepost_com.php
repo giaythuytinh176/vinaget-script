@@ -3,13 +3,13 @@
 class dl_filepost_com extends Download {
 	
 	public function PreLeech($url){
-		$data = $this->lib->curl($url,"","");
+		$data = $this->lib->curl($url,"lang=1","");
 		if(stristr($data,'This IP address has been blocked')) $this->error("blockIP", true, false);
 	}
 	
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://filepost.com/general/login_form/","","email={$user}&password={$pass}");
-		$cookie = $this->lib->GetCookies($data);
+		$data = $this->lib->curl("http://filepost.com/general/login_form/","lang=1","email={$user}&password={$pass}");
+		$cookie = "lang=1;".$this->lib->GetCookies($data);
 		return $cookie;
 	}
 	

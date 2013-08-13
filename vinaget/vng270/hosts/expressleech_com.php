@@ -1,4 +1,5 @@
 <?php
+
 class dl_expressleech_com extends Download {
     
     public function CheckAcc($cookie){
@@ -10,7 +11,7 @@ class dl_expressleech_com extends Download {
     
     public function Login($user, $pass){
          $data = $this->lib->curl("http://expressleech.com/login.html","lang=english","login={$user}&password={$pass}&op=login&redirect=");
-         $cookie = $this->lib->GetCookies($data);
+         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
          return $cookie;
     }
     

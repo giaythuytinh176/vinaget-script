@@ -3,7 +3,7 @@
 class dl_extabit_com extends Download {
 
     public function CheckAcc($cookie){
-         $data = $this->lib->curl("http://extabit.com/premium.jsp", $cookie, "");
+         $data = $this->lib->curl("http://extabit.com/premium.jsp", "language=en;".$cookie, "");
          if(stristr($data, 'Premium is active till')) return array(true, "Until ".$this->lib->cut_str($data, 'Premium is active till','<img src="http://st.extabit.com/s/img/menu/star.png" width="9" height="10" alt="*" /></span>'));
          else if(stristr($data, 'Buy premium <img src="http://st.extabit.com/s/img/menu/star.png" width="9" height="10" alt="*" /></span>')) return array(false, "accfree");
          else return array(false, "accinvalid");

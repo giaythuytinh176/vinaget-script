@@ -3,7 +3,7 @@
 class dl_crocko_com extends Download {
 
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("http://www.crocko.com/accounts", $cookie, "");
+		$data = $this->lib->curl("http://www.crocko.com/accounts", "language=en;".$cookie, "");
 		if(stristr($data, 'Premium membership: Active<br />') || stristr($data, 'Premium membership: Expiring<br />')) return array(true, "Until ".$this->lib->cut_str($data, 'Ends:  ',', in'));
 		else if(stristr($data, '<h4>Premium account <strong>active</strong></h4>')) return array(true, "Until ".$this->lib->cut_str($data, 'End time:  ',', in'));
 		else if(stristr($data, 'Premium membership: No premium')) return array(false, "accfree");
@@ -11,10 +11,10 @@ class dl_crocko_com extends Download {
 	}
        
     public function Login($user, $pass){
-		$post["login"]=$user;
-		$post["password"]=$pass;
-		$data = $this->lib->curl("http://www.crocko.com/accounts/login","language=en",$post);                        
-		$cookie = "language=en;".$this->lib->GetCookies($data);
+		$post["login"]= $user;
+		$post["password"]= $pass;
+		$data = $this->lib->curl("http://www.crocko.com/accounts/login", "language=en", $post);                        
+		$cookie = "language=en;{$this->lib->GetCookies($data)}";
 		return $cookie;
 	}
 	
@@ -22,10 +22,10 @@ class dl_crocko_com extends Download {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if($this->isredirect($data)) return trim($this->redirect);
 		elseif (stristr($data,"Sorry,<br />the page you're looking for<br />isn't here") || stristr($data,"Please go to home page or one of this links")) 
-			$this->error("dead", true, false, 2);
+		$this->error("dead", true, false, 2);
 		return false;
     }
-
+	
 }
 
 /*
@@ -36,6 +36,6 @@ class dl_crocko_com extends Download {
 * Fix by [FZ]
 * Downloader Class By [FZ]
 * Date: 18.7.2013
-* Fixed problem with login by giaythuytinh176 [22.7.2013]
+* Fixed login account by giaythuytinh176 [22.7.2013]
 */
 ?>

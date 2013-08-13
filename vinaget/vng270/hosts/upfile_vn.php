@@ -4,9 +4,8 @@ class dl_upfile_vn extends Download {
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://upfile.vn/upgrade.html", $cookie, "");
-		if(stristr($data, 'Chuyển về tài khoản Free:'))
-			return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Chuyển về tài khoản Free:','</tr>'), '<td>', '</td>'));
-		elseif (stristr($data, 'Free User                            </td>')) return array(false, "accfree"); 
+		if(stristr($data, 'Chuyển về tài khoản Free:')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Chuyển về tài khoản Free:','</tr>'), '<td>', '</td>'));
+		elseif(!stristr($data, 'Chuyển về tài khoản Free:')) return array(false, "accfree"); 
 		else return array(false, "accinvalid");
 	}
 
