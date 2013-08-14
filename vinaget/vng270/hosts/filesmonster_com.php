@@ -10,7 +10,7 @@ class dl_filesmonster_com extends Download {
 	}
 
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://filesmonster.com/login.php", "","act=login&user={$user}&pass={$pass}&captcha_shown=0&login=Login");
+		$data = $this->lib->curl("http://filesmonster.com/login.php", "", "act=login&user={$user}&pass={$pass}&captcha_shown=0&login=Login");
 		if (stristr($data,'yab_logined=1')) 
 		$cookie =  "yab_logined=1;".$this->lib->cut_str($cookie, "yab_logined=1;", "; yab_last_click");
 		$cookie = $this->lib->GetCookies($data);
@@ -20,12 +20,12 @@ class dl_filesmonster_com extends Download {
 	public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(preg_match('%<a href="(https?:\/\/[^\r\n\s\t"]+)"><span class="huge_button_green_left">%', $data, $lik)){
-			$data = $this->lib->curl($lik[1], $this->lib->cookie,"");
+		$data = $this->lib->curl($lik[1], $this->lib->cookie,"");
 			if(preg_match('/get_link\("([^\r\n\s\t"]+)"\)/', $data, $lik)) {
 				$data = $this->lib->curl("http://filesmonster.com".$lik[1], $this->lib->cookie,"");
 				$link = $this->lib->cut_str($data, '"url":"', '"}');
 				$link = str_replace('\/', '/',$link);
-					return trim($link);
+				return trim($link);
 			}
 		}
 		elseif(stristr($data,'File not found')) $this->error("dead", true, false, 2); 

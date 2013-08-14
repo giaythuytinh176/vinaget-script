@@ -22,7 +22,7 @@ class dl_oteupload_com extends Download {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', ' <table width="890px"'));
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($data,'Wrong password')) $this->error("reportpass", true, false);
+			if(stristr($data,'Wrong password')) $this->error("wrongpass", true, false, 2);
 			elseif($this->isredirect($data)) return trim($this->redirect);
 			else
 			$giay = $this->lib->cut_str($this->lib->cut_str($data, "<div id='dl'>", "</div>"), 'href=\'', '\'><img');

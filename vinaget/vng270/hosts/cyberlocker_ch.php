@@ -30,7 +30,7 @@ class dl_cyberlocker_ch extends Download {
 			$post["next"] = ""; 
 			$post["password"] = $pass; 
 			$giay = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($giay,'Wrong password')) $this->error("reportpass", true, false);
+			if(stristr($giay,'Wrong password'))  $this->error("wrongpass", true, false, 2);
 			elseif($this->isredirect($giay)) return trim($this->redirect);
 		}
         if($this->isredirect($data)) return trim($this->redirect);

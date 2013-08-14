@@ -33,7 +33,7 @@ class dl_filefactory_com extends Download {
 			$post["password"] = $pass;
 			$post["action"] = "password";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($data,'Incorrect password.')) $this->error("reportpass", true, false);
+			if(stristr($data,'Incorrect password.'))  $this->error("wrongpass", true, false, 2);
 			elseif($this->isredirect($data)) return trim($this->redirect);
 			elseif(preg_match('%(http:\/\/.+filefactory\.com/dlp/.+)">Download with F%U', $data, $redir2)) 
 			return trim($redir2[1]);

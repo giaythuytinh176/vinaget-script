@@ -22,7 +22,7 @@ class dl_hipfile_com extends Download {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($data,'Wrong password')) $this->error("reportpass", true, false);
+			if(stristr($data,'Wrong password')) $this->error("wrongpass", true, false, 2);
 			elseif($this->isredirect($data)) return trim($this->redirect);
 			else
 			$giay = $this->lib->cut_str($this->lib->cut_str($data, '<span style=" dotted #bbb;padding:7px;">', '</span>'), '<a href="', '" ">');

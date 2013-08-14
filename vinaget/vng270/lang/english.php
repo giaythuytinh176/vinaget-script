@@ -105,6 +105,7 @@ $lang = array (
 'removed'		=> '[REMOVED]',
 'unknown'		=> 'unknown',
 'linkpass'		=> 'Link have password!',
+'wrongpass'		=> 'Wrong password!',
 'notsupport'	=> 'Sorry. We do not support your link !',
 'notsupportacc'	=> 'Not support account, use cookie instead',
 'notsupportpass'=> 'Not support password currently for %1$s',
@@ -116,6 +117,6 @@ $lang = array (
 * Vinaget by ..::[H]::..
 * Version: 2.7.0 Final
 * English Language
-* Language Class By [FZ]
+* Language Class By [FZ][r38]
 */
 ?>

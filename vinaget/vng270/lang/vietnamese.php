@@ -105,6 +105,7 @@ $lang = array (
 'removed'		=> '[Đã xóa]',
 'unknown'		=> 'không rõ',
 'linkpass'		=> 'Liên kết có mật khẩu!',
+'wrongpass'		=> 'Mật khẩu không đúng!',
 'notsupport'	=> 'Xin lỗi. Chúng tôi không hỗ trợ liên kết của bạn !',
 'notsupportacc'	=> 'Không hỗ trợ tài khoản, sử dụng cookie thay thế',
 'notsupportpass'=> 'Hiện tại không hỗ trợ mật khẩu cho %1$s',
@@ -116,6 +117,6 @@ $lang = array (
 * Vinaget by ..::[H]::..
 * Version: 2.7.0 Final
 * Language Class By [FZ]
-* Vietnamese language by giaythuytinh176 [13.8.2013][r36]
+* Vietnamese language by giaythuytinh176 [14.8.2013][r38]
 */
 ?>

@@ -30,7 +30,7 @@ class dl_4share_vn extends Download {
 			$post["pwdownload_post"] = $pass;
 			$post["submit"] = "DOWNLOAD";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($data,'Bạn đã nhập sai Password download')) 	$this->error("reportpass", true, false);
+			if(stristr($data,'Bạn đã nhập sai Password download'))  $this->error("wrongpass", true, false, 2);
 			elseif ($this->isredirect($data)) return trim($this->redirect);
 			elseif (preg_match('%<a href=\'(.+)\'><img%U', $data, $link))  return trim($link[1]); 
 		}

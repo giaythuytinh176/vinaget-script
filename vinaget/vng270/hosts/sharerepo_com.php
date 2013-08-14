@@ -13,7 +13,7 @@ class dl_sharerepo_com extends Download {
 					$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '</Form>'));
 					$post1["password"] = $pass;
 					$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
-					if(stristr($data1,'Wrong password')) $this->error("reportpass", true, false);
+					if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
 					elseif($this->isredirect($data1)) return trim($this->redirect);
 				}
 			if(stristr($data,'type="password" name="password')) $this->error("reportpass", true, false);

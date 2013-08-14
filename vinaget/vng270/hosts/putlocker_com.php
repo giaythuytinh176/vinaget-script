@@ -14,7 +14,10 @@ class dl_putlocker_com extends Download {
 		$hash = $this->lib->cut_str($data, '<input type="hidden" value="','" name="hash">');
 		sleep(2);
 		$data = $this->lib->curl($url, $this->lib->cookie, ($pass ? "file_password={$pass}&" : "")."hash={$hash}&confirm=Continue as Free User");
+		if(stristr($data,'This file requires a password. Please enter it.')) 	$this->error("reportpass", true, false);
 		$data = $this->lib->curl($url, $this->lib->cookie, "hash={$hash}&confirm=Continue as Free User");
+		if(stristr($data,'This password is not correct')) 	 $this->error("wrongpass", true, false, 2);
+		elseif(stristr($data,'You have exceeded the daily download limit for your country')) 	$this->error("LimitAcc", true, false);
 		$this->lib->cookie .= ";".$this->lib->GetCookies($data);
 		$id = $this->lib->cut_str($data, '<a href="/get_file.php?id=','"');
 		$data = $this->lib->curl("http://www.putlocker.com/get_file.php?id=".trim($id),$this->lib->cookie,"");

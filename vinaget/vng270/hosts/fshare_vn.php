@@ -31,7 +31,7 @@ class dl_fshare_vn extends Download {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form action="', '</form>'));
 			$post["link_file_pwd_dl"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
-			if(stristr($data,'Mật khẩu download file không đúng'))  $this->error("reportpass", true, false);
+			if(stristr($data,'Mật khẩu download file không đúng')) $this->error("wrongpass", true, false, 2);
 			elseif(preg_match('%<form action="(.+)" method="post%U', $data, $giay176))  return trim($giay176[1]);
 			elseif($this->isredirect($data)) return trim($this->redirect);
 		}

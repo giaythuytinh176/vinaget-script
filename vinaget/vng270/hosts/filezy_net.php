@@ -28,7 +28,7 @@ class dl_filezy_net extends Download {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="A008', '</form>'));
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($data,'Wrong password')) $this->error("reportpass", true, false);
+			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
 			if (!preg_match('@eval\s*\(\s*function\s*\(p,a,c,k,e,d\)\s*\{[^\}]+\}\s*\(\s*\'([^\r|\n]*)\'\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\'([^\']+)\'\.split\([\'|\"](.)[\'|\"]\)\)\)@', $data, $js)) 
 			$this->error("PACKED code not found", true, false);
 			else
