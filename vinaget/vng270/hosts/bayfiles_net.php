@@ -15,7 +15,7 @@ class dl_bayfiles_net extends Download {
 		$post["password"]= $pass;
 		$post["next"] = "%2F";
 		$post["action"] = "login";
-		$data = $this->lib->curl("http://bayfiles.net/ajax_login","",$post);				
+		$data = $this->lib->curl("http://bayfiles.net/ajax_login", "", $post);				
 		$cookie = $this->lib->GetCookies($data);
 		return $cookie;
 	}
@@ -25,7 +25,7 @@ class dl_bayfiles_net extends Download {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
   		if (stristr($data,"<p>Invalid security token. Please check your link.</p>"))   $this->error("dead", true, false, 2);
 		elseif (stristr($data,"<p>The requested file could not be found.</p>"))   $this->error("dead", true, false, 2);
-		else{
+		else {
 			$data = $this->lib->cut_str($data, '<div style="text-align: center;">', '</div>');
 			$link = $this->lib->cut_str($data, '<a class="highlighted-btn" href="', '">Premium Download</a>');
 			return trim($link);	

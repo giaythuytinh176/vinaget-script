@@ -2,6 +2,14 @@
 
 class dl_megashares_com extends Download {
 	
+	public function PreLeech($url){
+		if(stristr($url, "megashares.com/dl/")) {
+			$ex =  explode("/", $url); 
+			$url = "http://d01.megashares.com/index.php?d01=".$ex[4];
+		}
+		return false;
+	}
+	
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://d01.megashares.com/myms.php", $cookie, "");
         if(stristr($data, 'Premium User</span>') && stristr($data, 'Period Ends')) return array(true, "Until ".$this->lib->cut_str($data, '<p class="premium_info_box">Period Ends: ','</p>'));
@@ -16,18 +24,27 @@ class dl_megashares_com extends Download {
 	}
 	
     public function Leech($url) {
-		if(stristr($url, "megashares.com/dl/")) {
-			$ex =  explode("/", $url); 
-			$url = "http://d01.megashares.com/index.php?d01=".$ex[4];
-		}
+		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-	/*	if(stristr($data, 'alt="download file" />')){
-			$giay = $this->lib->cut_str($this->lib->cut_str($data, '<div id="show_download_button_1">', 'download file" /></a>'), 'href="', '"><img');
-				return trim($giay);
-		} */
-		if (preg_match('%<a href="(https?:.+megashares.com.+)"><img style="margin:%U', $data, $link)) return trim($link[1]);
-		elseif($this->isredirect($data)) return trim($this->redirect);
+		if($pass) {
+			if(!preg_match('%action="([^"]+)"%U', $data, $urlp))  
+			$this->error("Error: Cannot get Pass Link", true, false, 2);
+			else 
+			$urlpass = 'http://d01.megashares.com'.$urlp[1];
+			$post["passText"] = $pass;
+			$data = $this->lib->curl($urlpass, $this->lib->cookie, $post);
+			if(stristr($data,'Password incorrect! Please provide the correct password below'))  $this->error("wrongpass", true, false, 2);
+			elseif(!preg_match('@https?:\/\/(\w+)?\.megashares\.com\/index\.php\?d[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);
+			else 
+			return trim($giay[0]);
+		}
+		if(stristr($data,'This link requires a password to continue')) 	$this->error("reportpass", true, false);
 		elseif (stristr($data,"Invalid Link") || stristr($data,"Link has been deleted") || stristr($data,"Link is invalid")) $this->error("dead", true, false, 2);
+		elseif(!preg_match('@https?:\/\/(\w+)?\.megashares\.com\/index\.php\?d[^"\'><\r\n\t]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2);
+		else 
+		return trim($giay[0]);
 		return false;
     }
 

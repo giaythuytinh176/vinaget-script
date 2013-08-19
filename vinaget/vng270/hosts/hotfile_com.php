@@ -1,18 +1,27 @@
-<?php
+<?php	
 
 class dl_hotfile_com extends Download {
 	
+    public function CheckAcc($cookie){
+        $data = $this->lib->curl("http://hotfile.com/myaccount.html", "lang=en;".$cookie, "");
+        if(stristr($data, 'Premium until')) return array(true, "Until ".$this->lib->cut_str($data, 'Premium until: <span class="rightSide">','</span>'));
+        else if(stristr($data, '<p><span>Free</span>')) return array(false, "accfree");
+		else return array(false, "accinvalid");
+    }
+	
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://www.hotfile.com/login.php","","user={$user}&pass={$pass}");
-		$cookie = $this->lib->GetCookies($data);
+		$data = $this->lib->curl("http://hotfile.com/login.php", "lang=en", "user={$user}&pass={$pass}&returnto=/");
+		$cookie = "lang=en;".$this->lib->GetCookies($data);
 		return $cookie;
 	}
 	
     public function Leech($url) {
 		$data = $this->lib->curl($url,"{$this->lib->cookie};lang=en;","");
-		if($this->isredirect($data)) return trim($this->redirect);
-		elseif(preg_match('%"(http\:\/\/hotfile\.com\/get\/.+)"%U', $page, $redir2)) return trim($redir2[1]);
-		elseif (stristr($page,"removed due to copyright claim")) $this->error("dead", true, false, 2);
+		if(stristr($data,"removed due to copyright claim") || stristr($data,"404 - Not Found"))   $this->error("dead", true, false, 2);
+		elseif(!preg_match('@https?:\/\/(s(\d+)?\.)?hotfile\.com\/get\/[^"\'><\r\n\t]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2);
+		else 
+		return trim($giay[0]);
 		return false;
     }
 
@@ -24,5 +33,7 @@ class dl_hotfile_com extends Download {
 * Version: 2.7.0
 * Hotfile Download Plugin 
 * Downloader Class By [FZ]
+* Add check acc by giaythuytinh176 [19.8.2013]
+* Thanks to Rapid61@rapidleech.com for your hotfile account.
 */
 ?>

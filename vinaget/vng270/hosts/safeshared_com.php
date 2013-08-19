@@ -7,11 +7,10 @@ class dl_safeshared_com extends Download {
 		$this->save($this->lib->GetCookies($data));
 		if(stristr($data,'<center><h1>404 Not Found</h1></center>') && stristr($data,'<center>nginx</center>')) $this->error("blockCountry", true, false);
 		elseif(stristr($data,'<div class="message-big">404</div>') && stristr($data,'<div class="message-small">HTTP Error - File or directory not found</div>')) $this->error("dead", true, false, 2);
-		$lik1 = $this->lib->cut_str($data, 'var domainDownload = \'', '/\';');
-		$lik2 = $this->lib->cut_str($data, 'var uriDownload = \'', '\';');
-		$giay = ''.$lik1.'/'.$lik2;  return trim($giay);
-
-			return false;
+		$ip = $this->lib->cut_str($data, 'var domainDownload = \'', '/\';');
+		$id = $this->lib->cut_str($data, 'var uriDownload = \'', '\';');
+		$link = ''.$ip.'/'.$id;  return trim($link);
+		return false;
 	}
 
 }

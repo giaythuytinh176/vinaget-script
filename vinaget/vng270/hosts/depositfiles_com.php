@@ -21,10 +21,9 @@ class dl_depositfiles_com extends Download {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if($pass) {
 			$post["file_password"] = $pass;
-			$post["submit"] = "Continue";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			//if(stristr($data, 'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			if($this->isredirect($data)) return trim($this->redirect);
+			if (stristr($data, 'The file\'s password is incorrect'))  $this->error("wrongpass", true, false, 2);
+			elseif ($this->isredirect($data)) return trim($this->redirect);
 			elseif (preg_match('%"(http:\/\/.+'.$name.'\.'.$domain.'/auth.+)" onClick="%U', $data, $redir2)) return trim($redir2[1]);
 		}
 		if (stristr($data, "You have exceeded the")) $this->error("LimitAcc");
@@ -35,6 +34,7 @@ class dl_depositfiles_com extends Download {
 		elseif (stristr($data, "Such file does not exist")) $this->error("dead", true, false, 2);
 		return false;
     }
+	
 }
 
 /*

@@ -10,7 +10,7 @@ class dl_freakshare_com extends Download {
 	}   
 	
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://freakshare.com/login.html","","user={$user}&pass={$pass}&submit=Login");
+		$data = $this->lib->curl("http://freakshare.com/login.html", "", "user={$user}&pass={$pass}&submit=Login");
 		return $this->lib->GetCookies($data);
 	}
          
@@ -23,7 +23,7 @@ class dl_freakshare_com extends Download {
 		else $this->error($data);
 		return false;
 	}
-
+	
 }
 
 /*

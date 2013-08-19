@@ -21,24 +21,28 @@ class dl_ryushare_com extends Download {
 		if($pass) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$post["password"] = $pass;
-			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);	// If still says "Wrong password", may be Ryushare have problem ...
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif($this->isredirect($data)) return trim($this->redirect);
-			$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span></center>'), '<a href="', '">Click');
-			return trim($giay);
+			elseif(!preg_match('@https?:\/\/(\w+)?\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2); 	
+			else	
+			return trim($giay[0]);
 		}
-		if($this->isredirect($data)) return trim($this->redirect);
-		elseif (stristr($data,'<input type="password" name="password" class="myForm">')) $this->error("reportpass", true, false);
-		elseif (stristr($data, "Create Download Link")){
-			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
-			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span></center>'), '<a href="', '">Click');
-			return trim($giay);
-		}
+		if (stristr($data,'<input type="password" name="password" class="myForm">')) $this->error("reportpass", true, false);
 		elseif (stristr($data,'403 Forbidden')) $this->error("blockIP", true, false);
 		elseif (stristr($data,'You have reached the download-limit')) $this->error("LimitAcc", true, false);
-		elseif (stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
-		elseif (stristr($data,'This server is in maintenance mode. Refresh this page in some minutes.')) $this->error("Ryushare Under Maintenance", true, false);
+		elseif (stristr($data,'This server is in maintenance mode.')) $this->error("Ryushare Under Maintenance", true, false);
+		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
+		elseif(!preg_match('@https?:\/\/(\w+)?\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if(!preg_match('@https?:\/\/(\w+)?\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);	
+			else 	
+			return trim($giay[0]);
+		} 
+		else   
+		return trim($dl[0]);
 		return false;
     }
 	

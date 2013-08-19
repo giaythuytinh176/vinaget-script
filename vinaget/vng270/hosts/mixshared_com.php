@@ -37,7 +37,7 @@ class dl_mixshared_com extends Download {
 			$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span>'), 'href="', '">');
 			return trim($giay);
 		}
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+        elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
 		return false;
     }
 	

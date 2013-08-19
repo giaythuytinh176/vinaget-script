@@ -29,14 +29,16 @@ class dl_cyberlocker_ch extends Download {
 			$post["down_direct"] = "1";
 			$post["next"] = ""; 
 			$post["password"] = $pass; 
-			$giay = $this->lib->curl($url, $this->lib->cookie, $post);
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($giay,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif($this->isredirect($giay)) return trim($this->redirect);
+			if(!preg_match('@https?:\/\/(\w+\.)?cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);
+			else  
+			return trim($giay[0]);
 		}
-        if($this->isredirect($data)) return trim($this->redirect);
 		elseif (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
 		elseif(stristr($data,'<br><b>Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data, '<input type="submit" id="btn_download" value="Download" class="btn_download buttons">')){
+		elseif(!preg_match('@https?:\/\/(\w+\.)?cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
 		//	$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$post["op"] = "download2";
 			$post["id"] = $this->lib->cut_str($data, 'name="id" value="', '">');
@@ -46,10 +48,14 @@ class dl_cyberlocker_ch extends Download {
 			$post["method_premium"] = "1";
 			$post["down_direct"] = "1";
 			$post["next"] = ""; 
-			$giay = $this->lib->curl($url, $this->lib->cookie, $post);
-			if($this->isredirect($giay)) return trim($this->redirect);
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if(!preg_match('@https?:\/\/(\w+\.)?cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2); 
+			else 
+			return trim($giay[0]);
 		}
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+		else  
+		return trim($dl[0]);
 		return false;
     }
 	

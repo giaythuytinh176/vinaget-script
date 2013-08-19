@@ -57,7 +57,7 @@ $lang = array (
 'notdl'			=> 'Khổng thể xác định dung lượng tệp tin.',
 'cantjob'		=> 'Không thể tạo thêm lần tải',
 'filebig'		=> 'Tệp tin quá lớn! (%s) chỉ cho phép %s',
-'notfound'		=> 'Không tìm thấy!',
+'notfound'		=> 'Lỗi: Không tìm thấy liên kết?',
 'del'			=> 'Xóa',
 'rname'			=> 'Đổi tên',
 'notfile'		=> 'Không tim thấy tệp tin',
@@ -117,6 +117,6 @@ $lang = array (
 * Vinaget by ..::[H]::..
 * Version: 2.7.0 Final
 * Language Class By [FZ]
-* Vietnamese language by giaythuytinh176 [14.8.2013][r38]
+* Vietnamese language by giaythuytinh176 [20.8.2013][r39]
 */
 ?>

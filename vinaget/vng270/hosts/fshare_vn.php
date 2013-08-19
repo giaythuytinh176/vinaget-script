@@ -32,17 +32,17 @@ class dl_fshare_vn extends Download {
 			$post["link_file_pwd_dl"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
 			if(stristr($data,'Mật khẩu download file không đúng')) $this->error("wrongpass", true, false, 2);
-			elseif(preg_match('%<form action="(.+)" method="post%U', $data, $giay176))  return trim($giay176[1]);
-			elseif($this->isredirect($data)) return trim($this->redirect);
+			elseif(!preg_match('@https?:\/\/download(\d+\.)?fshare\.vn\/vip\/[_a-zA-Z0-9-]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $data, $giay)) 
+				$this->error("notfound", true, false, 2); 	else  return trim($giay[0]);
 		}
-		if(preg_match('%<form action="(.+)" method="post%U', $data, $giay))  return trim($giay[1]);
-		elseif($this->isredirect($data)) return trim($this->redirect);
+		if(stristr($data,'Vui lòng nhập mật khẩu để tải tập tin')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,"Tài khoản đang được sử dụng trên máy khác")) 	$this->error("blockAcc", true, false);
-		elseif(stristr($data,'Vui lòng nhập mật khẩu để tải tập tin')) 	$this->error("reportpass", true, false);
- 		elseif(stristr($data,'Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt để tiếp tục !</b></font>'))		$this->error("blockAcc", true, false);
+ 		elseif(stristr($data,'Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt</b></font>'))  $this->error("blockAcc", true, false);
 		elseif(stristr($data,'Liên kết bạn chọn không tồn tại trên hệ thống Fshare'))	$this->error("dead", true, false, 2);
-		elseif(stristr($data,'Tài khoản của bạn thuộc GUEST nên chỉ tải xuống 1 lần'))		$this->error("accinvalid", true, false);
+		elseif(stristr($data,'Tài khoản của bạn thuộc GUEST nên chỉ tải xuống 1 lần'))	 $this->error("accinvalid", true, false);
 		elseif(stristr($data,'THÔNG TIN TẬP TIN TẢI XUỐNG') && stristr($data,'TẢI XUỐNG CHẬM'))	 $this->error("accfree", true, false);
+		elseif(!preg_match('@https?:\/\/download(\d+\.)?fshare\.vn\/vip\/[_a-zA-Z0-9-]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $data, $giay)) 
+			$this->error("notfound", true, false, 2); 	else  return trim($giay[0]);
 		return false;
     }
 	

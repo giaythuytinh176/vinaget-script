@@ -10,7 +10,7 @@ class dl_oteupload_com extends Download {
     }
     
     public function Login($user, $pass){
-        $data = $this->lib->curl("http://www.oteupload.com/", "lang=english", "login={$user}&password={$pass}&op=login&redirect=&submit=");
+        $data = $this->lib->curl("http://www.oteupload.com/", "lang=english", "login={$user}&password={$pass}&op=login&submit=&file_id=1&redirect=https://www.oteupload.com/");
         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
     }
@@ -23,21 +23,23 @@ class dl_oteupload_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			elseif($this->isredirect($data)) return trim($this->redirect);
-			else
-			$giay = $this->lib->cut_str($this->lib->cut_str($data, "<div id='dl'>", "</div>"), 'href=\'', '\'><img');
-			return trim($giay);
+			elseif(!preg_match('@https?:\/\/srv([0-9-]+)?\.oteupload\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);	
+			else 	
+			return trim($giay[0]);
 		}
-        if($this->isredirect($data)) return trim($this->redirect);
-		elseif(stristr($data,'type="password" name="password')) $this->error("reportpass", true, false);
-        elseif(stristr($data,'You have reached the download-limit:')) $this->error("LimitAcc", true, false);
-		elseif(stristr($data, '<h3 class="down_head">Download</h3>')){
+		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
+		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
+		elseif(!preg_match('@https?:\/\/srv([0-9-]+)?\.oteupload\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', ' <table width="890px"'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			$giay = $this->lib->cut_str($this->lib->cut_str($data, "<div id='dl'>", "</div>"), 'href=\'', '\'><img');
-				return trim($giay);
-		 }
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+			if(!preg_match('@https?:\/\/srv([0-9-]+)?\.oteupload\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);	
+			else 	
+			return trim($giay[0]);
+		} 
+		else   
+		return trim($dl[0]);
 		return false;
     }
 	

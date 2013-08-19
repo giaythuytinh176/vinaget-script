@@ -14,7 +14,7 @@ class dl_uploading_com extends Download {
 		elseif($this->isredirect($data)) return trim($this->redirect);
 		elseif (strpos($page,"Your account premium traffic has been limited")) $this->error("LimitAcc");
 		else {
-			$code = trim( $this->cut_str( $page, 'code: "', '",' ) );
+			$code = trim($this->cut_str($page, 'code: "', '",'));
 			$pages = $this->curl("http://uploading.com/files/get/?ajax",$cookie,"action=get_link&code={$code}&pass=false", 0, 0, $url, 1);
 			$json = json_decode($pages);
 			return $json->answer->link;

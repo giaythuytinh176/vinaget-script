@@ -57,7 +57,7 @@ $lang = array (
 'notdl'			=> 'Can not get file size.',
 'cantjob'		=> 'Can not create new job',
 'filebig'		=> 'File too big! (%s) when allowed only %s',
-'notfound'		=> 'Not Found!',
+'notfound'		=> 'Error: Download link not found?',
 'del'			=> 'Delete',
 'rname'			=> 'Rename',
 'notfile'		=> 'No Files Found',
@@ -80,7 +80,7 @@ $lang = array (
 'disabletrial'	=> 'your link is temporary disable for trial account.',
 'adult'			=> 'Adult Video Detected',
 'ytb_captcha'	=> 'Captcha Found. Please run on different server',
-'ytb_Error'		=> 'Error Locating Downlod URL',
+'ytb_Error'		=> 'Error Locating Download URL',
 'reportpass'	=> 'The file you are trying to download is password protected. Please enter the password below.',
 'accpremium'	=> 'Premium Account',
 'direct'		=> 'Direct Link',
@@ -117,6 +117,6 @@ $lang = array (
 * Vinaget by ..::[H]::..
 * Version: 2.7.0 Final
 * English Language
-* Language Class By [FZ][r38]
+* Language Class By [FZ][r39]
 */
 ?>

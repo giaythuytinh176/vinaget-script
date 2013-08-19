@@ -3,36 +3,41 @@
 class dl_filesmonster_com extends Download {
 
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("http://filesmonster.com/", $cookie, "");
+		$data = $this->lib->curl("http://filesmonster.com/", "yab_ulang=en;".$cookie, "");
 		if(stristr($data, 'Your membership type: <span class="em lightblack">Registered')) return array(false, "accfree");
 		elseif(stristr($data, 'Your membership type: <span class="em lightblack">Premium')) return array(true, "Until ".$this->lib->cut_str($data, '<span>Valid until: <span class=\'green\'>','</span><br /><input type='));
 		else return array(false, "accinvalid");
 	}
 
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://filesmonster.com/login.php", "", "act=login&user={$user}&pass={$pass}&captcha_shown=0&login=Login");
-		if (stristr($data,'yab_logined=1')) 
-		$cookie =  "yab_logined=1;".$this->lib->cut_str($cookie, "yab_logined=1;", "; yab_last_click");
-		$cookie = $this->lib->GetCookies($data);
+		$data = $this->lib->curl("http://filesmonster.com/login.php", "yab_ulang=en", "act=login&user={$user}&pass={$pass}&captcha_shown=0&login=Login");
+		$cookie = "yab_ulang=en;".$this->lib->GetCookies($data);
 		return $cookie;
 	}
   
 	public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(preg_match('%<a href="(https?:\/\/[^\r\n\s\t"]+)"><span class="huge_button_green_left">%', $data, $lik)){
-		$data = $this->lib->curl($lik[1], $this->lib->cookie,"");
-			if(preg_match('/get_link\("([^\r\n\s\t"]+)"\)/', $data, $lik)) {
-				$data = $this->lib->curl("http://filesmonster.com".$lik[1], $this->lib->cookie,"");
-				$link = $this->lib->cut_str($data, '"url":"', '"}');
-				$link = str_replace('\/', '/',$link);
-				return trim($link);
+		if(stristr($data,'File not found') || stristr($data,'<h1 class="block_header">The link could not be decoded</h1>'))   
+		$this->error("dead", true, false, 2); 
+		elseif(stristr($data,'Today you have already downloaded')) $this->error("LimitAcc", true, false);
+		elseif(!preg_match('/href="(https?:\/\/filesmonster\.com\/get\/[^"\'><\r\n\t]+)">/', $data, $data1)) 
+		$this->error("notfound", true, false, 2);	
+		else {
+			$data2 = $this->lib->curl($data1[1], $this->lib->cookie, "");
+			if(preg_match('/get_link\("([^"\'><\r\n\t]+)"\)/', $data2, $data3)) {
+				$data4 = $this->lib->curl("http://filesmonster.com".$data3[1], $this->lib->cookie, "");
+				if(!preg_match('%url":"(https?:.+fmdepo.net.+)"%U', $data4, $giay))
+				$this->error("notfound", true, false, 2);
+				else {
+					$giay = str_replace('\\', '', $giay[1]);
+					$giay = str_replace("https", "http", $giay);
+					return trim($giay);
+				}
 			}
 		}
-		elseif(stristr($data,'File not found')) $this->error("dead", true, false, 2); 
-		elseif(stristr($data,'<h1 class="block_header">The link could not be decoded</h1>')) $this->error("dead", true, false, 2); 
-		elseif(stristr($data,'<div id="error">Today you have already downloaded')) $this->error("outofbw", true, false, 2); 
 		return false;
 	}
+	
 }
 /*
 * Open Source Project

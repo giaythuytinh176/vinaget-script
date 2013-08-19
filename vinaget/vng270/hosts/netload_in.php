@@ -15,18 +15,32 @@ class dl_netload_in extends Download {
 		return $cookie;
 	}
 	
-    public function Leech($url) {		
+    public function Leech($url) {	
+		if (preg_match('@http:\/\/netload\.in\/(\w+)/(.+)\.htm@i', $url, $urlgiay) || preg_match('@http:\/\/netload\.in\/(\w+)\.htm@i', $url, $urlgiay))
+		$url = 'http://netload.in/'.$urlgiay[1].'.htm';
+		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
-		if (stristr($data,"The file was deleted")) $this->error("dead", true, false, 2);
-		elseif(preg_match('/ocation: *(.+)/i', $data, $a)){
-			if(preg_match('/^http:/', $a[1])) return trim($a[1]);
-			else {
-				$url = 'http://netload.in'.trim($a[1]);
-				$page = $this->lib->curl($url, $this->lib->cookie, "");
-				if(preg_match('/<a class="Orange_Link" href="(.*)" >Click here for the download/Ui', $page, $b)) return trim($b[1]);
-				elseif (preg_match('%ocation: (.+)\r\n%U', $page, $c)) return trim($c[1]);
-			}					
+		if($pass) {
+			if(!preg_match('%action="([^"]+)"%', $data, $urlp))  
+			$this->error("Error: Cannot get Pass Link", true, false, 2);
+			else 
+			$urlpass = 'http://netload.in/'.$urlp[1];
+			$post["file_id"] = $this->lib->cut_str($data, 'type="hidden" value="', '"');
+			$post["password"] = $pass; 
+			$post["submit"] = "Show";
+			$data = $this->lib->curl($urlpass, $this->lib->cookie, $post);
+			if(stristr($data,'You have entered an incorrect password'))  $this->error("wrongpass", true, false, 2);
+			elseif (!preg_match('@http:\/\/[\d.]+\/[^|\r|\n|\'"]+@i', $data, $dl))
+			$this->error("notfound", true, false, 2); 
+			else
+			return trim($dl[0]);
 		}
+		if (stristr($data,"The file was deleted"))  $this->error("dead", true, false, 2);
+		elseif (stristr($data,'This file is password-protected'))   $this->error("reportpass", true, false);
+		elseif (!preg_match('@http:\/\/[\d.]+\/[^|\r|\n|\'"]+@i', $data, $dl))
+		$this->error("notfound", true, false, 2); 
+		else
+		return trim($dl[0]);
 		return false;
     }
 
@@ -38,5 +52,6 @@ class dl_netload_in extends Download {
 * Version: 2.7.0
 * Netload Download Plugin 
 * Downloader Class By [FZ]
+* Fixed download link, add support file password by giaythuytinh176 [19.8.2013]
 */
 ?>

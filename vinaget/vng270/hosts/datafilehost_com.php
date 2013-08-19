@@ -5,10 +5,13 @@ class dl_datafilehost_com extends Download {
 	public function FreeLeech($url){
 		$data = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($data));
-		$data = $this->lib->cut_str($data, 'if(document.cbf.cb.checked == false) {', '></a>"; }');
-		if (preg_match('%innerHTML="<a href=\'(.+)\'><img src=%U', $data, $giay))  return trim($giay[1]);
+        if (!preg_match('@https?:\/\/www\.datafilehost\.com\/get\.php\?file\=[^"\'><\r\n\t]+@i', $data, $dl)) 
+		$this->error("notfound", true, false, 2);  
+		else  
+		return trim($dl[0]);
 		return false;
 	}
+
 }
 
 /*

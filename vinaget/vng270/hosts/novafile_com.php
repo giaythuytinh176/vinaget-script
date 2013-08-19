@@ -4,7 +4,7 @@ class dl_novafile_com extends Download {
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://novafile.com/premium.html", "lang=english;".$cookie, "");
-		if(stristr($data, 'Premium Account expires')) return array(true, "Until ".$this->lib->cut_str($data, 'Premium Account expires  ','	</div>'));
+		if(stristr($data, 'Premium Account expires')) return array(true, "Until ".$this->lib->cut_str($data, 'Premium Account expires','</div>'));
 		else if(stristr($data, 'FREE - member')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}
@@ -17,16 +17,20 @@ class dl_novafile_com extends Download {
 	
     public function Leech($url){
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(stristr($data, "Create Download Link")){
+        if(stristr($data,'<div class="name">File Not Found</div>')) $this->error("dead", true, false, 2);
+		elseif(stristr($data,"different IP")) $this->error("blockIP", true, false);
+		elseif(!stristr($data, "Create Download Link"))
+		$this->error("Cannot get Create Download Link", true, false, 2);	 
+		else {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form action="', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			//if (stristr($data,'You have reached the download limit'))  $this->error("LimitAcc", true, false);
-			if(preg_match('/download limit: ([0-9]+) MB <br>/', $data, $giay)) $this->error('You have reached the download limit: '.$giay[1].' MB', true, false);
-			$link = $this->lib->cut_str($this->lib->cut_str($data, '<div class="alert alert-success-invert">', '<p>This direct'), '<a href="', '" class="btn btn-green">');
-			return trim($link);
+			if(preg_match('/download limit: (\d+) MB <br>/', $data, $giay)) $this->error('You have reached the download limit: '.$giay[1].' MB', true, false);
+			elseif(!preg_match('@https?:\/\/s(\d+)?\.novafile\.com(:\d+)?\/[^"\'><\r\n\t]+@i', $data, $thuytinh))
+			$this->error("notfound", true, false, 2);	
+			else 	
+			return trim($thuytinh[0]);
 		}
-		elseif(stristr($data,"different IP")) $this->error("blockIP", true, false);
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
 		return false;
     }
 

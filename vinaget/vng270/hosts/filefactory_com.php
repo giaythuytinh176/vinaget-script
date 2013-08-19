@@ -33,20 +33,20 @@ class dl_filefactory_com extends Download {
 			$post["password"] = $pass;
 			$post["action"] = "password";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($data,'Incorrect password.'))  $this->error("wrongpass", true, false, 2);
+			if(stristr($data,'Incorrect password. Please try again'))  $this->error("wrongpass", true, false, 2);
+			elseif(stristr($data,'You have entered an incorrect password too many times'))  $this->error("You have entered an incorrect password too many times", true, false, 2);
 			elseif($this->isredirect($data)) return trim($this->redirect);
-			elseif(preg_match('%(http:\/\/.+filefactory\.com/dlp/.+)">Download with F%U', $data, $redir2)) 
-			return trim($redir2[1]);
+			elseif(!preg_match('@https?:\/\/s(\d+\.)?filefactory\.com\/dlp\/[a-z0-9]+\/n\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2); 	
+			else   
+			return trim($giay[0]);
 		}
-		if($this->isredirect($data)) return trim($this->redirect);
-		elseif(preg_match('%(http:\/\/.+filefactory\.com/dlp/.+)">Download with F%U', $data, $redir2)) 
-		return trim($redir2[1]);
-		if(!empty($link)){
-			if(!stristr($link, "logout.php")) return $link;
-			else $this->error("notwork");
-		}
-		elseif(stristr($data,'You are trying to access a password protected file')) 	$this->error("reportpass", true, false);
+		if(stristr($data,'You are trying to access a password protected file')) 	$this->error("reportpass", true, false);
 		elseif (stristr($data,"This error is usually caused by requesting a file that does not exist")) $this->error("dead", true, false, 2);
+        elseif(!preg_match('@https?:\/\/s(\d+\.)?filefactory\.com\/dlp\/[a-z0-9]+\/n\/[^"\'><\r\n\t]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2); 	
+		else   
+		return trim($giay[0]);
 		return false;
     }
 	

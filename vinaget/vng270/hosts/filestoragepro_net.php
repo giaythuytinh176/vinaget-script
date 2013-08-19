@@ -17,8 +17,9 @@ class dl_filestoragepro_net extends Download {
 	public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(stristr($data, "That file has been deleted.")) $this->error("dead", true, false, 2);
-		elseif($this->isredirect($data)) return trim($this->redirect);
-		else $this->error("unknown", true, false);
+
+		
+		
 		return false;
 	}
 	

@@ -31,14 +31,19 @@ class dl_4share_vn extends Download {
 			$post["submit"] = "DOWNLOAD";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Bạn đã nhập sai Password download'))  $this->error("wrongpass", true, false, 2);
-			elseif ($this->isredirect($data)) return trim($this->redirect);
-			elseif (preg_match('%<a href=\'(.+)\'><img%U', $data, $link))  return trim($link[1]); 
+			elseif(!preg_match('@https?:\/\/sv(\d+\.)?4share\.vn\/\d+\/[^"\'><\r\n\t]+@i', $data, $giay)) 
+			$this->error("notfound", true, false, 2); 
+			else 	
+			return trim($giay[0]);
 		}
-		if (preg_match('%<a href=\'(.+)\'><img%U', $data, $link))  return trim($link[1]); 
-		elseif ($this->isredirect($data)) return trim($this->redirect);
-  		elseif (stristr($data,"File có password download"))  $this->error("reportpass", true, false); 
-  		elseif (stristr($data,"bị khóa đến")) 	 $this->error("blockAcc", true, false);
-  		elseif (stristr($data,"File not found") || stristr($data,"FID Không hợp lệ") || stristr($data,"File đã bị xóa")) $this->error("dead", true, false, 2);
+		if (stristr($data,"File có password download"))  $this->error("reportpass", true, false); 
+  		elseif (stristr($data,"bị khóa đến"))  $this->error("blockAcc", true, false);
+  		elseif (stristr($data,"File not found") || stristr($data,"FID Không hợp lệ") || stristr($data,"File đã bị xóa")) 
+		$this->error("dead", true, false, 2);
+		elseif(!preg_match('@https?:\/\/sv(\d+\.)?4share\.vn\/\d+\/[^"\'><\r\n\t]+@i', $data, $giay)) 
+		$this->error("notfound", true, false, 2); 	
+		else  
+		return trim($giay[0]);
 		return false;
     }
 

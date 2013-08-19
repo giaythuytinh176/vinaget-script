@@ -14,7 +14,36 @@ class dl_tusfiles_net extends Download {
         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
     }
-    
+  
+    public function FreeLeech($url) {
+		list($url, $pass) = $this->linkpassword($url);
+        $data = $this->lib->curl($url, "", "");
+		$this->save($this->lib->GetCookies($data));
+		if($pass) {
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$post["password"] = $pass;
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
+			elseif(!preg_match('@https?:\/\/([a-z]+(\d+)?\.)?tusfiles\.net(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2); 	
+			else	
+			return trim($giay[0]);
+		}
+		if(stristr($data,'<h2>File Not Found</h2>') || stristr($data,'<h3>The file was removed by administrator</h3>')) $this->error("dead", true, false, 2);
+		elseif(stristr($data,'<small>Password:</small> <input class="bttn')) 	$this->error("reportpass", true, false);
+		elseif(!stristr($data, "Download Now!"))
+		$this->error("Cannot get Download Now", true, false);
+		else {
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if(!preg_match('@https?:\/\/([a-z]+(\d+)?\.)?tusfiles\.net(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);	
+			else 	
+			return trim($giay[0]);
+		}
+		return false;
+    }
+  
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
@@ -23,17 +52,23 @@ class dl_tusfiles_net extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif($this->isredirect($data)) return trim($this->redirect);
+			elseif(!preg_match('@https?:\/\/([a-z]+(\d+)?\.)?tusfiles\.net(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2); 	
+			else	
+			return trim($giay[0]);
 		}
-        if($this->isredirect($data)) return trim($this->redirect);
-		elseif (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
+		if(stristr($data,'<h2>File Not Found</h2>') || stristr($data,'<h3>The file was removed by administrator</h3>')) $this->error("dead", true, false, 2);
 		elseif(stristr($data,'<small>Password:</small> <input class="bttn')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data, "Download Now!")){
+		elseif(!preg_match('@https?:\/\/([a-z]+(\d+)?\.)?tusfiles\.net(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if($this->isredirect($data)) return trim($this->redirect);
-		}
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+			if(!preg_match('@https?:\/\/([a-z]+(\d+)?\.)?tusfiles\.net(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);	
+			else 	
+			return trim($giay[0]);
+		} 
+		else   
+		return trim($dl[0]);
 		return false;
     }
 	

@@ -2,21 +2,23 @@
 
 class dl_2shared_com extends Download {
 	
-
 	public function FreeLeech($url){
 		list($url, $pass) = $this->linkpassword($url);
+		if(stristr($url, "/fadmin/"))  $this->error("dead", true, false, 2);
 		$post = !empty($pass) ? "userPass2=".$pass : "";
 		$data = $this->lib->curl($url, $this->lib->cookie, $post ? "userPass2={$pass}" : "");
 		$this->save($this->lib->GetCookies($data));
-        if (preg_match ('/dc(\d+)\.2shared\.com\/download\/([^\'|\"|\<|\>|\r|\n]+)/i', $data, $lik)) {
-           $giay = "http://dc" . $lik[1] . ".2shared.com/download/" . $lik[2];
-				return trim($giay);
-		}
-		elseif (stristr($data,"The file link that you requested is not valid.") && stristr($data,"Please contact link publisher or try to make a search."))   $this->error("dead", true, false, 2);
-		elseif (stristr($data,"Please enter password to access this file"))  $this->error("reportpass", true, false);
-		elseif (stristr($data,"Your free download limit is over."))  $this->error("outofbw", true, false);
-
-			return false;
+		if (stristr($data,"The file link that you requested is not valid.") && stristr($data,"Please contact link publisher or try to make a search."))  
+		$this->error("dead", true, false, 2);
+		elseif (stristr($data,"Your free download limit is over."))  $this->error("LimitAcc", true, false);
+		else
+		if(stristr($data,"Please enter password to access this file"))  $this->error("reportpass", true, false);
+		elseif (!preg_match('/dc(\d+)\.2shared\.com\/download\/([^\'|\"|\<|\>|\r|\n]+)/i', $data, $lik)) 
+		$this->error("notfound", true, false, 2);
+		else
+		$giay = "http://dc".$lik[1].".2shared.com/download/".$lik[2];
+		return trim($giay);
+		return false;
 	}
 
 }

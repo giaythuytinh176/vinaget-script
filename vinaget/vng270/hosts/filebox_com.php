@@ -17,17 +17,14 @@ class dl_filebox_com extends Download {
     
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(stristr($data, "<b>How would you like to continue? </b>")){
+		if(stristr($data,'<h2>This file is no longer available</h2>')) $this->error("dead", true, false, 2);
+		elseif(!preg_match('@https?:\/\/www(\d+\.)?filebox\.com(:\d+)?\/d\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $data, $dl)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form style=\'display:inline-block\'', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			$giay = $this->lib->cut_str($data, 'onclick="document.location=\'', '\'" value=\'Download\' /></center>');
-			return trim($giay);
+			if(!preg_match('@https?:\/\/www(\d+\.)?filebox\.com(:\d+)?\/d\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $this->lib->cut_str($data, 'onclick="document.location=\'', '\'" value=\'Download\' /></center>'), $giay))
+				$this->error("notfound", true, false, 2);	else   return trim($giay[0]);
 		}
-		elseif(stristr($data, "<span style='font-size:22px;'>Download File</span></center>")){
-			$giay = $this->lib->cut_str($data, 'onclick="document.location=\'', '\'" value=\'Download\' /></center>');
-			return trim($giay);
-		}
-		elseif(stristr($data,'<h2>This file is no longer available</h2>')) $this->error("dead", true, false, 2);
+		else return trim($dl[0]);
 		return false;
     }
 	

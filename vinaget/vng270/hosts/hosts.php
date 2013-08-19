@@ -7,6 +7,10 @@ $alias['depositfiles.org'] = 'depositfiles.com';
 $alias['ul.to'] = 'uploaded.net';
 $alias['uploaded.to'] = 'uploaded.net';
 $alias['up.4share.vn'] = '4share.vn';
+$alias['playlist.chiasenhac.com'] = 'chiasenhac.com';
+$alias['d01.megashares.com'] = 'megashares.com';
+$alias['fp.io'] = 'filepost.com';
+$alias['clz.to'] = 'cloudzer.net';
 $folderhost = opendir ( "hosts/" );
 while ( $hostname = readdir ( $folderhost ) ) {		
 	if($hostname == "." || $hostname == ".." || strpos($hostname,"bak") || $hostname == "hosts.php") {continue;}

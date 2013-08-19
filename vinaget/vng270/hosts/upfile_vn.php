@@ -3,9 +3,9 @@
 class dl_upfile_vn extends Download {
 
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("http://upfile.vn/upgrade.html", $cookie, "");
+		$data = $this->lib->curl("http://upfile.vn/payments/index.html", $cookie, "");
 		if(stristr($data, 'Chuyển về tài khoản Free:')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Chuyển về tài khoản Free:','</tr>'), '<td>', '</td>'));
-		elseif(!stristr($data, 'Chuyển về tài khoản Free:')) return array(false, "accfree"); 
+		elseif(stristr($data, 'Loại Tài Khoản:') && !stristr($data, 'Chuyển về tài khoản Free')) return array(false, "accfree"); 
 		else return array(false, "accinvalid");
 	}
 
@@ -16,9 +16,12 @@ class dl_upfile_vn extends Download {
 	}
 	
     public function Leech($url) {
-		return trim($url);
+		if(!preg_match('@https?:\/\/upfile\.vn\/[^"\'><\r\n\t]+@i', $url, $giay))
+		$this->error("notfound", true, false, 2); 
+		else
+		return trim($giay[0]);
 		return false;
-    }
+    }	
 
 }
 /*
@@ -30,5 +33,6 @@ class dl_upfile_vn extends Download {
 * Add check account by giaythuytinh176
 * Date: 20.7.2013
 * Fix check account by giaythuytinh176 [23.7.2013]
+* Fix check account by giaythuytinh176 [15.8.2013]
 */
 ?>

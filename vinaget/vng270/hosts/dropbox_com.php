@@ -2,17 +2,14 @@
 
 class dl_dropbox_com extends Download {
 	
- 
-	
 	public function FreeLeech($url){
 		$data = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($data));
-		if(stristr($data,'Nothing Here') && stristr($data,'The file you\'re looking for has been deleted or moved.')) $this->error("dead", true, false, 2);
-		$data = $this->lib->cut_str($data, '</span></div><div class="meta">', 'class="freshbutton-blue">Download');
-		$link = $this->lib->cut_str($data, '</div><a href="', '" id="default_content_download_button"');
-		$link = str_replace("https","http",$link);
-				return trim($link);
-			return false;
+		if(!preg_match('@https?:\/\/dl\.dropboxusercontent\.com\/[^"\'><\r\n\t]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2);  
+		else  
+		return trim($giay[0]);
+		return false;
 	}
 
 }

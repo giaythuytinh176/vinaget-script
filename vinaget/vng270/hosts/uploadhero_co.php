@@ -1,9 +1,10 @@
 <?php
+
 class dl_uploadhero_co extends Download {
     
     public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://uploadhero.co/my-account", $cookie, "");
-		if(stristr($data, 'Premium days')) return array(true, $this->lib->cut_str($data, 'You still have <span class="bleu">','</span>')." days");
+		if(stristr($data, 'Premium days.')) return array(true, $this->lib->cut_str($data, 'You still have <span class="bleu">', '</span><br />')." days");
 		elseif(!stristr($data, '<a href="/logout"')) return array(false, "accinvalid");
 		else return array(false, "accfree");
 	}
@@ -20,7 +21,10 @@ class dl_uploadhero_co extends Download {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(stristr($data, "No such file with this filename</font>")) $this->error("dead", true, false, 2);
 		elseif(stristr($data, "http://uploadhero.co/forbbiden")) $this->error("blockIP", true, false);
-		elseif($this->isredirect($data)) return trim($this->redirect);
+		elseif(!preg_match('@https?:\/\/p(\d+)\.uploadhero\.co\/\?d=[^"\'><\r\n\t]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2);	
+		else 	
+		return trim($giay[0]);
 		return false;
     }
 

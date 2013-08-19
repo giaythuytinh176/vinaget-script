@@ -18,14 +18,17 @@ class dl_turbobit_net extends Download {
     public function Leech($url) {
         $data = $this->lib->curl($url,$this->lib->cookie,"");
 		$this->save($this->lib->GetCookies($data));
-        if($this->isredirect($data)) return trim($this->redirect);
-        elseif(preg_match('/<a href=\'(.+)\'><b>Download/', $data, $a)) return trim($a[1]);
-        elseif (stristr($data,'site is temporarily unavailable')) $this->error("dead", true, false, 2);
+        if (stristr($data,'site is temporarily unavailable')) $this->error("dead", true, false, 2);
         elseif (stristr($data,'Please wait, searching file')) $this->error("dead", true, false, 2);
         elseif (stristr($data, '<u>Turbo Access</u> denied')) $this->error("blockAcc");
         elseif (stristr($data, 'You have reached the <a href=\'/user/messages\'>daily</a> limit of premium downloads')) $this->error("blockAcc");
-        return false;
+		elseif(!preg_match('@https?:\/\/turbobit\.net\/\/download\/redirect\/[^"\'><\r\n\t]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2); 
+		else 	
+		return trim($giay[0]);
+		return false;
     }
+	
 }
 
 /*

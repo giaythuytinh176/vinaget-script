@@ -23,17 +23,24 @@ class dl_lafiles_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			elseif($this->isredirect($data)) return trim($this->redirect);
+			if(!preg_match('@https?:\/\/(\w+\.)lafiles\.(.*)\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);
+			else
+			return trim($giay[0]);
 		}
         if($this->isredirect($data)) return trim($this->redirect);
 		elseif (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
 		elseif(stristr($data,'Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data, "Create Download Link")){
+		elseif(!preg_match('@https?:\/\/(\w+\.)lafiles\.(.*)\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if($this->isredirect($data)) return trim($this->redirect);
+			if(!preg_match('@https?:\/\/(\w+\.)lafiles\.(.*)\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);
+			else
+			return trim($giay[0]);
 		}
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+		else
+        return trim($dl[0]);
 		return false;
     }
 	

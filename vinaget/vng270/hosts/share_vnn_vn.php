@@ -1,11 +1,12 @@
 <?php
+
 class dl_share_vnn_vn extends Download {
     
     public function CheckAcc($cookie){
          $data = $this->lib->curl("http://share.vnn.vn/thong-tin-ca-nhan", $cookie, "");
          if(stristr($data, '<label class="caption">Thời hạn VIP còn lại:</label>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, '<label class="caption">Thời hạn VIP còn lại:</label>','<div class="field">'), '<div class="fieldtext">','ngày') ."day");
          else if(stristr($data, 'MegaShare Free				</div>')) return array(false, "accfree");
-			else return array(false, "accinvalid");
+		 else return array(false, "accinvalid");
     }
     
     public function Login($user, $pass){
@@ -19,9 +20,9 @@ class dl_share_vnn_vn extends Download {
 			$data = $this->lib->curl($match[1], $thuytinh, '');
 			$thuytinh = $thuytinh. '; ' .$this->lib->GetCookies($data);
 			if(preg_match('#PHPSESSID=ST(.+)#', $thuytinh, $matchs)) 
-				$cookie = $cookie."; ".$matchs[0];	
+			$cookie = "{$cookie};{$matchs[0]}";	
 		}
-			return $cookie;
+		return $cookie;
     }
     
     public function Leech($url) {
@@ -29,8 +30,10 @@ class dl_share_vnn_vn extends Download {
 		if(stristr($data,'Không tìm thấy file bạn yêu cầu')) $this->error("dead", true, false, 2);
 		elseif(stristr($data,'File bạn yêu cầu đã bị khóa')) $this->error("dead", true, false, 2);
 		elseif(stristr($data,'We cannot find the page you are looking for')) $this->error("dead", true, false, 2);
-			else
-		$giay = $this->lib->cut_str($data, '"window.location.href=\'', '\'"></button>'); return trim($giay);
+		elseif(!preg_match('@https?:\/\/(?:(?:((dl(\d+\.)?share\.vnn\.vn))|(?:(\d+\.\d+\.\d+\.\d+(:\d+)?))))\/dl\d+\/[^"\'><\r\n\t]+@i', $data, $giay)) 
+		$this->error("notfound", true, false, 2);  
+		else    
+		return trim($giay[0]);
 		return false;
     }
 

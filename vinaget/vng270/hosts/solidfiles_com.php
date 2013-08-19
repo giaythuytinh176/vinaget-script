@@ -1,13 +1,15 @@
 <?php
 
 class dl_solidfiles_com extends Download {
-
 	
 	public function FreeLeech($url){
 		$data = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($data));
-		if (preg_match('%class="ui-button small green" href="(.+)">%U', $data, $giay))  return trim($giay[1]);
-			return false;
+		if(!preg_match('@https?:\/\/s(\d+\.)?sfcdn\.in\/[^"\'><\r\n\t]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2);	
+		else 	
+		return trim($giay[0]);
+		return false;
 	}
 
 }

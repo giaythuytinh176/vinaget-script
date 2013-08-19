@@ -6,13 +6,13 @@ class dl_uploaded_net extends Download {
 		$data = $this->lib->curl("http://uploaded.net/", $cookie, "");
 		if(stristr($data, '<a href="register"><em>Premium</em></a>')) return array(true, $this->lib->cut_str($this->lib->cut_str($data, "Duration:</td>","/th>"), "<th>","<"));
 		elseif(stristr($data, '<li><a href="logout">Logout</a></li>')) return array(false, "accfree");
-			else return array(false, "accinvalid");
+		else return array(false, "accinvalid");
 	}
          
 	public function Login($user, $pass){
 		$data = $this->lib->curl("http://uploaded.net/io/login", "", "id={$user}&pw={$pass}");
 		$cookie = $this->lib->GetCookies($data);
-			return $cookie;
+		return $cookie;
 	}
          
 	public function Leech($url) {
@@ -21,18 +21,16 @@ class dl_uploaded_net extends Download {
 		$data = $this->lib->curl($url, $this->lib->cookie, ""); 
 		if (stristr($data,"<h1>Extend traffic</h1>")) $this->error("LimitAcc");
 		elseif (stristr($data,"Hybrid-Traffic is completely exhausted")) $this->error("LimitAcc");
-		elseif($this->isredirect($data)) $link = trim($this->redirect);  
-		elseif(preg_match('%(http:\/\/.+uploaded\.net/dl/.+)"%U', $data, $redir2)) $link = trim($redir2[1]);
 		elseif (stristr($data,"Our service is currently unavailable in your country")) $this->error("blockCountry", true, false);
 		elseif (stristr($data,"You used too many different IPs")) $this->error("blockAcc", true, false);
 		elseif (stristr($data,"Download Blocked (ip)")) $this->error("blockIP", true, false);
-		elseif(preg_match('/action="(.+)" /', $data, $a)) if(preg_match('/^http:/', $a[1])) return trim($a[1]);
-		if(!empty($link)) {
-			if (stristr($link,'uploaded.net/404')) $this->error("dead", true, false, 2);
-			else return $link;
-		}
-			return false;
+		elseif (!preg_match('@https?:\/\/[a-z0-9-]+stor(\d+\.)?uploaded\.net(:\d+)?\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2); 
+		else
+		return trim($giay[0]);
+		return false;
 	}
+	
 }
 
 /*

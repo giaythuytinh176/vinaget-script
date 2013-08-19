@@ -33,11 +33,13 @@ class dl_filezy_net extends Download {
 			$this->error("PACKED code not found", true, false);
 			else
 			$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
-			if (!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink))	$this->error("Couldn't find the download link", true, false);
+			if (!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink))	
+			$this->error("notfound", true, false, 2);
 			else
 			return trim($filezyLink[1]);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
+		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
         elseif($this->isredirect($data)) return trim($this->redirect);
 		elseif(stristr($data, "Create Download Link")){
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="A008', '</form>'));
@@ -46,11 +48,11 @@ class dl_filezy_net extends Download {
 			$this->error("PACKED code not found", true, false);
 			else
 			$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
-			if (!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	$this->error("Couldn't find the download link", true, false);
+			if (!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
+			$this->error("notfound", true, false, 2);
 			else
 			return trim($filezyLink[1]);
 		}
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
 		return false;
     }
 	

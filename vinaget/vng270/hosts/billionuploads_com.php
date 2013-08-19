@@ -11,18 +11,23 @@ class dl_billionuploads_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			else
-			$giay = $this->lib->cut_str($data, '<input type="hidden" id="dl" value="','">');
-			return trim($giay);
+			elseif(!preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);	
+			else	
+			return trim($giay[0]);
 		}
 		if(stristr($data,'type="password" name="password')) $this->error("reportpass", true, false);
-		elseif(stristr($data, "Download or Watch") && !stristr($data,'type="password" name="password')){
+		elseif(stristr($data,'<h2><b>File Not Found</b></h2><br><br>')) $this->error("dead", true, false, 2);
+		elseif(!stristr($data, "Download or Watch")) 
+		$this->error("Cannot get Download or Watch", true, false, 2);	
+		else {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			$link = $this->lib->cut_str($data, '<input type="hidden" id="dl" value="','">');
-			return trim($link);
+			if(!preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);	
+			else	
+			return trim($giay[0]);
 		}
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
 		return false;
 	}
 	
