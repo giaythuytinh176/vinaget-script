@@ -15,7 +15,7 @@ class dl_mediafire_com extends Download {
 		if(stristr($data, 'Billed on date of purchase')) return array(true, "Until ".$this->lib->cut_str($data, '<div> <div class="lg-txt">','</div>'));
 		elseif(stristr($data, 'You are not currently and never have been a MediaPro')) return array(false, "accfree");
 		else return array(false, "accinvalid");
-	}
+	}	
 	
 	public function Login($user, $pass){
 		$page1 = $this->lib->curl("http://www.mediafire.com/", "", "");
@@ -44,7 +44,7 @@ class dl_mediafire_com extends Download {
 		}
 		elseif(stristr($data,"This file is temporarily unavailable because")) $this->error("File too big, only allowed 200MB", false, false, 2);
 		return false;
-    }	*/	
+    }	 */
 	
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
@@ -53,7 +53,7 @@ class dl_mediafire_com extends Download {
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if(stristr($data,'Please enter password to unlock this file')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,"error.php")) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/(?:(?:([\d.]+(:\d+)?))|(:?(download(\d+)?\.mediafire\.com(:\d+)?)))\/[^"\'><\r\n\t]+@i', $data, $giay))
+		elseif(!preg_match('@http:\/\/(?:(?:[\d.]+)|(:?(download\d+\.mediafire\.com)))\/[^"\'><\r\n\t]+@i', $data, $giay))
 		$this->error("notfound", true, false, 2);	
 		else	
 		return trim($giay[0]);
