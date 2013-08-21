@@ -10,7 +10,7 @@ class dl_upfile_vn extends Download {
 	}
 
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://upfile.vn/login.html","","loginUsername={$user}&loginPassword={$pass}&submit=Login&submitme=1");
+		$data = $this->lib->curl("http://upfile.vn/login.html","","loginUsername={$user}&loginPassword={$pass}&submitme=1&submit=Đăng nhập");
 		$cookie = $this->lib->GetCookies($data);
 		return $cookie;
 	}

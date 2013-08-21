@@ -16,22 +16,26 @@ class dl_depositfiles_com extends Download {
 
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
-		$url = $this->getredirect($url);
 		list($name, $domain) = explode(".", $this->lib->cut_str(str_replace("www.", "", $url), "http://", "/"));
+		$url = $this->getredirect($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if($pass) {
 			$post["file_password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if (stristr($data, 'The file\'s password is incorrect'))  $this->error("wrongpass", true, false, 2);
-			elseif ($this->isredirect($data)) return trim($this->redirect);
-			elseif (preg_match('%"(http:\/\/.+'.$name.'\.'.$domain.'/auth.+)" onClick="%U', $data, $redir2)) return trim($redir2[1]);
+			if(stristr($data, 'The file\'s password is incorrect'))  $this->error("wrongpass", true, false, 2);
+			elseif (!preg_match('@http:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth-[^\r\n\t\"\'<>]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);
+			else 
+			return trim($giay[0]);
 		}
 		if (stristr($data, "You have exceeded the")) $this->error("LimitAcc");
-		elseif(strpos($data,'Please, enter the password for this file')) $this->error("reportpass", true, false);
-		elseif($this->isredirect($data)) return trim($this->redirect);
-		elseif (preg_match('%"(http:\/\/.+'.$name.'\.'.$domain.'/auth.+)" onClick="%U', $data, $redir2)) return trim($redir2[1]);
+		elseif (stristr($data,'Please, enter the password for this file')) $this->error("reportpass", true, false);
 		elseif (stristr($data, "it has been removed due to infringement of copyright")) $this->error("dead", true, false, 2);
 		elseif (stristr($data, "Such file does not exist")) $this->error("dead", true, false, 2);
+		elseif (!preg_match('@http:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth-[^\r\n\t\"\'<>]+@i', $data, $giay))
+		$this->error("notfound", true, false, 2);
+		else 
+		return trim($giay[0]);
 		return false;
     }
 	

@@ -30,7 +30,7 @@ class dl_uploaded_net extends Download {
 		return trim($giay[0]);
 		return false;
 	}
-	
+
 }
 
 /*

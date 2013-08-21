@@ -24,7 +24,7 @@ define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
 $obj->using = $using;
-$obj->current_version = 40;
+$obj->current_version = 41;
 $obj->msg = false;
 if(isset($_COOKIE['msg'])) {
 	$obj->msg = $_COOKIE['msg'];
