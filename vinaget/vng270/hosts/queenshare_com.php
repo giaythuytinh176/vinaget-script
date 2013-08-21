@@ -35,10 +35,8 @@ class dl_queenshare_com extends Download {
 				else
 				return trim($giay[0]);
 			}
-			if(preg_match('/You have to wait (\d+) minutes, (\d+) seconds till next download/', $data, $giay)) 	$this->error('You have to wait '.$giay[1].' minutes, '.$giay[2].' seconds till next download', true, false);
-			elseif(preg_match('/You have to wait (\d+) minute, (\d+) seconds till next download/', $data, $giay))  $this->error('You have to wait '.$giay[1].' minute, '.$giay[2].' seconds till next download', true, false);
-			elseif(preg_match('/You have to wait (\d+) seconds till next download/', $data, $giay))  $this->error('You have to wait '.$giay[1].' seconds till next download', true, false);
-			elseif(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
+			if(preg_match('@You have to wait (?:\d+ \w+,\s)?\d+ \w+ till next download@i', $data, $count)) 	$this->error($count[0], true, false);
+			elseif(stristr($data,'type="password" name="password'))  $this->error("reportpass", true, false);
 			elseif(!stristr($data, 'value="Create Download Link')) 
 			$this->error("Cannot get Create Download Link", true, false);
 			else {

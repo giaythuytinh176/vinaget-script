@@ -16,11 +16,16 @@ class dl_share_online_biz extends Download {
     
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		$giay = base64_decode($this->lib->cut_str($data, 'var dl="', '";var file'));
-		if(stristr($data, 'The requested file is not available')) $this->error("dead", true, false, 2);
-		elseif(stristr($giay, 'share-online.biz'))  return trim($giay);
+		if(stristr($data, 'The requested file is not available'))   $this->error("dead", true, false, 2);
+		if(!preg_match('/var dl="(\w+)";/', $data, $en64)) 
+		$this->error("Cannot get base64_encode", true, false, 2);	
+		else { 		
+			$de64 = base64_decode($en64[1]);
+			return trim($de64);
+		}
 		return false;
     }
+	
 }
 
 /*

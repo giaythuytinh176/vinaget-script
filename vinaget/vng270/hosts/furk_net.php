@@ -17,7 +17,7 @@ class dl_furk_net extends Download {
 	
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(!preg_match('@http:\/\/(\w+)?\.gcdn\.bi[^"\'><\r\n\t]+@i', $this->lib->cut_str($data, 'class="dl_link button-large', 'onClick'), $giay))
+		if(!preg_match('@http:\/\/\w+\.gcdn\.bi[^"\'><\r\n\t]+@i', $this->lib->cut_str($data, 'class="dl_link button-large', 'onClick'), $giay))
 		$this->error("notfound", true, false, 2);
 		else
 		return trim($giay[0]);

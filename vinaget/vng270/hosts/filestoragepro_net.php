@@ -15,11 +15,33 @@ class dl_filestoragepro_net extends Download {
 	}
 	
 	public function Leech($url) {
+		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(stristr($data, "That file has been deleted.")) $this->error("dead", true, false, 2);
-
-		
-		
+		if($pass) {
+			$post["downloadverify"] = "1";
+			$post["d"] = "1";
+			$post["downloadpw"] = $pass;
+			$post["Update"] = "Submit";
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if(stristr($data,'Password Error')) $this->error("wrongpass", true, false, 2);
+			elseif(!preg_match('@https?:\/\/filestoragepro\.net\/getfile\.php\?id=\d+\&a=[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2); 
+			else 	
+			return trim($giay[0]);
+		}
+		if(stristr($data,'name="downloadpw')) 	$this->error("reportpass", true, false);
+		elseif(!preg_match('@https?:\/\/filestoragepro\.net\/getfile\.php\?id=\d+\&a=[^"\'><\r\n\t]+@i', $data, $giay)) {
+			$post["downloadverify"] = "1";
+			$post["d"] = "1";
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if(!preg_match('@https?:\/\/filestoragepro\.net\/getfile\.php\?id=\d+\&a=[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2); 
+			else 	
+			return trim($giay[0]);
+		}
+		else 	
+		return trim($giay[0]);
 		return false;
 	}
 	

@@ -29,30 +29,33 @@ class dl_filezy_net extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			if (!preg_match('@eval\s*\(\s*function\s*\(p,a,c,k,e,d\)\s*\{[^\}]+\}\s*\(\s*\'([^\r|\n]*)\'\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\'([^\']+)\'\.split\([\'|\"](.)[\'|\"]\)\)\)@', $data, $js)) 
+			elseif(!preg_match('@eval\s*\(\s*function\s*\(p,a,c,k,e,d\)\s*\{[^\}]+\}\s*\(\s*\'([^\r|\n]*)\'\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\'([^\']+)\'\.split\([\'|\"](.)[\'|\"]\)\)\)@', $data, $js)) 
 			$this->error("PACKED code not found", true, false);
-			else
-			$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
-			if (!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink))	
-			$this->error("notfound", true, false, 2);
-			else
-			return trim($filezyLink[1]);
+			else {
+				$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
+				if(!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
+				$this->error("notfound", true, false, 2);
+				else
+				return trim($filezyLink[1]);
+			}
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
-        elseif($this->isredirect($data)) return trim($this->redirect);
-		elseif(stristr($data, "Create Download Link")){
+		elseif(!preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="A008', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if (!preg_match('@eval\s*\(\s*function\s*\(p,a,c,k,e,d\)\s*\{[^\}]+\}\s*\(\s*\'([^\r|\n]*)\'\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\'([^\']+)\'\.split\([\'|\"](.)[\'|\"]\)\)\)@', $data, $js)) 
+			if(!preg_match('@eval\s*\(\s*function\s*\(p,a,c,k,e,d\)\s*\{[^\}]+\}\s*\(\s*\'([^\r|\n]*)\'\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\'([^\']+)\'\.split\([\'|\"](.)[\'|\"]\)\)\)@', $data, $js)) 
 			$this->error("PACKED code not found", true, false);
-			else
-			$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
-			if (!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
-			$this->error("notfound", true, false, 2);
-			else
-			return trim($filezyLink[1]);
+			else {
+				$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
+				if(!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
+				$this->error("notfound", true, false, 2);
+				else
+				return trim($filezyLink[1]);
+			}
 		}
+		else
+		return trim($dl[0]);
 		return false;
     }
 	

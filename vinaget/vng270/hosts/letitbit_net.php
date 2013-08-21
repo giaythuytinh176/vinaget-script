@@ -28,15 +28,17 @@ class dl_letitbit_net extends Download {
 		$this->save("lang=en;".$this->lib->GetCookies($data1));
 		if(!preg_match('@https?:\/\/u\d+\.(s\d+\.)?letitbit\.net\/download\/[^"\'><\r\n\t]+@', $data1, $thuytinh)) 
 		$this->error("Cannot get Check2", true, false, 2); 
-		else 
-		$check2 = trim($thuytinh[0]);
-		$data2 = $this->lib->curl($check2, "lang=en;".$this->lib->cookie, "");
+		else {
+			$check2 = trim($thuytinh[0]);
+			$data2 = $this->lib->curl($check2, "lang=en;".$this->lib->cookie, "");
+		}
 		if(!preg_match('@https?:\/\/u\d+\.(s\d+\.)?letitbit.net\/sms\/check2\.php@', $data2, $thuytinh)) 
 		$this->error("Cannot get Check3", true, false, 2);	
-		else 
-		$check3 = trim($thuytinh[0]);
-		$data3 = $this->lib->curl($check3, "lang=en;".$this->lib->cookie, "");
-		if(!preg_match('@https?:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?\/d\/[a-z0-9]+\/[^"\'><\r\n\t]+@i', $this->lib->cut_str($data3, 'direct_link_1', 'direct_link_2'), $giay176))
+		else {
+			$check3 = trim($thuytinh[0]);
+			$data3 = $this->lib->curl($check3, "lang=en;".$this->lib->cookie, "");
+		}
+		if(!preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[a-z0-9]+\/[^"\'><\r\n\t]+@i', $this->lib->cut_str($data3, 'direct_link_1', 'direct_link_2'), $giay176))
 		$this->error("notfound", true, false, 2); 
 		else 
 		return trim($giay176[0]);
