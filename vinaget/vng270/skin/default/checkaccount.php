@@ -34,7 +34,7 @@ if (isset($_POST["check"])) {
 				if($status[1] == "noplugin") $msg = array("unknown", $msgs);
 				else{
 					$msg = array("<font color='yellow'><b>{$obj->lang['notwork']}</b></font>", "<font color='black'><b>{$msgs} {$obj->lang['removed']}</b></font>");
-					unset($obj->acc[$check]["accounts"][$i]);
+					$del[$check][$i] = true;
 					$update = true;
 				}
 			}
@@ -46,6 +46,14 @@ if (isset($_POST["check"])) {
 	}
 	
 	if($update == true && is_array($obj->acc) && count($obj->acc) > 0) {
+		foreach($del as $host=>$acc){
+			$tmp = $obj->acc[$host]['accounts'];
+			unset($obj->acc[$host]['accounts']);
+			foreach($tmp as $key=>$val){
+				if($acc[$key] == true) continue;
+				$obj->acc[$host]['accounts'][] = $val;
+			}
+		}
 		$obj->save_json($obj->fileaccount, $obj->acc);
 	}
 }

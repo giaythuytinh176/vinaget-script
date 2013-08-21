@@ -541,21 +541,18 @@ class stream_get extends getinfo
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 		}
-
 		if ($this->proxy != false) {
-			preg_match('%(.*)\:(.*)%', $this->proxy, $res);
-			$prox = $res[1];
-			$port = $res[2];
+			list($prox, $port) = explode(":", $this->proxy);
 			curl_setopt($ch, CURLOPT_PROXYPORT, $port);
 			curl_setopt($ch, CURLOPT_PROXYTYPE, 'HTTP');
 			curl_setopt($ch, CURLOPT_PROXY, $prox);
 		}
-
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
 		$page = curl_exec($ch);
 		curl_close($ch);
 		return $page;
@@ -746,9 +743,7 @@ class stream_get extends getinfo
 		}
 		
 		if (!$link) {
-			$domain = explode("/", $Original);
-			$ex = explode(".", $domain[2]);
-			$domain = strtolower($ex[count($ex)-2].".".$ex[count($ex)-1]);
+			$domain = str_replace("www.", "", $this->cut_str($Original, "://", "/"));
 			if(isset($this->list_host[$domain])){
 				require_once ('hosts/' . $this->list_host[$domain]['file']);
 				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);

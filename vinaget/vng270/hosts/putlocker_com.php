@@ -12,6 +12,7 @@ class dl_putlocker_com extends Download {
 		$data = $this->lib->curl($url, "", "");
 		$this->lib->cookie = $this->lib->GetCookies($data);
 		$hash = $this->lib->cut_str($data, '<input type="hidden" value="','" name="hash">');
+		if(stristr($data,'name="captcha_code"'))  $this->error("Captcha required!", true, false);
 		if(preg_match('@var countdownNum = (\d+);@i', $data, $count) && $count[1] > 0) 
 		sleep($count[1]+1);
 		$data = $this->lib->curl($url, $this->lib->cookie, ($pass ? "file_password={$pass}&" : "")."hash={$hash}&confirm=Continue as Free User");

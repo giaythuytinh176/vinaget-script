@@ -19,7 +19,7 @@ class dl_uptobox_com extends Download {
 		list($url, $pass) = $this->linkpassword($url);
 		$page = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($page));
-		$page2 = $this->lib->cut_str($page, 'Form method="POST" action=', '</form>'); //Cutting page
+		$page2 = $this->lib->cut_str($page, 'Form method="POST" action=', '</form>'); 
 		$post = array();
 		$post['op'] = $this->lib->cut_str($page2, 'name="op" value="', '"');
 		$post['usr_login'] = (empty($this->lib->cookie['xfss'])) ? '' : $this->lib->cookie['xfss'];
@@ -31,9 +31,9 @@ class dl_uptobox_com extends Download {
 		$page = $this->lib->curl($url, $this->lib->cookie, $post);
 		if(preg_match('@You have reached the download-limit: \d+ Mb for last 1 days@i', $page, $limit)) $this->error($limit[0], true, false);
 		if(preg_match('@You have to wait (?:\d+ \w+,\s)?\d+ \w+ till next download@i', $page, $count)) 	$this->error($count[0], true, false);
-		if(preg_match('@You can download files up to \d+ [KMG]b only@i', $page, $sizelim)) 	$this->error($sizelim[0], true, false);
+		if(preg_match('@charger des fichiers de taille sup&eacute;rieur &agrave (\d+) Mb.@i', $page, $sizelim)) $this->error('You can download files up to '.$sizelim[1].' Mb.', true, false);
 		
-		$page2 = $this->lib->cut_str($page, '<form name="F1" method="POST"', '</form>'); //Cutting page
+		$page2 = $this->lib->cut_str($page, '<form name="F1" method="POST"', '</form>');  
 		$post = array();
 		$post['op'] = $this->lib->cut_str($page2, 'name="op" value="', '"');
 		$post['id'] = $this->lib->cut_str($page2, 'name="id" value="', '"');
@@ -63,7 +63,6 @@ class dl_uptobox_com extends Download {
 				if(stristr($page,'>Skipped countdown'))  $this->error("Error: Skipped countdown?.", true, false);
 				if(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
 				if(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
-				if(preg_match('@You can download files up to \d+ [KMG]b only.@i', $page, $err))  $this->error('Error: '.$err[0], true, false);	
 				if(!preg_match('@https?:\/\/(?:(?:(([a-z]+)?(\d+\.)?uptobox\.com(:\d+)?))|(?:([\d.]+(:\d+)?)))\/d\/[^"\'><\r\n\t]+@i', $page, $dlink)) 
 				$this->error("notfound", true, false, 2);
 				else

@@ -21,6 +21,10 @@ class dl_fshare_vn extends Download {
     }
 	
     public function Leech($url) {
+		if(stristr($url, "mega.1280.com")) {
+			$ex = explode("mega.1280.com", $url);
+			$url = "http://www.fshare.vn".$ex[1];
+		}
 		if(!stristr($url, "www")) {
 			$ex = explode("fshare.vn", $url);
 			$url = "http://www.fshare.vn".$ex[1];
