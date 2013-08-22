@@ -2,12 +2,16 @@
 
 class dl_rapidshare_com extends Download {
     
+	public function PreLeech($url) {
+		if(stristr($url, "my.rapidshare.com"))  $this->error("Not Support Folder", true, false, 2);
+	}
+	
     public function CheckAcc($cookie){
-		if(stristr($cookie, "enc")) {
-			$exc =  explode("=", $cookie); 
-			$ckc = $exc[1];
+		if(stristr($cookie, "=")) {
+			$ckc =  explode("=", $cookie); 
+			$cookie = $ckc[1];
 		} 
-        $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "lang=en", "sub=getaccountdetails&withcookie=1&withpublicid=1&withsession=1&cookie={$ckc}&cbf=RSAPIDispatcher&cbid=1");	
+        $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "lang=en", "sub=getaccountdetails&withcookie=1&withpublicid=1&withsession=1&cookie={$cookie}&cbf=RSAPIDispatcher&cbid=1");	
         if(stristr($data, '\nbilleduntil=0\\')) return array(false, "accfree");
 		elseif(preg_match('/nbilleduntil=([0-9]+)/', $data, $giay))	{
 			if(time() > $giay[1]) return array(false, "Account Expired!");
@@ -15,13 +19,6 @@ class dl_rapidshare_com extends Download {
 		}
 		else return array(false, "accinvalid");
     }
-    
-/*  public function Login($user, $pass){
-         $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "lang=en", "sub=getaccountdetails&withcookie=1&withpublicid=1&login={$user}&cbf=RSAPIDispatcher&cbid=2&password={$pass}");
-		 $thuytinh = $this->lib->cut_str($data, '\ncookie=', '\n"');
-		 $cookie = "enc={$thuytinh};lang=en";
-		 return $cookie;
-    }	*/
 	
 	public function Login($user, $pass){
         $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "lang=en", "sub=getaccountdetails&withcookie=1&withpublicid=1&login={$user}&cbf=RSAPIDispatcher&cbid=2&password={$pass}");
@@ -31,7 +28,6 @@ class dl_rapidshare_com extends Download {
     }	
 
     public function Leech($url) {
-		if(stristr($url, "my.rapidshare.com"))  $this->error("dead", true, false, 2);
 		if(stristr($url, 'rapidshare') == true && stristr($url, 'download|') == true) {
 			$url = str_replace("%21","!",$url);
 			$url = str_replace("%7C","|",$url);
@@ -50,8 +46,8 @@ class dl_rapidshare_com extends Download {
 				$idnames = $arrRSL[5];
 			}
 		}
-		$checkdead = file_get_contents("http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=checkfiles&files={$idfiles}&filenames={$idnames}");
-		if(stristr($checkdead,'0,0,0,0,0')) $this->error("dead", true, false, 2);
+		$checkfile = file_get_contents("http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=checkfiles&files={$idfiles}&filenames={$idnames}");
+		if(stristr($checkfile,'0,0,0,0,0')) 	$this->error("dead", true, false, 2);
 		$data = $this->lib->curl($url, "lang=en;".$this->lib->cookie, ""); 
 		if(!preg_match('@https?:\/\/((rs(\d+)?)?(p(\d+\.)?)?)?rapidshare\.com(:\d+)?\/files\/\d+\/[^"\'><\r\n\t]+@i', $data, $giay))
 		$this->error("notfound", true, false, 2); 

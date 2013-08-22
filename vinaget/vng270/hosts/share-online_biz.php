@@ -4,7 +4,8 @@ class dl_share_online_biz extends Download {
     
     public function CheckAcc($cookie){
         $data = $this->lib->curl("https://www.share-online.biz/user/profile", "page_language=english;".$cookie, "");
-        if(stristr($data, 'Penalty-Premium        </p>') || stristr($data, 'Premium        </p>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Account valid until:','Registration date:'), '<span class=\'green\'>', '</span>'));
+        if(stristr($data, 'Penalty-Premium        </p>') || stristr($data, 'Premium        </p>') && stristr($data, '<span class=\'red\'>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Account valid until:','Registration date:'), '<span class=\'red\'>', '</span>'));
+		elseif(stristr($data, 'Penalty-Premium        </p>') || stristr($data, 'Premium        </p>') && stristr($data, '<span class=\'green\'>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Account valid until:','Registration date:'), '<span class=\'green\'>', '</span>'));
 		else return array(false, "accinvalid");
     }
     
