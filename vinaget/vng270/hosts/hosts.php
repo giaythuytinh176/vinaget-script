@@ -12,6 +12,7 @@ $alias['d01.megashares.com'] = 'megashares.com';
 $alias['fp.io'] = 'filepost.com';
 $alias['clz.to'] = 'cloudzer.net';
 $alias['mega.1280.com'] = 'fshare.vn';
+$alias['easy-share.com'] = 'crocko.com';
 $folderhost = opendir ( "hosts/" );
 while ( $hostname = readdir ( $folderhost ) ) {		
 	if($hostname == "." || $hostname == ".." || strpos($hostname,"bak") || $hostname == "hosts.php") {continue;}

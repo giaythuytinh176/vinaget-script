@@ -2,7 +2,16 @@
 
 class dl_mediafire_com extends Download {
 	
-	public function PreLeech($url){
+	public function PreLeech($url) {
+		if(stristr($url, "/folder/")) $this->error("Not Support Folder", true, false, 2);
+		if(stristr($url, "mediafire.com/?")) {
+			$ex = explode("?", $url);
+			$url = "http://www.mediafire.com/download/".$ex[1];
+		}
+		if(!stristr($url, "www")) {
+			$ex = explode("mediafire.com", $url);
+			$url = "http://www.mediafire.com".$ex[1];
+		}
 		$url = str_replace("/view/", "/download/", $url);
 		$url = str_replace("/edit/", "/download/", $url);
 		$url = str_replace("/watch/", "/download/", $url);

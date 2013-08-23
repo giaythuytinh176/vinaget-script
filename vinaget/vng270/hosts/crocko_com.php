@@ -20,6 +20,7 @@ class dl_crocko_com extends Download {
 	
     public function Leech($url) {
 		if(stristr($url, "crocko.com/f/")) $this->error("Not Support Folder", true, false, 2);
+		if(stristr($url, "easy-share.com")) $url = str_replace("easy-share.com", "crocko.com", $url);
 		$data = $this->lib->curl($url, "language=en;".$this->lib->cookie, "");	
 		if(stristr($data,"Sorry,<br />the page you're looking for<br />isn't here") || stristr($data,"Please go to home page or one of this links") || stristr($data,"Information is not available at this time")) 
 		$this->error("dead", true, false, 2);

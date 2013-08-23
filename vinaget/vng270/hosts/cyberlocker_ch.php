@@ -14,16 +14,53 @@ class dl_cyberlocker_ch extends Download {
         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
     }
-    
+   
+    public function FreeLeech($url) {
+		list($url, $pass) = $this->linkpassword($url);
+        $data = $this->lib->curl($url, "", "");
+		$this->save($this->lib->GetCookies($data));
+		if(!stristr($data, 'btn.value = \'Free Download\';'))
+		$this->error("Cannot get Free Download", true, false);
+		else {
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form method="POST" action=\'\'>', 'class="1tbl_pre" border="0" style="width:750px; max-width:750px'));
+			$post['method_free'] = 'Wait for 0 seconds';
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			$this->save($this->lib->GetCookies($data));
+			if($pass) {
+				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '<input type="hidden" name="method_premium" value="">'));
+				$post1['method_premium'] = "";
+				$post1['down_direct'] = "1";
+				$post1['password'] = $pass;
+				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
+				if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
+				if(!preg_match('@http:\/\/\w+\.cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				$this->error("notfound", true, false, 2);
+				else
+				return trim($giay[0]);
+			}
+			if(preg_match('@You have to wait (?:\d+ \w+,\s)?\d+ \w+ till next download@i', $data, $count)) 	$this->error($count[0], true, false);
+			elseif(stristr($data,'<br><b>Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
+			elseif(!stristr($data, 'btn_download" value="Download" class="bt')) 
+			$this->error("Cannot get DOWNLOAD", true, false);
+			else {
+				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '<input type="hidden" name="method_premium" value="">'));
+				$post1['method_premium'] = "";
+				$post1['down_direct'] = "1";
+				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
+				if(!preg_match('@http:\/\/\w+\.cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				$this->error("notfound", true, false, 2);
+				else
+				return trim($giay[0]);
+			}
+		}
+		return false;
+	}		
+   
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {
-		//	$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
-			$post["op"] = "download2";
-			$post["id"] = $this->lib->cut_str($data, 'name="id" value="', '">');
-			$post["rand"] = $this->lib->cut_str($data, 'rand" value="', '">');
-			$post["referer"] = "";
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '<input type="hidden" name="method_premium" value="">'));
 			$post["method_free"] = "";
 			$post["method_premium"] = "1";
 			$post["down_direct"] = "1";
@@ -31,25 +68,21 @@ class dl_cyberlocker_ch extends Download {
 			$post["password"] = $pass; 
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($giay,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			if(!preg_match('@https?:\/\/(\w+\.)?cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!preg_match('@http:\/\/(\w+\.)?cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2);
 			else  
 			return trim($giay[0]);
 		}
 		elseif (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
 		elseif(stristr($data,'<br><b>Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
-		elseif(!preg_match('@https?:\/\/(\w+\.)?cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
-		//	$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
-			$post["op"] = "download2";
-			$post["id"] = $this->lib->cut_str($data, 'name="id" value="', '">');
-			$post["rand"] = $this->lib->cut_str($data, 'rand" value="', '">');
-			$post["referer"] = "";
+		elseif(!preg_match('@http:\/\/\w+\.cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '<input type="hidden" name="method_premium" value="">'));
 			$post["method_free"] = "";
 			$post["method_premium"] = "1";
 			$post["down_direct"] = "1";
 			$post["next"] = ""; 
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/(\w+\.)?cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!preg_match('@http:\/\/\w+\.cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2); 
 			else 
 			return trim($giay[0]);

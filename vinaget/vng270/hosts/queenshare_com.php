@@ -30,7 +30,7 @@ class dl_queenshare_com extends Download {
 				$post1['password'] = $pass;
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
 				if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-				if(!preg_match('@https?:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				$this->error("notfound", true, false, 2);
 				else
 				return trim($giay[0]);
@@ -42,7 +42,7 @@ class dl_queenshare_com extends Download {
 			else {
 				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', 'value="Create Download Link">'));
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
-				if(!preg_match('@https?:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				$this->error("notfound", true, false, 2);
 				else
 				return trim($giay[0]);
@@ -59,7 +59,7 @@ class dl_queenshare_com extends Download {
 			$post0["password"] = $pass;
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
 			if(stristr($data0,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			if(!preg_match('@https?:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
+			if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
 			$this->error("notfound", true, false, 2);
 			else
 			return trim($giay[0]);
@@ -68,7 +68,7 @@ class dl_queenshare_com extends Download {
         elseif(!preg_match('@https?:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
 		    $post0 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '</Form>'));
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
-			if(!preg_match('@https?:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
+			if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
 			$this->error("notfound", true, false, 2);
 			else
 			return trim($giay[0]);

@@ -18,7 +18,6 @@ class dl_ultramegabit_com extends Download {
     }
 	
     public function Leech($url) {
-		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(stristr($data,'<h4>File has been deleted.</h4>') || stristr($data,'File has been deleted in compliance with the')) $this->error("dead", true, false, 2);
 		elseif(!preg_match('@https?:\/\/vip\d+\.ultramegabit\.com(:\d+)?\/files\/\d+(.*)hash=[^"\'><\r\n\t]+@i', $data, $giay)) {

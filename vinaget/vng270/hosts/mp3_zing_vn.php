@@ -35,7 +35,7 @@ class dl_mp3_zing_vn extends Download {
 	
     public function Leech($url) {	
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(!preg_match('/Lossless" href="(https?:\/\/mp3\.zing\.vn\/download\/song\/[^"\'><\r\n\t]+)" class/', $data, $giay))   {
+		if(!preg_match('/Lossless" href="(https?:\/\/mp3\.zing\.vn\/download\/song\/[^"\'><\r\n\t]+)" class/', $data, $giay)) {
 			if(!preg_match('/320Kb" href="(https?:\/\/mp3\.zing\.vn\/download\/song\/[^"\'><\r\n\t]+)" class/', $data, $link)) 
 			$this->error("notfound", true, false, 2); 	
 			else

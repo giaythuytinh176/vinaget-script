@@ -1,6 +1,17 @@
 <?php
 
 class dl_filefactory_com extends Download {
+	
+	public function PreLeech($url){
+		if(!stristr($url, "www")) {
+			$ex = explode("filefactory.com", $url);
+			$url = "http://www.filefactory.com".$ex[1];
+		}
+		if(!stristr($url, "/n/")) {
+			$ex =  explode("/", $url); 
+			$url = "http://www.filefactory.com/file/".$ex[4]."/n/".$ex[5];
+		}
+	}
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://www.filefactory.com/premium/", "ff_locale=en_US.utf8;".$cookie, "");
@@ -19,14 +30,6 @@ class dl_filefactory_com extends Download {
 	}
 	
     public function Leech($url) {
-		if(!stristr($url, "www")) {
-			$ex = explode("filefactory.com", $url);
-			$url = "http://www.filefactory.com".$ex[1];
-		}
-		if(!stristr($url, "/n/")) {
-			$ex =  explode("/", $url); 
-			$url = "http://www.filefactory.com/file/".$ex[4]."/n/".$ex[5];
-		}
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if($pass) {

@@ -21,9 +21,9 @@ class dl_ryushare_com extends Download {
 		if($pass) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$post["password"] = $pass;
-			$data = $this->lib->curl($url, $this->lib->cookie, $post);	// If still says "Wrong password", may be Ryushare have problem ...
-			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/(\w+)?\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
+			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2); // If still says "Wrong password", may be Ryushare have problem ...
+			elseif(!preg_match('@http:\/\/\w+\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2); 	
 			else	
 			return trim($giay[0]);
@@ -33,10 +33,10 @@ class dl_ryushare_com extends Download {
 		elseif (stristr($data,'You have reached the download-limit')) $this->error("LimitAcc", true, false);
 		elseif (stristr($data,'This server is in maintenance mode.')) $this->error("Ryushare Under Maintenance", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/(\w+)?\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+		elseif(!preg_match('@http:\/\/\w+\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $dl)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/(\w+)?\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!preg_match('@http:\/\/\w+\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2);	
 			else 	
 			return trim($giay[0]);
