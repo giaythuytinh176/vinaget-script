@@ -16,7 +16,7 @@ class dl_upfile_vn extends Download {
 	}
 	
     public function Leech($url) {
-		if(!preg_match('@https?:\/\/upfile\.vn\/[^"\'><\r\n\t]+@i', $url, $giay))
+		if(!preg_match('@http:\/\/upfile\.vn\/[^"\'><\r\n\t]+@i', $url, $giay))
 		$this->error("notfound", true, false, 2); 
 		else
 		return trim($giay[0]);

@@ -17,14 +17,19 @@ class dl_expressleech_com extends Download {
     
     public function Leech($url) {
         $data = $this->lib->curl($url, $this->lib->cookie, "");
-		if($this->isredirect($data)) return trim($this->redirect);
-        elseif(stristr($data, "Create Download Link")){
-			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
-			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			$link = $this->lib->cut_str($data, '<div class="news-title"><a href="', '">');
-			return trim($link);
+		if(stristr($data, "No such file with this filename</font>")) $this->error("dead", true, false, 2);
+		elseif(!$this->isredirect($data)) {
+			if(!stristr($data, "Create Download Link"))
+			$this->error("Cannot get Create Download Link", true, false);
+			else {
+				$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+				$data = $this->lib->curl($url, $this->lib->cookie, $post);
+				$link = $this->lib->cut_str($data, '<div class="news-title"><a href="', '">');
+				return trim($link);
+			}
 		}
-		elseif(stristr($data, "No such file with this filename</font>")) $this->error("dead", true, false, 2);
+		else  
+		return trim($this->redirect);
 		return false;
     }
 

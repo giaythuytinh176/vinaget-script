@@ -19,7 +19,7 @@ class dl_rapidgator_net extends Download {
 		$data = $this->lib->curl($url,"lang=en;".$this->lib->cookie,"");
 		if(stristr($data, "You have reached daily quota")) $this->error("LimitAcc");
 		elseif(stristr($data,'File not found</div>'))  $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/[a-z]+(\d+)\.rapidgator\.net\/\/\?r=download\/[^"\'><\r\n\t]+@i', $data, $giay))
+		elseif(!preg_match('@https?:\/\/\w+\.rapidgator\.net\/\/\?r=download\/[^"\'><\r\n\t]+@i', $data, $giay))
 		$this->error("notfound", true, false, 2); 
 		else
 		return trim($giay[0]);

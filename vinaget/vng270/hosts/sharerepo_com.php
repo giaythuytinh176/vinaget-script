@@ -17,7 +17,7 @@ class dl_sharerepo_com extends Download {
 				$post1["password"] = $pass;
 				$data1 = $this->lib->curl($url, "lang=english;".$this->lib->cookie, $post1);
 				if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-				elseif(!preg_match('@https?:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				elseif(!preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				$this->error("notfound", true, false, 2); 	
 				else	
 				return trim($giay[0]);
@@ -25,7 +25,7 @@ class dl_sharerepo_com extends Download {
 			if(stristr($data,'type="password" name="password')) $this->error("reportpass", true, false);
 			$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '</Form>'));
 			$data1 = $this->lib->curl($url, "lang=english;".$this->lib->cookie, $post1);
-			if(!preg_match('@https?:\/\/\d+\.\d+\.\d+\.\d+(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+			if(!preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 			$this->error("notfound", true, false, 2); 	
 			else	
 			return trim($giay[0]);

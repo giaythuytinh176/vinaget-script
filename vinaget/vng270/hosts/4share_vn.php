@@ -31,19 +31,19 @@ class dl_4share_vn extends Download {
 			$post["submit"] = "DOWNLOAD";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Bạn đã nhập sai Password download'))  $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/sv(\d+\.)?4share\.vn\/\d+\/[^"\'><\r\n\t]+@i', $data, $giay)) 
+			elseif(!$this->isredirect($data))
 			$this->error("notfound", true, false, 2); 
-			else 	
-			return trim($giay[0]);
+			else 
+			return trim($this->redirect);
 		}
 		if (stristr($data,"File có password download"))  $this->error("reportpass", true, false); 
   		elseif (stristr($data,"bị khóa đến"))  $this->error("blockAcc", true, false);
   		elseif (stristr($data,"File not found") || stristr($data,"FID Không hợp lệ") || stristr($data,"File đã bị xóa")) 
 		$this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/sv(\d+\.)?4share\.vn\/\d+\/[^"\'><\r\n\t]+@i', $data, $giay)) 
+		elseif(!preg_match('@http:\/\/sv\d+\.4share\.vn\/\d+\/\?i=[^"\'><\r\n\t]+@i', $data, $link)) 
 		$this->error("notfound", true, false, 2); 	
 		else  
-		return trim($giay[0]);
+		return trim($link[0]);
 		return false;
     }
 

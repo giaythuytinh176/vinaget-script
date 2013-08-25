@@ -7,7 +7,7 @@ class dl_uploading_com extends Download {
 		$cookie = $this->lib->GetCookies($data);
 		return $cookie;
 	}
-	
+/*	
     public function Leech($url) {
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if (stristr($data,'file not found')) $this->error("dead", true, false, 2);
@@ -18,6 +18,20 @@ class dl_uploading_com extends Download {
 			$pages = $this->curl("http://uploading.com/files/get/?ajax",$cookie,"action=get_link&code={$code}&pass=false", 0, 0, $url, 1);
 			$json = json_decode($pages);
 			return $json->answer->link;
+		}
+		return false;
+    }	*/
+	
+    public function Leech($url) {
+		$data = $this->lib->curl($url,$this->lib->cookie,"");
+		if (stristr($data,'file not found')) $this->error("dead", true, false, 2);
+		elseif($this->isredirect($data)) return trim($this->redirect);
+		elseif (strpos($page,"Your account premium traffic has been limited")) $this->error("LimitAcc");
+		else {
+			$code = trim($this->cut_str($page, 'code: "', '",'));
+			$pages = $this->lib->curl("http://uploading.com/files/get/?ajax",$this->lib->cookie,"action=get_link&code={$code}&pass=false", 0, 0, $url, 1);
+			$json = json_decode($pages, true);
+			return trim($json['answer']['link']);
 		}
 		return false;
     }

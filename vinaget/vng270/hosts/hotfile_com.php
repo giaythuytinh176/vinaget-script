@@ -18,10 +18,14 @@ class dl_hotfile_com extends Download {
     public function Leech($url) {
 		$data = $this->lib->curl($url,"{$this->lib->cookie};lang=en;","");
 		if(stristr($data,"removed due to copyright claim") || stristr($data,"404 - Not Found"))   $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/(s(\d+)?\.)?hotfile\.com\/get\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2);
-		else 
-		return trim($giay[0]);
+		elseif(!$this->isredirect($data)) {
+			if(!preg_match('@https?:\/\/(s(\d+)?\.)?hotfile\.com\/get\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);
+			else 
+			return trim($giay[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
     }
 

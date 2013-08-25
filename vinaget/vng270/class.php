@@ -29,7 +29,7 @@ class getinfo
 		$this->fileinfo_ext = "vng";
 		$this->banned = explode(' ', '.htaccess .htpasswd .php .php3 .php4 .php5 .phtml .asp .aspx .cgi .pl');
 		$this->unit = 512;
-		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/12.0';
+		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/23.01';
 		$this->config = $this->load_json($this->fileconfig);
 		include ("config.php");
 		if(count($this->config) == 0) {	
@@ -88,7 +88,10 @@ class getinfo
 		$this->max_size_default = $this->config['max_size_default'];
 		$this->zlink = $this->config['ziplink'];
 		$this->link_zip = $this->config['apiadf'];
-		$this->badword = explode(", ", $this->config['badword']);
+		$this->link_rutgon = $this->config['apirutgon'];	
+		$this->googl = $this->config['googlzip'];
+		$this->googleapikey = $this->config['googlkey'];
+		$this->badword = explode(", ", $this->config['badword']);	
 		$this->act = array('rename' => $this->config['rename'], 'delete' => $this->config['delete']);
 		$this->listfile = $this->config['listfile'];
 		$this->checkacc = $this->config['checkacc'];
@@ -333,6 +336,24 @@ class getinfo
 
 class stream_get extends getinfo
 {	
+	function googl($longUrl)
+	{
+		$GoogleApiKey = $this->googleapikey;   //Get API key from : http://code.google.com/apis/console/
+		$postData = array('longUrl' => $longUrl, 'key' => $GoogleApiKey);
+		$jsonData = json_encode($postData);
+		$curlObj = curl_init(); 
+		curl_setopt($curlObj, CURLOPT_URL, 'https://www.googleapis.com/urlshortener/v1/url');
+		curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($curlObj, CURLOPT_HEADER, 0);
+		curl_setopt($curlObj, CURLOPT_HTTPHEADER, array('Content-type:application/json'));
+		curl_setopt($curlObj, CURLOPT_POST, 1);
+		curl_setopt($curlObj, CURLOPT_POSTFIELDS, $jsonData);
+		$response = curl_exec($curlObj);
+		$json = json_decode($response, true);
+		curl_close($curlObj);
+		return $json['id'];
+	}
 	function stream_get()
 	{
 		$this->config();
@@ -826,11 +847,68 @@ class stream_get extends getinfo
 			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
-		// #########Begin short link ############
-		if (empty($this->zlink) == false && empty($this->link_zip) == false && empty($link) == false) {
-			$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
-			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
+		if (empty($this->zlink) == true && empty($link) == false && empty($this->googl) == false) {
+			$datalink = $this->googl($linkdown);
+			if (preg_match('%(http:\/\/.++)%U', $datalink, $googl)) $lik = trim($googl[1]);
 			else $lik = $linkdown;
+		}
+		elseif (empty($this->zlink) == false && empty($link) == false) {
+			if (empty($this->googl) == true) {
+				if (empty($this->link_zip) == false) {
+					if (empty($this->link_rutgon) == true) {
+						$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
+						if (preg_match('%(http:\/\/.++)%U', $apizip2, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+				elseif (empty($this->link_zip) == true) {
+					if (empty($this->link_rutgon) == true) {
+						$lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$datalink = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+			}
+			elseif (empty($this->googl) == false) {
+				if (empty($this->link_zip) == false) {
+					if (empty($this->link_rutgon) == true) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$datalink = $this->googl($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $googl)) $lik = trim($googl[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
+						$datalink = $this->googl($apizip2);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $googl)) $lik = trim($googl[1]);
+						else $lik = $linkdown;
+					}
+				}
+				elseif (empty($this->link_zip) == true) {
+					if (empty($this->link_rutgon) == true) {
+						$datalink = $this->googl($linkdown);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $googl)) $lik = trim($googl[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
+						$datalink = $this->googl($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+			}
 		}
 		// ########### End short link  ##########
 		else $lik = $linkdown;
@@ -1186,6 +1264,11 @@ class Tools_get extends getinfo
 		elseif (strpos($url, "uploaded.to") || strpos($url, "ul.to") || strpos($url, "uploaded.net")) $site = "UT";
 		elseif (strpos($url, "uploading.com")) $site = "UP";
 		elseif (strpos($url, "1fichier.com")) $site = "1F";
+		else if(strpos($url,"rapidshare.com")) 	$site = "RS";
+		else if(strpos($url,"fshare.vn"))	   $site = "FshareVN";
+		else if(strpos($url,"up.4share.vn")  || strpos($url, "4share.vn"))  $site = "4ShareVN";
+		else if(strpos($url,"share.vnn.vn"))   $site = "share.vnn.vn";
+		else if(strpos($url,"upfile.vn"))   $site = "UpfileVN";
 		else {
 			$schema = parse_url($url);
 			$site = preg_replace("/(www\.|\.com|\.net|\.biz|\.info|\.org|\.us|\.vn|\.jp|\.fr|\.in|\.to)/", "", $schema['host']);

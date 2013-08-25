@@ -18,13 +18,16 @@ class dl_filebox_com extends Download {
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(stristr($data,'<h2>This file is no longer available</h2>')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/www(\d+\.)?filebox\.com(:\d+)?\/d\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form style=\'display:inline-block\'', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(!preg_match('@https?:\/\/www(\d+\.)?filebox\.com(:\d+)?\/d\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $this->lib->cut_str($data, 'onclick="document.location=\'', '\'" value=\'Download\' /></center>'), $giay))
-				$this->error("notfound", true, false, 2);	else   return trim($giay[0]);
+			$this->error("notfound", true, false, 2);	
+			else   
+			return trim($giay[0]);
 		}
-		else return trim($dl[0]);
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

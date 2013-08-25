@@ -65,16 +65,16 @@ class dl_queenshare_com extends Download {
 			return trim($giay[0]);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
-        elseif(!preg_match('@https?:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 		    $post0 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '</Form>'));
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
 			if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
 			$this->error("notfound", true, false, 2);
 			else
 			return trim($giay[0]);
-        }
-		else
-        return trim($dl[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
     } 
 	

@@ -28,7 +28,8 @@ class dl_hipfile_com extends Download {
 			$post['method_premium'] = '';
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			$this->save($this->lib->GetCookies($data));
-			sleep(15);
+			if(preg_match('@<span id="countdown_str"[^>]*>[^<>]+<span[^>]*>(\d+)</span>[^<>]+</span>@i', $data, $count) && $count[1] > 0) 
+			sleep($count[1]);
 			if($pass) {
 				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 				$post1['password'] = $pass;
@@ -40,7 +41,8 @@ class dl_hipfile_com extends Download {
 				return trim($giay[0]);
 			}
 			if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
-			elseif(!stristr($data, 'value="File Download"'))   $this->error("Cannot get File Download", true, false);
+			elseif(!stristr($data, 'value="File Download"'))   
+			$this->error("Cannot get File Download", true, false);
 			else {
 				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
@@ -69,16 +71,16 @@ class dl_hipfile_com extends Download {
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
         elseif(stristr($data,'You have reached the download-limit:')) $this->error("LimitAcc", true, false);
-		elseif(!preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(!preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2);	
 			else 	
 			return trim($giay[0]);
-		} 
-		else   
-		return trim($dl[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
     }
 

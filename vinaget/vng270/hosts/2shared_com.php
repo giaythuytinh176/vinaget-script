@@ -13,10 +13,10 @@ class dl_2shared_com extends Download {
 		elseif (stristr($data,"Your free download limit is over."))  $this->error("LimitAcc", true, false);
 		else
 		if(stristr($data,"Please enter password to access this file"))  $this->error("reportpass", true, false);
-		elseif (!preg_match('/dc(\d+)\.2shared\.com\/download\/([^\'|\"|\<|\>|\r|\n]+)/i', $data, $lik)) 
+		elseif (!preg_match('/dc(\d+)\.2shared\.com\/download\/([^\'|\"|\<|\>|\r|\n]+)/i', $data, $link)) 
 		$this->error("notfound", true, false, 2);
 		else
-		$giay = "http://dc".$lik[1].".2shared.com/download/".$lik[2];
+		$giay = "http://dc".$link[1].".2shared.com/download/".$link[2];
 		return trim($giay);
 		return false;
 	}

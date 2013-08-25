@@ -19,12 +19,12 @@ setcookie("using", $using);
 ob_start();
 ob_implicit_flush (TRUE);
 ignore_user_abort (0);
-if( !ini_get('safe_mode') )set_time_limit(30);
+if( !ini_get('safe_mode') )set_time_limit(120);
 define('vinaget', 'yes');
 include("class.php");
 $obj = new stream_get(); 
 $obj->using = $using;
-$obj->current_version = 48;
+$obj->current_version = 49;
 $obj->msg = false;
 if(isset($_COOKIE['msg'])) {
 	$obj->msg = $_COOKIE['msg'];

@@ -31,7 +31,7 @@ class dl_filestoragepro_net extends Download {
 			return trim($giay[0]);
 		}
 		if(stristr($data,'name="downloadpw')) 	$this->error("reportpass", true, false);
-		elseif(!preg_match('@https?:\/\/filestoragepro\.net\/getfile\.php\?id=\d+\&a=[^"\'><\r\n\t]+@i', $data, $giay)) {
+		elseif(!$this->isredirect($data)) {
 			$post["downloadverify"] = "1";
 			$post["d"] = "1";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
@@ -40,8 +40,8 @@ class dl_filestoragepro_net extends Download {
 			else 	
 			return trim($giay[0]);
 		}
-		else 	
-		return trim($giay[0]);
+		else  
+		return trim($this->redirect);
 		return false;
 	}
 	

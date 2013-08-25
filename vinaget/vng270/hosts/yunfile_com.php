@@ -16,15 +16,9 @@ class dl_yunfile_com extends Download {
     }
 	
     public function Leech($url) {
-		if(stristr($url, "yfdisk")) {
-			$url = str_replace("http://yfdisk.com/", "http://page2.yunfile.com/", $url);
-		}
-		elseif(stristr($url, "filemarkets")) {
-			$url = str_replace("http://filemarkets.com/", "http://page2.yunfile.com/", $url);
-		}
-		elseif(stristr($url, "http://yunfile.com/")) {
-			$url = str_replace("http://yunfile.com/", "http://page2.yunfile.com/", $url);
-		}
+		if(stristr($url, "yfdisk"))   $url = str_replace("http://yfdisk.com/", "http://page2.yunfile.com/", $url);
+		elseif(stristr($url, "filemarkets"))   $url = str_replace("http://filemarkets.com/", "http://page2.yunfile.com/", $url);
+		elseif(stristr($url, "http://yunfile.com/"))   $url = str_replace("http://yunfile.com/", "http://page2.yunfile.com/", $url);
  		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		$link = $this->lib->cut_str($this->lib->cut_str($data, '<td  class ="down_url_table_td">', 'onclick=\'setCookie'), '<a href="', '"');
 		return trim($link);

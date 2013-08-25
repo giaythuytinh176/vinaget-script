@@ -76,13 +76,13 @@ class dl_uptobox_com extends Download {
 			if(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
 			if(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
 			if(preg_match('@You can download files up to \d+ [KMG]b only.@i', $page, $err))  $this->error('Error: '.$err[0], true, false);	
-			if(!preg_match('@http:\/\/(?:(?:(www\d+\.uptobox\.com(:\d+)?))|(?:([\d.]+(:\d+)?)))\/d\/[^"\'><\r\n\t]+@i', $page, $dlink)) 
+			if(!preg_match('@https?:\/\/(?:(?:(www\d+\.uptobox\.com(:\d+)?))|(?:([\d.]+(:\d+)?)))\/d\/[^"\'><\r\n\t]+@i', $page, $dlink)) 
 			$this->error("notfound", true, false, 2);
 			else
 			return trim($dlink[0]);
 		}
 		return false;
-	}			
+	}					
 	
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
@@ -92,23 +92,23 @@ class dl_uptobox_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@http:\/\/(?:(?:(www\d+\.uptobox\.com(:\d+)?))|(?:([\d.]+(:\d+)?)))\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			elseif(!preg_match('@https?:\/\/(?:(?:(www\d+\.uptobox\.com(:\d+)?))|(?:([\d.]+(:\d+)?)))\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2);	
 			else	
 			return trim($giay[0]);
 		}
 		if(stristr($data,'type="password" name="password'))  $this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@http:\/\/(?:(?:(www\d+\.uptobox\.com(:\d+)?))|(?:([\d.]+(:\d+)?)))\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@http:\/\/(?:(?:(www\d+\.uptobox\.com(:\d+)?))|(?:([\d.]+(:\d+)?)))\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!preg_match('@https?:\/\/(?:(?:(www\d+\.uptobox\.com(:\d+)?))|(?:([\d.]+(:\d+)?)))\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2); 	
 			else  
 			return trim($giay[0]);
 		}
-		else    
-		return trim($dl[0]);
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

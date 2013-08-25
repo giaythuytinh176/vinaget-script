@@ -23,24 +23,24 @@ class dl_lafiles_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			if(!preg_match('@https?:\/\/(\w+\.)lafiles\.(.*)\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			elseif(!$this->isredirect($data)) 
 			$this->error("notfound", true, false, 2);
-			else
-			return trim($giay[0]);
+			else  
+			return trim($this->redirect);
 		}
         if($this->isredirect($data)) return trim($this->redirect);
 		elseif (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
 		elseif(stristr($data,'Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
-		elseif(!preg_match('@https?:\/\/(\w+\.)lafiles\.(.*)\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/(\w+\.)lafiles\.(.*)\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!$this->isredirect($data)) 
 			$this->error("notfound", true, false, 2);
-			else
-			return trim($giay[0]);
+			else  
+			return trim($this->redirect);
 		}
-		else
-        return trim($dl[0]);
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

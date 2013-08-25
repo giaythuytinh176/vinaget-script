@@ -20,7 +20,7 @@ class dl_ultramegabit_com extends Download {
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(stristr($data,'<h4>File has been deleted.</h4>') || stristr($data,'File has been deleted in compliance with the')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/vip\d+\.ultramegabit\.com(:\d+)?\/files\/\d+(.*)hash=[^"\'><\r\n\t]+@i', $data, $giay)) {
+		elseif(!$this->isredirect($data)) {
 			$post["csrf_token"] = $this->lib->cut_str($data, 'csrf_token" value="', '"');
 			$post["encode"] = $this->lib->cut_str($data, 'encode" value="', '"');
 			$data = $this->lib->curl("http://ultramegabit.com/file/download", $this->lib->cookie, $post);
@@ -30,9 +30,9 @@ class dl_ultramegabit_com extends Download {
 			$this->save($this->lib->GetCookies($data));
 			return trim($giay[0]);
 		}
-		else 	
+		else  
 		$this->save($this->lib->GetCookies($data));
-		return trim($giay[0]);
+		return trim($this->redirect);
 		return false;
     }
 	

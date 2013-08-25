@@ -1,17 +1,6 @@
 <?php
 
 class dl_filefactory_com extends Download {
-	
-	public function PreLeech($url){
-		if(!stristr($url, "www")) {
-			$ex = explode("filefactory.com", $url);
-			$url = "http://www.filefactory.com".$ex[1];
-		}
-		if(!stristr($url, "/n/")) {
-			$ex =  explode("/", $url); 
-			$url = "http://www.filefactory.com/file/".$ex[4]."/n/".$ex[5];
-		}
-	}
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://www.filefactory.com/premium/", "ff_locale=en_US.utf8;".$cookie, "");
@@ -30,6 +19,14 @@ class dl_filefactory_com extends Download {
 	}
 	
     public function Leech($url) {
+		if(!stristr($url, "/n/")) {
+			$ex =  explode("/", $url); 
+			$url = "http://www.filefactory.com/file/".$ex[4]."/n/".$ex[5];
+		}
+		if(!stristr($url, "www")) {
+			$ex = explode("filefactory.com", $url);
+			$url = "http://www.filefactory.com".$ex[1];
+		}
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if($pass) {
@@ -38,18 +35,18 @@ class dl_filefactory_com extends Download {
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Incorrect password. Please try again'))  $this->error("wrongpass", true, false, 2);
 			elseif(stristr($data,'You have entered an incorrect password too many times'))  $this->error("You have entered an incorrect password too many times", true, false, 2);
-			elseif($this->isredirect($data)) return trim($this->redirect);
-			elseif(!preg_match('@https?:\/\/s(\d+\.)?filefactory\.com\/dlp\/[a-z0-9]+\/n\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2); 	
-			else   
-			return trim($giay[0]);
+			elseif(preg_match('%href="(http:.+filefactory.com/dlp/.+)">Download%U', $data, $link))	return trim($link[1]);
 		}
 		if(stristr($data,'You are trying to access a password protected file')) 	$this->error("reportpass", true, false);
 		elseif (stristr($data,"This error is usually caused by requesting a file that does not exist")) $this->error("dead", true, false, 2);
-        elseif(!preg_match('@https?:\/\/s(\d+\.)?filefactory\.com\/dlp\/[a-z0-9]+\/n\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2); 	
-		else   
-		return trim($giay[0]);
+        elseif(!$this->isredirect($data)) {
+			if(!preg_match('%href="(http:.+filefactory.com/dlp/.+)">Download%U', $data, $link))
+			$this->error("notfound", true, false, 2); 	
+			else   
+			return trim($link[1]);
+		}
+		else
+		return trim($this->redirect);
 		return false;
     }
 	

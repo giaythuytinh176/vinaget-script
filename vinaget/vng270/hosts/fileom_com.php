@@ -24,17 +24,22 @@ class dl_fileom_com extends Download {
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
 			elseif(!preg_match('@https?:\/\/(\w+\.)?fileom\.com(:\d+)?\/d\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $this->lib->cut_str($data, 'dotted #bbb;padding:7px;line-height:29px;">', '">http'), $giay))
-				$this->error("notfound", true, false, 2);	else	return trim($giay[0]);
+			$this->error("notfound", true, false, 2);	
+			else	
+			return trim($giay[0]);
 		}
 		if(stristr($data,'Password:</b> <input type="password')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,'<div class="page-title">File Not Found</div>')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/(\w+\.)?fileom\.com(:\d+)?\/d\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(!preg_match('@https?:\/\/(\w+\.)?fileom\.com(:\d+)?\/d\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $this->lib->cut_str($data, 'dotted #bbb;padding:7px;line-height:29px;">', '">http'), $giay))
-				$this->error("notfound", true, false, 2);	else	return trim($giay[0]);
+			$this->error("notfound", true, false, 2);	
+			else	
+			return trim($giay[0]);
 		}
-		else  return trim($dl[0]);
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

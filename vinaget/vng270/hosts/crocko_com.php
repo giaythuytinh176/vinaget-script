@@ -24,10 +24,14 @@ class dl_crocko_com extends Download {
 		$data = $this->lib->curl($url, "language=en;".$this->lib->cookie, "");	
 		if(stristr($data,"Sorry,<br />the page you're looking for<br />isn't here") || stristr($data,"Please go to home page or one of this links") || stristr($data,"Information is not available at this time")) 
 		$this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/d(\d+\.)?crocko\.com\/file_contents\/file\/id\/[A-Z0-9]+\/cont_id\/[0-9]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2);
-		else 	
-		return trim($giay[0]);
+		if(!$this->isredirect($data)) {
+			if(!preg_match('@https?:\/\/d(\d+\.)?crocko\.com\/file_contents\/file\/id\/[A-Z0-9]+\/cont_id\/[0-9]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);
+			else 	
+			return trim($giay[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

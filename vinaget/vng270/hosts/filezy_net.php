@@ -41,7 +41,7 @@ class dl_filezy_net extends Download {
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="A008', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(!preg_match('@eval\s*\(\s*function\s*\(p,a,c,k,e,d\)\s*\{[^\}]+\}\s*\(\s*\'([^\r|\n]*)\'\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\'([^\']+)\'\.split\([\'|\"](.)[\'|\"]\)\)\)@', $data, $js)) 
@@ -54,8 +54,8 @@ class dl_filezy_net extends Download {
 				return trim($filezyLink[1]);
 			}
 		}
-		else
-		return trim($dl[0]);
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

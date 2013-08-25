@@ -28,15 +28,20 @@ class dl_isavelink_com extends Download {
 			$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span>'), 'href="', '">');
 			return trim($giay);
 		}
-        if($this->isredirect($data)) return trim($this->redirect);
-		elseif(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data, "Create Download Link")){
-			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
-			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span>'), 'href="', '">');
-			return trim($giay);
+		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
+		elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+		elseif(!$this->isredirect($data)) {
+			if(!stristr($data, "Create Download Link"))
+			$this->error("Cannot get Create Download Link", true, false);
+			else {
+				$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+				$data = $this->lib->curl($url, $this->lib->cookie, $post);
+				$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span>'), 'href="', '">');
+				return trim($giay);
+			}
 		}
-        elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

@@ -20,9 +20,11 @@ class dl_uploadboy_com extends Download {
         $data = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($data));
 		if(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
-		if(stristr($data, 'method_free" value="Free Download')){
+		if(!stristr($data, 'method_free" value="  Free Download  "'))
+		$this->error("Cannot get Free Download", true, false);
+		else {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form method="POST" action=', '<table border="0" width="600" cellspaci'));
-			$post['method_free'] = 'Free Download';
+			$post['method_free'] = '  Free Download  ';
 			$post['method_premium'] = '';
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			$this->save($this->lib->GetCookies($data));
@@ -31,7 +33,7 @@ class dl_uploadboy_com extends Download {
 				$post1['password'] = $pass;
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
 				if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-				elseif(!preg_match('@https?:\/\/s(\d+)?\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				elseif(!preg_match('@https?:\/\/s\d+\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				$this->error("notfound", true, false, 2);	
 				else
 				return trim($giay[0]);
@@ -41,7 +43,7 @@ class dl_uploadboy_com extends Download {
 			else {
 				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
-				if(!preg_match('@https?:\/\/s(\d+)?\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				if(!preg_match('@https?:\/\/s\d+\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				$this->error("notfound", true, false, 2);
 				else 
 				return trim($giay[0]);
@@ -59,22 +61,22 @@ class dl_uploadboy_com extends Download {
 			$post0["password"] = $pass;
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
 			if(stristr($data0,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/s(\d+)?\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
+			elseif(!preg_match('@https?:\/\/s\d+\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
 			$this->error("notfound", true, false, 2); 	
 			else  
 			return trim($giay[0]);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
-        elseif(!preg_match('@https?:\/\/s(\d+)?\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+        elseif(!$this->isredirect($data)) {
 		    $post0 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
-			if(!preg_match('@https?:\/\/s(\d+)?\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
+			if(!preg_match('@https?:\/\/s\d+\.uploadboy\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
 			$this->error("notfound", true, false, 2); 
 			else 	
 			return trim($giay[0]);
-        }
+		}
 		else  
-		return trim($dl[0]);
+		return trim($this->redirect);
 		return false;
     } 
 	

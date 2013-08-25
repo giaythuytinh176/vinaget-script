@@ -30,16 +30,16 @@ class dl_spicyfile_com extends Download {
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/sv(\d+)?\.spicyfile\.com(:\d+)?\/files\/\d+\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/sv(\d+)?\.spicyfile\.com(:\d+)?\/files\/\d+\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!preg_match('@https?:\/\/sv\d+\.spicyfile\.com(:\d+)?\/files\/\d+\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2);	
 			else 	
 			return trim($giay[0]);
-		} 
-		else   
-		return trim($dl[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

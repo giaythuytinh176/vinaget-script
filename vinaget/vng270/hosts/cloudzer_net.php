@@ -28,10 +28,14 @@ class dl_cloudzer_net extends Download {
 		elseif (stristr($data,"Our service is currently unavailable in your country")) $this->error("blockCountry", true, false);
 		elseif (stristr($data,"You used too many different IPs")) $this->error("blockAcc", true, false);
 		elseif (stristr($data,"Download Blocked (ip)")) $this->error("blockIP", true, false);
-		elseif (!preg_match('@https?:\/\/[a-z0-9-]+stor(\d+\.)?cloudzer\.net(:\d+)?\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2); 
-		else
-		return trim($giay[0]);
+		elseif(!$this->isredirect($data)) {
+			if (!preg_match('@https?:\/\/[a-z0-9-]+stor\d+\.cloudzer\.net(:\d+)?\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2); 
+			else
+			return trim($giay[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
 	}
 	

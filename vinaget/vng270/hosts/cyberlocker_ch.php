@@ -14,7 +14,7 @@ class dl_cyberlocker_ch extends Download {
         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
     }
-   
+
     public function FreeLeech($url) {
 		list($url, $pass) = $this->linkpassword($url);
         $data = $this->lib->curl($url, "", "");
@@ -33,13 +33,13 @@ class dl_cyberlocker_ch extends Download {
 				$post1['password'] = $pass;
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
 				if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-				if(!preg_match('@http:\/\/\w+\.cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				if(!$this->isredirect($data1))
 				$this->error("notfound", true, false, 2);
 				else
-				return trim($giay[0]);
+				return trim($this->redirect);
 			}
 			if(preg_match('@You have to wait (?:\d+ \w+,\s)?\d+ \w+ till next download@i', $data, $count)) 	$this->error($count[0], true, false);
-			elseif(stristr($data,'<br><b>Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
+			elseif(stristr($data,'<input type="password" name="password" class="myForm"><br>')) 	$this->error("reportpass", true, false);
 			elseif(!stristr($data, 'btn_download" value="Download" class="bt')) 
 			$this->error("Cannot get DOWNLOAD", true, false);
 			else {
@@ -47,48 +47,41 @@ class dl_cyberlocker_ch extends Download {
 				$post1['method_premium'] = "";
 				$post1['down_direct'] = "1";
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
-				if(!preg_match('@http:\/\/\w+\.cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
+				if(!$this->isredirect($data1))
 				$this->error("notfound", true, false, 2);
 				else
-				return trim($giay[0]);
+				return trim($this->redirect);
 			}
 		}
 		return false;
-	}		
+	}			
    
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {
-			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '<input type="hidden" name="method_premium" value="">'));
-			$post["method_free"] = "";
-			$post["method_premium"] = "1";
-			$post["down_direct"] = "1";
-			$post["next"] = ""; 
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', 'value="Download" class="btn_download buttons">'));
 			$post["password"] = $pass; 
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($giay,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			if(!preg_match('@http:\/\/(\w+\.)?cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
+			elseif(!$this->isredirect($data)) 
 			$this->error("notfound", true, false, 2);
 			else  
-			return trim($giay[0]);
+			return trim($this->redirect);
 		}
 		elseif (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
-		elseif(stristr($data,'<br><b>Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
-		elseif(!preg_match('@http:\/\/\w+\.cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
-			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '<input type="hidden" name="method_premium" value="">'));
-			$post["method_free"] = "";
-			$post["method_premium"] = "1";
-			$post["down_direct"] = "1";
-			$post["next"] = ""; 
+		elseif (stristr($data,'404 Not Found'))  $this->error("dead", true, false, 2);
+		elseif(stristr($data,'<input type="password" name="password" class="myForm"><br>')) 	$this->error("reportpass", true, false);
+		elseif(!$this->isredirect($data)) {
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', 'value="Download" class="btn_download buttons">'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@http:\/\/\w+\.cyberlocker\.ch(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!$this->isredirect($data))
 			$this->error("notfound", true, false, 2); 
-			else 
-			return trim($giay[0]);
+			else  
+			return trim($this->redirect);
 		}
 		else  
-		return trim($dl[0]);
+		return trim($this->redirect);
 		return false;
     }
 	

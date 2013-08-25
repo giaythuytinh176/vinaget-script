@@ -30,7 +30,7 @@ class dl_pandamemo_com extends Download {
 		}
 		elseif(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/(\w+\.)?pandamemo\.com(:\d+)?\/dl\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(!preg_match('@https?:\/\/(\w+\.)?pandamemo\.com(:\d+)?\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
@@ -38,8 +38,8 @@ class dl_pandamemo_com extends Download {
 			else 	
 			return trim($giay[0]);
 		}
-		else
-        return trim($dl[0]);
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

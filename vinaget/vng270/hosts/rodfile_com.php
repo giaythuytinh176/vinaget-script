@@ -66,16 +66,16 @@ class dl_rodfile_com extends Download {
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
-        elseif(!preg_match('@https?:\/\/rs(\d+)?\.rodfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $dl)) {
+        elseif(!$this->isredirect($data)) {
 		    $post0 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
 			if(!preg_match('@https?:\/\/rs(\d+)?\.rodfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
 			$this->error("notfound", true, false, 2);
 			else
 			return trim($giay[0]);
-        }
-		else
-        return trim($dl[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
     } 
 	

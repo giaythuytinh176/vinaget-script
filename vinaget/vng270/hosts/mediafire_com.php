@@ -33,6 +33,8 @@ class dl_mediafire_com extends Download {
 		$cookie = "{$cookies};{$this->lib->GetCookies($page2)}";
 		return $cookie;
 	}
+	
+	// MediaFire Folder http://www.mediafire.com/api/folder/get_info.php?r=vdxs&folder_key=$id&response_format=json&version=1
 /*
 	public function FreeLeech($url) {
 		list($url, $pass) = $this->linkpassword($url);
@@ -62,10 +64,14 @@ class dl_mediafire_com extends Download {
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if(stristr($data,'Please enter password to unlock this file')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,"error.php")) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@http:\/\/(?:(?:[\d.]+)|(:?(download\d+\.mediafire\.com)))\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2);	
-		else	
-		return trim($giay[0]);
+		elseif(!$this->isredirect($data)) {
+			if(!preg_match('@http:\/\/(?:(?:[\d.]+)|(:?(download\d+\.mediafire\.com)))\/[^"\'><\r\n\t]+@i', $data, $giay))
+			$this->error("notfound", true, false, 2);	
+			else	
+			return trim($giay[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
     }
 	

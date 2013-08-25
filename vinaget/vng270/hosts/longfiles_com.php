@@ -14,10 +14,10 @@ class dl_longfiles_com extends Download {
 		else {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/ls\d+\.longfiles\.com(:\d+)?\/(?:(?:files)|(?:cgi-bin\/dl\.cgi))\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!$this->isredirect($data)) 
 			$this->error("notfound", true, false, 2);
-			else
-			return trim($giay[0]);
+			else  
+			return trim($this->redirect);
 		}
 		return false;
 	}
