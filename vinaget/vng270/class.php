@@ -1126,7 +1126,7 @@ class stream_get extends getinfo
 		$msg = sprintf($this->lang["error2"], $msg, $a);
 		die($msg);
 	}
-	function googl($longUrl)
+	function Googlzip($longUrl)
 	{
 		$GoogleApiKey = $this->googlapikey;   //Get API key from : http://code.google.com/apis/console/
 		$postData = array('longUrl' => $longUrl, 'key' => $GoogleApiKey);
