@@ -89,8 +89,8 @@ class getinfo
 		$this->zlink = $this->config['ziplink'];
 		$this->link_zip = $this->config['apiadf'];
 		$this->link_rutgon = $this->config['apirutgon'];	
-		$this->googl = $this->config['googlzip'];
-		$this->googleapikey = $this->config['googlkey'];
+		$this->Googlzip = $this->config['Googlzip'];
+		$this->googlapikey = $this->config['googleapikey'];
 		$this->badword = explode(", ", $this->config['badword']);	
 		$this->act = array('rename' => $this->config['rename'], 'delete' => $this->config['delete']);
 		$this->listfile = $this->config['listfile'];
@@ -335,25 +335,7 @@ class getinfo
 // #################################### Begin class stream_get ##################################
 
 class stream_get extends getinfo
-{	
-	function googl($longUrl)
-	{
-		$GoogleApiKey = $this->googleapikey;   //Get API key from : http://code.google.com/apis/console/
-		$postData = array('longUrl' => $longUrl, 'key' => $GoogleApiKey);
-		$jsonData = json_encode($postData);
-		$curlObj = curl_init(); 
-		curl_setopt($curlObj, CURLOPT_URL, 'https://www.googleapis.com/urlshortener/v1/url');
-		curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($curlObj, CURLOPT_HEADER, 0);
-		curl_setopt($curlObj, CURLOPT_HTTPHEADER, array('Content-type:application/json'));
-		curl_setopt($curlObj, CURLOPT_POST, 1);
-		curl_setopt($curlObj, CURLOPT_POSTFIELDS, $jsonData);
-		$response = curl_exec($curlObj);
-		$json = json_decode($response, true);
-		curl_close($curlObj);
-		return $json['id'];
-	}
+{ 
 	function stream_get()
 	{
 		$this->config();
@@ -848,13 +830,13 @@ class stream_get extends getinfo
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
 		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
-		if (empty($this->zlink) == true && empty($link) == false && empty($this->googl) == false) {
-			$datalink = $this->googl($linkdown);
-			if (preg_match('%(http:\/\/.++)%U', $datalink, $googl)) $lik = trim($googl[1]);
+		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false) {
+			$datalink = $this->Googlzip($linkdown);
+			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
 			else $lik = $linkdown;
 		}
 		elseif (empty($this->zlink) == false && empty($link) == false) {
-			if (empty($this->googl) == true) {
+			if (empty($this->Googlzip) == true) {
 				if (empty($this->link_zip) == false) {
 					if (empty($this->link_rutgon) == true) {
 						$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
@@ -879,31 +861,31 @@ class stream_get extends getinfo
 					}
 				}
 			}
-			elseif (empty($this->googl) == false) {
+			elseif (empty($this->Googlzip) == false) {
 				if (empty($this->link_zip) == false) {
 					if (empty($this->link_rutgon) == true) {
 						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$datalink = $this->googl($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $googl)) $lik = trim($googl[1]);
+						$datalink = $this->Googlzip($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
 						else $lik = $linkdown;
 					}
 					elseif (empty($this->link_rutgon) == false) {
 						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
 						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
-						$datalink = $this->googl($apizip2);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $googl)) $lik = trim($googl[1]);
+						$datalink = $this->Googlzip($apizip2);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
 						else $lik = $linkdown;
 					}
 				}
 				elseif (empty($this->link_zip) == true) {
 					if (empty($this->link_rutgon) == true) {
-						$datalink = $this->googl($linkdown);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $googl)) $lik = trim($googl[1]);
+						$datalink = $this->Googlzip($linkdown);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
 						else $lik = $linkdown;
 					}
 					elseif (empty($this->link_rutgon) == false) {
 						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
-						$datalink = $this->googl($apizip);
+						$datalink = $this->Googlzip($apizip);
 						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
 						else $lik = $linkdown;
 					}
@@ -1143,6 +1125,24 @@ class stream_get extends getinfo
 		if(isset($this->lang[$msg])) $msg = sprintf($this->lang[$msg], $a, $b, $c, $d);
 		$msg = sprintf($this->lang["error2"], $msg, $a);
 		die($msg);
+	}
+	function googl($longUrl)
+	{
+		$GoogleApiKey = $this->googlapikey;   //Get API key from : http://code.google.com/apis/console/
+		$postData = array('longUrl' => $longUrl, 'key' => $GoogleApiKey);
+		$jsonData = json_encode($postData);
+		$curlObj = curl_init(); 
+		curl_setopt($curlObj, CURLOPT_URL, 'https://www.googleapis.com/urlshortener/v1/url');
+		curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($curlObj, CURLOPT_HEADER, 0);
+		curl_setopt($curlObj, CURLOPT_HTTPHEADER, array('Content-type:application/json'));
+		curl_setopt($curlObj, CURLOPT_POST, 1);
+		curl_setopt($curlObj, CURLOPT_POSTFIELDS, $jsonData);
+		$response = curl_exec($curlObj);
+		$json = json_decode($response, true);
+		curl_close($curlObj);
+		return $json['id'];
 	}
 }
 
