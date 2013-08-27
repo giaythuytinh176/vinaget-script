@@ -21,9 +21,9 @@ class dl_ryushare_com extends Download {
 		if($pass) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$post["password"] = $pass;
-			$data = $this->lib->curl($url, $this->lib->cookie, $post);	// If still says "Wrong password", may be Ryushare have problem ...
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/(\w+)?\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
+			elseif(!preg_match('@http:\/\/(\w+\.)?ryushare\.com(:\d+)?\/files\/dl\/[^"\'<>\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2); 	
 			else	
 			return trim($giay[0]);
@@ -36,7 +36,7 @@ class dl_ryushare_com extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/(\w+)?\.ryushare\.com(:\d+)?\/files\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
+			if(!preg_match('@https?:\/\/(\w+\.)?ryushare\.com(:\d+)?\/files\/dl\/[^"\'<>\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2);	
 			else 	
 			return trim($giay[0]);

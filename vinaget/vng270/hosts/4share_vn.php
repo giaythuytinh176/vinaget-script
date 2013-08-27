@@ -40,10 +40,10 @@ class dl_4share_vn extends Download {
   		elseif (stristr($data,"bị khóa đến"))  $this->error("blockAcc", true, false);
   		elseif (stristr($data,"File not found") || stristr($data,"FID Không hợp lệ") || stristr($data,"File đã bị xóa")) 
 		$this->error("dead", true, false, 2);
-		elseif(!preg_match('@http:\/\/sv\d+\.4share\.vn\/\d+\/\?i=[^"\'><\r\n\t]+@i', $data, $link)) 
+		elseif(!preg_match('/href=\'(http:\/\/\w+\.4share\.vn\/\d+\/.+)\'>/', $data, $link)) 
 		$this->error("notfound", true, false, 2); 	
 		else  
-		return trim($link[0]);
+		return trim($link[1]);
 		return false;
     }
 

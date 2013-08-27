@@ -21,10 +21,10 @@ class dl_uploadhero_co extends Download {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(stristr($data, "No such file with this filename</font>")) $this->error("dead", true, false, 2);
 		elseif(stristr($data, "http://uploadhero.co/forbbiden")) $this->error("blockIP", true, false);
-		elseif(!preg_match('@https?:\/\/p(\d+)\.uploadhero\.co\/\?d=[^"\'><\r\n\t]+@i', $data, $giay))
+		elseif(!preg_match('@https?:\/\/(\w+\.)?uploadhero\.co\/\?d=[^"\'><\r\n\t]+@i', $data, $link))
 		$this->error("notfound", true, false, 2);	
 		else 	
-		return trim($giay[0]);
+		return trim($link[0]);
 		return false;
     }
 
