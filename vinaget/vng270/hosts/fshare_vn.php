@@ -36,10 +36,14 @@ class dl_fshare_vn extends Download {
 			$post["link_file_pwd_dl"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
 			if(stristr($data,'Mật khẩu download file không đúng')) $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('%<form action="(http:\/\/download\d+\.fshare.vn\/vip\/.+)" method%U', $data, $giay)) 
-			$this->error("notfound", true, false, 2); 	
-			else 
-			return trim($giay[1]);
+			elseif(!$this->isredirect($data)) {
+				if(!preg_match('%<form action="(http:\/\/download\d+\.fshare.vn\/vip\/.+)" method%U', $data, $giay)) 
+				$this->error("notfound", true, false, 2); 	
+				else  
+				return trim($giay[1]);
+			}
+			else
+			return trim($this->redirect);
 		}
 		if(stristr($data,'Vui lòng nhập mật khẩu để tải tập tin')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,"Tài khoản đang được sử dụng trên máy khác")) 	$this->error("blockAcc", true, false);
