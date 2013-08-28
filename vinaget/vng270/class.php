@@ -960,7 +960,7 @@ class stream_get extends getinfo
 		if ($act == "") echo "<option value=\"dis\"> " . $this->lang['acdis'] . " </option>";
 		else echo '<option selected="selected">' . $this->lang['ac'] . '</option>' . $act;
 		echo '</select>';
-		echo '<div style="overflow: auto; height: auto; max-height: 450px; width: 800px;"><table id="table_filelist" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%"><thead><tr class="flisttblhdr" valign="bottom"><td id="file_list_checkbox_title" class="sorttable_checkbox">&nbsp;</td><td class="sorttable_alpha"><b>' . $this->lang['name'] . '</b></td>'.($this->directdl ? '<td><b>'.$this->lang['direct'].'</b></td>' : '').'<td><b>' . $this->lang['original'] . '</b></td><td><b>' . $this->lang['size'] . '</b></td><td><b>' . $this->lang['date'] . '</b></td></tr></thead><tbody>
+		echo '<div style="overflow: auto; height: auto; max-height: 450px; width: 800px;"><table id="table_filelist" class="filelist" align="left" cellpadding="3" cellspacing="1" width="100%"><thead><tr class="flisttblhdr" valign="bottom"><td id="file_list_checkbox_title" class="sorttable_checkbox">&nbsp;</td><td class="sorttable_alpha"><b>' . $this->lang['name'] . '</b></td>'.($this->directdl ? '<td><b>'.$this->lang['direct'].'</b></td>' : '').'<td><b>' . $this->lang['original'] . '</b></td><td><b>' . $this->lang['size'] . '</b></td><td><b>' . $this->lang['date'] . '</b></td><td><b>IP</b></td></tr></thead><tbody>
     ';
 		usort($files, array(
 			$this,
@@ -983,7 +983,7 @@ class stream_get extends getinfo
         ".($this->directdl ? "<td><a href='$file[7]' style='color: rgb(0, 0, 0);'>" . $hosting . "</a></td>" : "")."
         <td><a href='$file[0]' style='color: rgb(0, 0, 0);'>" . $hosting . "</a></td>
         <td title='$file[5]'>" . $file[6] . "</td>
-        <td><a href=http://www.google.com/search?q=$file[0] title='" . $this->lang['clickcheck'] . "' target='$file[1]'><font color=#000000>$timeago</font></a></center></td>
+        <td><a href=http://www.google.com/search?q=$file[0] title='" . $this->lang['clickcheck'] . "' target='$file[1]'><font color=#000000>$timeago</font></a></center></td><td>".$file[5]."</td>
       </tr>";
 		}
 
@@ -993,8 +993,12 @@ class stream_get extends getinfo
 		$MB1IP = Tools_get::convertmb($this->countMBIP * 1024 * 1024);
 		$thislimitMBIP = Tools_get::convertmb($this->limitMBIP * 1024 * 1024);
 		$timereset = Tools_get::convert_time($this->ttl * 60);
-		echo "</tbody><tbody><tr class='flisttblftr'><td>&nbsp;</td><td>" . $this->lang['total'] . ":</td><td></td><td></td><td>$totalall</td><td>&nbsp;</td></tr></tbody></table>
-    </div></form><center><b>" . $this->lang['used'] . " $MB1IP/$thislimitMBIP - " . $this->lang['reset'] . " $timereset</b>.</center><br/>";
+		if($this->config['showdirect'] == true)  
+		echo "</tbody><tbody><tr class='flisttblftr'><td>&nbsp;</td><td>" . $this->lang['total'] . ":</td><td></td><td></td><td>$totalall</td><td></td><td>&nbsp;</td></tr></tbody></table>
+				</div></form><center><b>" . $this->lang['used'] . " $MB1IP/$thislimitMBIP - " . $this->lang['reset'] . " $timereset</b>.</center><br/>"; 
+		
+		else echo "</tbody><tbody><tr class='flisttblftr'><td>&nbsp;</td><td>" . $this->lang['total'] . ":</td><td></td><td>$totalall</td><td></td><td>&nbsp;</td></tr></tbody></table>
+				</div></form><center><b>" . $this->lang['used'] . " $MB1IP/$thislimitMBIP - " . $this->lang['reset'] . " $timereset</b>.</center><br/>"; 
 	}
 
 	function deljob()

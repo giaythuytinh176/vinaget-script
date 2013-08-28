@@ -3,26 +3,14 @@
 class dl_mediafire_com extends Download {
 	
 	public function PreLeech($url) {
-		if(stristr($url, "/folder/")) $this->error("Not Support Folder", true, false, 2);
-		if(stristr($url, "mediafire.com/?")) {
-			$ex = explode("?", $url);
-			$url = "http://www.mediafire.com/download/".$ex[1];
-		}
-		if(!stristr($url, "www")) {
-			$ex = explode("mediafire.com", $url);
-			$url = "http://www.mediafire.com".$ex[1];
-		}
-		$url = str_replace("/view/", "/download/", $url);
-		$url = str_replace("/edit/", "/download/", $url);
-		$url = str_replace("/watch/", "/download/", $url);
-		$url = str_replace("/listen/", "/download/", $url);
-		$url = str_replace("/play/", "/download/", $url);
+		if(stristr($url, "/folder/")) $this->error("Not Support Folder", true, false, 2); 
 	}
 	
     public function CheckAcc($cookie){
 		$data = $this->lib->curl("https://www.mediafire.com/myaccount/billinghistory.php", $cookie, "");
-		if(stristr($data, 'Billed on date of purchase')) return array(true, "Until ".$this->lib->cut_str($data, '<div> <div class="lg-txt">','</div>'));
-		elseif(stristr($data, 'You are not currently and never have been a MediaPro')) return array(false, "accfree");
+		$dt = $this->lib->curl("https://www.mediafire.com/myaccount.php", $cookie, "");
+		if(stristr($data, 'Billed on date of purchase') && !stristr($dt, '>Upgrade your Account<')) return array(true, "Until ".$this->lib->cut_str($data, '<div> <div class="lg-txt">','</div>'));
+		elseif(stristr($data, 'You are not currently and never have been a MediaPro') || stristr($dt, '>Upgrade your Account<')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}	
 	
@@ -58,12 +46,21 @@ class dl_mediafire_com extends Download {
     }	 */
 	
     public function Leech($url) {
+		if(stristr($url, "mediafire.com/?")) {
+			$ex = explode("?", $url);
+			$url = "http://www.mediafire.com/download/".$ex[1];
+		}
+		if(!stristr($url, "www")) {
+			$ex = explode("mediafire.com", $url);
+			$url = "http://www.mediafire.com".$ex[1];
+		}
+		$url = preg_replace("/(view|edit|watch|listen|play)/", "download", $url);	
 		list($url, $pass) = $this->linkpassword($url);
 		$fileID = $this->exploder('/', $url, 4);
 		if($pass) $this->lib->curl("http://www.mediafire.com/?{$fileID}",$this->lib->cookie,"downloadp=".$pass);
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if(stristr($data,'Please enter password to unlock this file')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data,"error.php")) $this->error("dead", true, false, 2);
+		elseif(stristr($data,"error.php"))  $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
 			if(!preg_match('@http:\/\/(?:(?:[\d.]+)|(:?(download\d+\.mediafire\.com)))\/[^"\'><\r\n\t]+@i', $data, $giay))
 			$this->error("notfound", true, false, 2);	
