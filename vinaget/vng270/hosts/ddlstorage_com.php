@@ -23,9 +23,7 @@ class dl_ddlstorage_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))    $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('/onclick="parent.location=\'(http:\/\/\w+\.ddlstorage\.com:182\/d\/.+)\'">/', $data, $link))
-			$this->error("notfound", true, false, 2);	
-			else 	
+			elseif(preg_match('/onclick="parent.location=\'(http:\/\/\w+\.ddlstorage\.com:182\/d\/.+)\'">/', $data, $link))
 			return trim($link[1]);
 		}
 		if(stristr($data,'type="password" name="password" style="width:210px')) 	$this->error("reportpass", true, false);
@@ -33,9 +31,7 @@ class dl_ddlstorage_com extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form method="POST" name="F1', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('/onclick="parent.location=\'(http:\/\/\w+\.ddlstorage\.com:182\/d\/.+)\'">/', $data, $link))
-			$this->error("notfound", true, false, 2);	
-			else 	
+			if(preg_match('/onclick="parent.location=\'(http:\/\/\w+\.ddlstorage\.com:182\/d\/.+)\'">/', $data, $link))
 			return trim($link[1]);
 		} 
 		else  

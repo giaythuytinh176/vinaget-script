@@ -78,6 +78,7 @@ class getinfo
 		$this->Secure = $this->config['secure'];
 		$this->skin = $this->config['skin'];
 		$this->download_prefix = $this->config['download_prefix'];
+		$this->download_suffix = $this->config['download_suffix'];
 		$this->limitMBIP = $this->config['limitMBIP'];
 		$this->ttl = $this->config['ttl'];
 		$this->limitPERIP = $this->config['limitPERIP'];
@@ -91,6 +92,9 @@ class getinfo
 		$this->link_rutgon = $this->config['apirutgon'];	
 		$this->Googlzip = $this->config['Googlzip'];
 		$this->googlapikey = $this->config['googleapikey'];
+		$this->bitly = $this->config['bitly'];
+		$this->BitLylogin = $this->config['BitLylogin'];
+		$this->BitLyApi = $this->config['BitLyApi'];
 		$this->badword = explode(", ", $this->config['badword']);	
 		$this->act = array('rename' => $this->config['rename'], 'delete' => $this->config['delete']);
 		$this->listfile = $this->config['listfile'];
@@ -375,7 +379,7 @@ class stream_get extends getinfo
 		if ($this->get_load() > $this->max_load) sleep(15);
 		$link = '';
 		$filesize = $job['size'];
-		$filename = $this->download_prefix . Tools_get::convert_name($job['filename']);
+		$filename = $this->download_prefix . Tools_get::convert_name($job['filename']) . $this->download_suffix;
 		$directlink = urldecode($job['directlink']['url']);
 		$this->cookie = $job['directlink']['cookies'];
 		$link = $directlink;
@@ -447,7 +451,7 @@ class stream_get extends getinfo
 			if (stristr($header, "filename")) {
 				$filename = trim($this->cut_str($header, "filename", "\n"));
 				$filename = preg_replace("/(\"\;\?\=|\"|=|\*|UTF-8|\')/", "", $filename);
-				$filename = $this->download_prefix . $filename;
+				$filename = $this->download_prefix . $filename . $this->download_suffix;
 			}
 			if (is_numeric($filesize)) {
 				header("HTTP/1.1 200 OK");
@@ -830,13 +834,18 @@ class stream_get extends getinfo
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
 		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
-		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false) {
+		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false && empty($this->bitly) == true) {
 			$datalink = $this->Googlzip($linkdown);
 			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
 			else $lik = $linkdown;
 		}
+		elseif (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == true && empty($this->bitly) == false) {
+			$datalink = $this->bitly($linkdown);
+			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+			else $lik = $linkdown;
+		}
 		elseif (empty($this->zlink) == false && empty($link) == false) {
-			if (empty($this->Googlzip) == true) {
+			if (empty($this->Googlzip) == true && empty($this->bitly) == true) {
 				if (empty($this->link_zip) == false) {
 					if (empty($this->link_rutgon) == true) {
 						$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
@@ -861,7 +870,7 @@ class stream_get extends getinfo
 					}
 				}
 			}
-			elseif (empty($this->Googlzip) == false) {
+			elseif (empty($this->Googlzip) == false && empty($this->bitly) == true) {
 				if (empty($this->link_zip) == false) {
 					if (empty($this->link_rutgon) == true) {
 						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
@@ -886,6 +895,36 @@ class stream_get extends getinfo
 					elseif (empty($this->link_rutgon) == false) {
 						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
 						$datalink = $this->Googlzip($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+			}
+			elseif (empty($this->Googlzip) == true && empty($this->bitly) == false) {
+				if (empty($this->link_zip) == false) {
+					if (empty($this->link_rutgon) == true) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$datalink = $this->bitly($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
+						$datalink = $this->bitly($apizip2);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+				elseif (empty($this->link_zip) == true) {
+					if (empty($this->link_rutgon) == true) {
+						$datalink = $this->bitly($linkdown);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
+						$datalink = $this->bitly($apizip);
 						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
 						else $lik = $linkdown;
 					}
@@ -982,8 +1021,8 @@ class stream_get extends getinfo
         <td><a href='" . $linkdown . "' style='font-weight: bold; color: rgb(0, 0, 0);'>$file[3]" . ($file[8] != 0 ? "<br/>({$file[8]})" : "") . "</a></td>
         ".($this->directdl ? "<td><a href='$file[7]' style='color: rgb(0, 0, 0);'>" . $hosting . "</a></td>" : "")."
         <td><a href='$file[0]' style='color: rgb(0, 0, 0);'>" . $hosting . "</a></td>
-        <td title='$file[5]'>" . $file[6] . "</td>
-        <td><a href=http://www.google.com/search?q=$file[0] title='" . $this->lang['clickcheck'] . "' target='$file[1]'><font color=#000000>$timeago</font></a></center></td><td>".$file[5]."</td>
+        <td>" . $file[6] . "</td>
+        <td><a href=http://www.google.com/search?q=$file[0] title='" . $this->lang['clickcheck'] . "' target='$file[1]'><font color=#000000>$timeago</font></a></center></td><td title='IP has generated link'>".$file[5]."</td>
       </tr>";
 		}
 
@@ -1147,6 +1186,19 @@ class stream_get extends getinfo
 		$json = json_decode($response, true);
 		curl_close($curlObj);
 		return $json['id'];
+	}
+	function bitly($url, $format='txt') 
+	{
+		$login = $this->BitLylogin;
+		$apikey = $this->BitLyApi;
+		$bitly_api = 'http://api.bit.ly/v3/shorten?login='.$login.'&apiKey='.$apikey.'&uri='.urlencode($url).'&format='.$format;
+		$ch = curl_init();
+		curl_setopt($ch,CURLOPT_URL,$bitly_api);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,5);
+		$data = curl_exec($ch);
+		curl_close($ch);
+		return $data;
 	}
 }
 

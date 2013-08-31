@@ -23,21 +23,16 @@ class dl_lafiles_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			elseif(!$this->isredirect($data)) 
-			$this->error("notfound", true, false, 2);
-			else  
-			return trim($this->redirect);
+			elseif($this->isredirect($data)) 	return trim($this->redirect);
 		}
         if($this->isredirect($data)) return trim($this->redirect);
 		elseif (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
+		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
 		elseif(stristr($data,'Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!$this->isredirect($data)) 
-			$this->error("notfound", true, false, 2);
-			else  
-			return trim($this->redirect);
+			if($this->isredirect($data))	return trim($this->redirect);
 		}
 		else  
 		return trim($this->redirect);

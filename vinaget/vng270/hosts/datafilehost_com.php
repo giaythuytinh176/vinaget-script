@@ -5,10 +5,8 @@ class dl_datafilehost_com extends Download {
 	public function FreeLeech($url){
 		$data = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($data));
-        if (!preg_match('@https?:\/\/www\.datafilehost\.com\/get\.php\?file\=[^"\'><\r\n\t]+@i', $data, $dl)) 
-		$this->error("notfound", true, false, 2);  
-		else  
-		return trim($dl[0]);
+        if (preg_match('/a href=\'(http:\/\/www\.datafilehost\.com\/get\.php\?file\=[^\']+)/i', $data, $dl)) 
+		return trim($dl[1]);
 		return false;
 	}
 

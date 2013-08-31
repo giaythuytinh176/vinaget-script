@@ -20,11 +20,9 @@ class dl_turbobit_net extends Download {
 		$this->save($this->lib->GetCookies($data));
         if (stristr($data,'site is temporarily unavailable')) $this->error("dead", true, false, 2);
         elseif (stristr($data,'Please wait, searching file')) $this->error("dead", true, false, 2);
-        elseif (stristr($data, '<u>Turbo Access</u> denied')) $this->error("blockAcc");
-        elseif (stristr($data, 'You have reached the <a href=\'/user/messages\'>daily</a> limit of premium downloads')) $this->error("blockAcc");
-		elseif(!preg_match('@https?:\/\/turbobit\.net\/\/download\/redirect\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2); 
-		else 	
+        elseif (stristr($data, 'You have reached the <a href=\'/user/messages\'>daily</a> limit of premium downloads') || stristr($data, 'You have reached the <a href=\'/user/messages\'>monthly</a> limit of premium downloads')) $this->error("LimitAcc");
+		elseif (stristr($data, '<u>Turbo Access</u> denied')) $this->error("blockAcc");
+		elseif (preg_match('@https?:\/\/turbobit\.net\/\/download\/redirect\/[^"\'><\r\n\t]+@i', $data, $giay))
 		return trim($giay[0]);
 		return false;
     }

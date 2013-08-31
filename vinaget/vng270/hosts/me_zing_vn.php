@@ -5,10 +5,8 @@ class dl_me_zing_vn extends Download {
 	public function FreeLeech($url){
 		$thuytinh = file_get_contents($this->lib->cut_str(file_get_contents($url), 'width="100%" src="', '"'));
 		if(stristr($thuytinh,'File không tồn tại')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/dl(\d+)?\.download\.apps\.zing\.vn\/zingdownload\/[^"\'><\r\n\t]+@i', $thuytinh, $giay)) 
-		$this->error("notfound", true, false, 2);
-		else
-		return trim($giay[0]);
+		elseif(preg_match('/a href="(https?:\/\/.+zing.vn.+)" target/i', $thuytinh, $giay)) 
+		return trim($giay[1]);
 		return false;
 	}
 

@@ -41,9 +41,7 @@ class dl_chiasenhac_com extends Download {
 															if(!preg_match('/href="(https?:\/\/(:?(:?(data(\d+)?))|:?download)\.chiasenhac\.com\/downloads\/(.+)\[MP4 HD 720p\]\.mp4)"/', $thuytinh, $giay)) {
 																if(!preg_match('/href="(https?:\/\/(:?(:?(data(\d+)?))|:?download)\.chiasenhac\.com\/downloads\/(.+)\[MP4 HD 480p\]\.mp4)"/', $thuytinh, $giay)) {
 																	if(!preg_match('/href="(https?:\/\/(:?(:?(data(\d+)?))|:?download)\.chiasenhac\.com\/downloads\/(.+)\[MP4 HD 360p\]\.mp4)"/', $thuytinh, $giay)) {
-																		if(!preg_match('@https?:\/\/(:?(:?(data(\d+)?))|:?download)\.chiasenhac\.com\/downloads\/[^"\'><\r\n\t]+@i', $thuytinh, $giay))
-																		$this->error("notfound", true, false, 2);	
-																		else
+																		if(preg_match('@https?:\/\/(:?(:?(data(\d+)?))|:?download)\.chiasenhac\.com\/downloads\/[^"\'><\r\n\t]+@i', $thuytinh, $giay))
 																		return trim($giay[0]);
 																	}
 																	else

@@ -5,9 +5,7 @@ class dl_dropbox_com extends Download {
 	public function FreeLeech($url){
 		$data = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($data));
-		if(!preg_match('@https?:\/\/dl\.dropboxusercontent\.com\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2);  
-		else  
+		if(preg_match('@https?:\/\/dl\.dropboxusercontent\.com\/[^"\'><\r\n\t]+@i', $data, $giay))
 		return trim($giay[0]);
 		return false;
 	}

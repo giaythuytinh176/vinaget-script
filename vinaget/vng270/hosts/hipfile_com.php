@@ -35,9 +35,7 @@ class dl_hipfile_com extends Download {
 				$post1['password'] = $pass;
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
 				if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-				elseif(!preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
-				$this->error("notfound", true, false, 2);	
-				else
+				elseif(preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				return trim($giay[0]);
 			}
 			if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
@@ -46,9 +44,7 @@ class dl_hipfile_com extends Download {
 			else {
 				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
-				if(!preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
-				$this->error("notfound", true, false, 2);
-				else 
+				if(preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				return trim($giay[0]);
 			}
 		}
@@ -63,9 +59,7 @@ class dl_hipfile_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else 	
+			elseif(preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
@@ -74,9 +68,7 @@ class dl_hipfile_com extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else 	
+			if(preg_match('@https?:\/\/hf(\d+)?\.hipfile\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		else  

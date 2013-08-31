@@ -18,8 +18,7 @@ class dl_bitshare_com extends Download {
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if($this->isredirect($data)) return trim($this->redirect);
-		elseif(stristr($data,'<h1>Error - File not available</h1>') || stristr($data,'We are sorry, but the requested file was not found in our database! <br /> The file was deleted either by the uploader, inactivity or due to copyright claim.'))
-		$this->error("dead", true, false, 2);
+		elseif(stristr($data,'<h1>Error - File not available</h1>') || stristr($data,'We are sorry, but the requested file was not found in our database! <br /> The file was deleted either by the uploader, inactivity or due to copyright claim.'))  $this->error("dead", true, false, 2);
 		return false;
     }
 

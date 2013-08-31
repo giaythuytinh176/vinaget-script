@@ -6,13 +6,14 @@ $alias['depositfiles.net'] = 'depositfiles.com';
 $alias['depositfiles.org'] = 'depositfiles.com';
 $alias['ul.to'] = 'uploaded.net';
 $alias['uploaded.to'] = 'uploaded.net';
-$alias['up.4share.vn'] = '4share.vn';
+$alias['4share.vn'] = 'up.4share.vn';
 $alias['playlist.chiasenhac.com'] = 'chiasenhac.com';
 $alias['d01.megashares.com'] = 'megashares.com';
 $alias['fp.io'] = 'filepost.com';
 $alias['clz.to'] = 'cloudzer.net';
 $alias['mega.1280.com'] = 'fshare.vn';
 $alias['easy-share.com'] = 'crocko.com';
+$alias['billionuploads.com'] = 'new.billionuploads.com';
 $folderhost = opendir ( "hosts/" );
 while ( $hostname = readdir ( $folderhost ) ) {		
 	if($hostname == "." || $hostname == ".." || strpos($hostname,"bak") || $hostname == "hosts.php") {continue;}

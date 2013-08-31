@@ -11,15 +11,11 @@ class dl_upfile_mobi extends Download {
 			$post["key"] = $pass;
 			$data = $this->lib->curl($url, "lang=en;".$this->lib->cookie, $post);
 			if(stristr($data,'Enter password:'))  $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/upfile\.mobi\/download\.php[^"\'><\r\n\t]+@i', "http://upfile.mobi/{$this->lib->cut_str($data, 'title="download" href="', '">')}", $giay))
-			$this->error("notfound", true, false, 2);
-			else
+			elseif(preg_match('@https?:\/\/upfile\.mobi\/download\.php[^"\'><\r\n\t]+@i', "http://upfile.mobi/{$this->lib->cut_str($data, 'title="download" href="', '">')}", $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'type="password" name="key')) $this->error("reportpass", true, false);
-		elseif(!preg_match('@https?:\/\/upfile\.mobi\/download\.php[^"\'><\r\n\t]+@i', "http://upfile.mobi/{$this->lib->cut_str($data, 'title="download" href="', '">')}", $giay))
-		$this->error("notfound", true, false, 2);
-		else
+		elseif(preg_match('@https?:\/\/upfile\.mobi\/download\.php[^"\'><\r\n\t]+@i', "http://upfile.mobi/{$this->lib->cut_str($data, 'title="download" href="', '">')}", $giay))
 		return trim($giay[0]);
 		return false;
 	}

@@ -23,25 +23,22 @@ class dl_letitbit_net extends Download {
 		if(!stristr($url, "http://letitbit.net")) $url = preg_replace("/(u\d+(\.s\d+)?\.)/", "", $url);	
 		$this->lib->cookie = preg_replace("/; PHPSESSID=[a-z0-9]+;/", "", $this->lib->cookie);	
 		$data1 = $this->lib->curl($url, "lang=en;".$this->lib->cookie, "");
-		if(stristr($data1,'Please wait, there is a file search') || stristr($data1,'File not found') || stristr($data1,'The file is temporarily unavailable for download')) 
-		$this->error("dead", true, false, 2);
+		if(stristr($data1,'Please wait, there is a file search') || stristr($data1,'File not found') || stristr($data1,'The file is temporarily unavailable for download'))  $this->error("dead", true, false, 2);
 		$this->save("lang=en;".$this->lib->GetCookies($data1));
 		if(!preg_match('@https?:\/\/u\d+\.(s\d+\.)?letitbit\.net\/download\/[^"\'><\r\n\t]+@', $data1, $thuytinh)) 
 		$this->error("Cannot get Check2", true, false, 2); 
 		else {
 			$check2 = trim($thuytinh[0]);
 			$data2 = $this->lib->curl($check2, "lang=en;".$this->lib->cookie, "");
-		}
-		if(!preg_match('@https?:\/\/u\d+\.(s\d+\.)?letitbit.net\/sms\/check2\.php@', $data2, $thuytinh)) 
-		$this->error("Cannot get Check3", true, false, 2);	
-		else {
-			$check3 = trim($thuytinh[0]);
-			$data3 = $this->lib->curl($check3, "lang=en;".$this->lib->cookie, "");
-		}
-		if(!preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[a-z0-9]+\/[^"\'><\r\n\t]+@i', $this->lib->cut_str($data3, 'direct_link_1', 'direct_link_2'), $giay176))
-		$this->error("notfound", true, false, 2); 
-		else 
-		return trim($giay176[0]);
+			if(!preg_match('@https?:\/\/u\d+\.(s\d+\.)?letitbit.net\/sms\/check2\.php@', $data2, $thuytinh)) 
+			$this->error("Cannot get Check3", true, false, 2);	
+			else {
+				$check3 = trim($thuytinh[0]);
+				$data3 = $this->lib->curl($check3, "lang=en;".$this->lib->cookie, "");
+				if(preg_match('@https?:\/\/[\d.]+(:\d+)?\/d\/[a-z0-9]+\/[^"\'><\r\n\t]+@i', $this->lib->cut_str($data3, 'direct_link_1', 'direct_link_2'), $giay176))
+				return trim($giay176[0]);
+			}
+		} 
 		return false;
     }
 	

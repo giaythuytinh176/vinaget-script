@@ -36,10 +36,7 @@ class dl_uploadjet_net extends Download {
 				$post1['password'] = $pass;
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
 				if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-				elseif(!$this->isredirect($data1)) 
-				$this->error("notfound", true, false, 2);
-				else
-				return trim($this->redirect);
+				elseif($this->isredirect($data1)) return trim($this->redirect);
 			}
 			if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 			elseif(!stristr($data, 'btn_download" value="Create Download Link'))   
@@ -47,10 +44,7 @@ class dl_uploadjet_net extends Download {
 			else {
 				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
-				if(!$this->isredirect($data1)) 
-				$this->error("notfound", true, false, 2);
-				else
-				return trim($this->redirect);
+				if($this->isredirect($data1)) 	return trim($this->redirect);
 			}
 		}
 		return false;
@@ -65,19 +59,13 @@ class dl_uploadjet_net extends Download {
 			$post0["password"] = $pass;
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
 			if(stristr($data0,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			elseif(!$this->isredirect($data0)) 
-			$this->error("notfound", true, false, 2); 	
-			else  
-			return trim($this->redirect);
+			elseif($this->isredirect($data0))	return trim($this->redirect);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
         elseif(!$this->isredirect($data)) {
 		    $post0 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
-			if(!$this->isredirect($data0)) 
-			$this->error("notfound", true, false, 2); 
-			else 	
-			return trim($this->redirect);
+			if($this->isredirect($data0))	return trim($this->redirect);
 		}
 		else  
 		return trim($this->redirect);

@@ -27,10 +27,7 @@ class dl_verzend_be extends Download {
 			$post1['password'] = $pass;
 			$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
 			if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(!$this->isredirect($data1))	
-			$this->error("notfound", true, false, 2);	
-			else
-			return trim($this->redirect);
+			elseif($this->isredirect($data1))	return trim($this->redirect);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 		elseif(!stristr($data, 'value="Create Download Link'))   $this->error("Cannot get Create Download Link", true, false);
@@ -38,10 +35,7 @@ class dl_verzend_be extends Download {
 			$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
 			$post1["method_free"] = "Free Download";
 			$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
-			if(!$this->isredirect($data1))	
-			$this->error("notfound", true, false, 2);
-			else 
-			return trim($this->redirect);
+			if($this->isredirect($data1))	return trim($this->redirect);
 		}
 		return false;
 	}
@@ -54,10 +48,7 @@ class dl_verzend_be extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(!$this->isredirect($data))	
-			$this->error("notfound", true, false, 2); 	
-			else  
-			return trim($this->redirect);
+			elseif($this->isredirect($data))	return trim($this->redirect);
 		}
 		if (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
@@ -65,10 +56,7 @@ class dl_verzend_be extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!$this->isredirect($data)) 	
-			$this->error("notfound", true, false, 2);	
-			else  
-			return trim($this->redirect);
+			if($this->isredirect($data))	return trim($this->redirect);
 		} 
 		else  
 		return trim($this->redirect);

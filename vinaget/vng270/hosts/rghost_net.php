@@ -21,16 +21,12 @@ class dl_rghost_net extends Download {
 			$post["commit"] = "Get link";
 			$data = $this->lib->curl($urlgiay, $this->lib->cookie, $post);
 			if(stristr($data,'Incorrect password'))  $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/rghost\.net\/download\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else 	
+			elseif(preg_match('@https?:\/\/rghost\.net\/download\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'File is deleted.') || stristr($data,'<p>this page is not found</p>')) $this->error("dead", true, false, 2);
 		elseif(stristr($data,'password" name="password')) 	$this->error("reportpass", true, false);
-		elseif(!preg_match('@https?:\/\/rghost\.net\/download\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2);	
-		else 	
+		elseif(preg_match('@https?:\/\/rghost\.net\/download\/[^"\'><\r\n\t]+@i', $data, $giay))
 		return trim($giay[0]);
 		return false;
 	}

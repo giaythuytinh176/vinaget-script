@@ -27,23 +27,11 @@ class dl_filepost_com extends Download {
 		}
 		$gach = explode('/', $url);
 		if (count($gach) > 5) $url = 'http://filepost.com/files/' . $gach[4];
-		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url,"lang=1;".$this->lib->cookie,"");
-		if($pass) {			// not work :3
-			$post["file_pass"] = $pass;
-			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(stristr($data,'Wrong file password')) $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/fs\d+\.filepost\.com(:\d+)?\/get_file\/[^"\'\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2); 
-			else 	
-			return trim($giay[0]);
-		}	
 		if(stristr($data,'Password is required to download this file')) 	$this->error("linkpass", true, false, 2);
 		elseif(stristr($data,'It may have been deleted by the uploader')) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/fs\d+\.filepost\.com(:\d+)?\/get_file\/[^"\'\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2); 
-		else 	
-		return trim($giay[0]);
+		elseif(preg_match('@https?:\/\/fs\d+\.filepost\.com(:\d+)?\/get_file\/[^"\'><\r\n\t]+@i', $data, $link))
+		return trim($link[0]);
 		return false;
     }
 	

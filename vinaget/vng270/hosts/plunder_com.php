@@ -24,9 +24,7 @@ class dl_plunder_com extends Download {
 	
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(!preg_match('@https?:\/\/[a-z]+\.plunder\.com\/[a-z]+\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2);	
-		else
+		if(preg_match('@https?:\/\/[a-z]+\.plunder\.com\/[a-z]+\/[^"\'><\r\n\t]+@i', $data, $giay))
 		return trim($giay[0]);
 		return false;
 	}

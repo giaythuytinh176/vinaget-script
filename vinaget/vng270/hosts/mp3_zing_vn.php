@@ -22,9 +22,7 @@ class dl_mp3_zing_vn extends Download {
 		$this->error("Cannot get XML", true, false, 2); 
 		else {
 			$data = $this->lib->curl($giay[0], $this->lib->cookie, "");
-			if(!preg_match('@https?:.+m\.mp3\.zing\.vn[^"\'><\r\n\t]+I=@i', $data, $link))  
-			$this->error("notfound", true, false, 2);
-			else {
+			if(preg_match('@https?:.+m\.mp3\.zing\.vn[^"\'><\r\n\t]+I=@i', $data, $link))  {
 				$giay = str_replace("\\","", $link[0]); 
 				$giay = str_replace("I=","Y=", $giay); 
 				return trim($giay);
@@ -36,9 +34,7 @@ class dl_mp3_zing_vn extends Download {
     public function Leech($url) {	
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if(!preg_match('/Lossless" href="(https?:\/\/mp3\.zing\.vn\/download\/song\/[^"\'><\r\n\t]+)" class/', $data, $giay)) {
-			if(!preg_match('/320Kb" href="(https?:\/\/mp3\.zing\.vn\/download\/song\/[^"\'><\r\n\t]+)" class/', $data, $link)) 
-			$this->error("notfound", true, false, 2); 	
-			else
+			if(preg_match('/320Kb" href="(https?:\/\/mp3\.zing\.vn\/download\/song\/[^"\'><\r\n\t]+)" class/', $data, $link)) 
 			return trim($giay[1]);
 		}
 		else

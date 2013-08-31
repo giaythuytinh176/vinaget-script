@@ -22,10 +22,7 @@ class dl_czshare_com extends Download {
 		$id = $this->lib->cut_str($data, "name=\"id\" value=\"", "\"");
 		$code = $this->lib->cut_str($data, "name=\"code\" value=\"", "\"");
 		$data = $this->lib->curl("http://czshare.com/profi_down.php", $this->lib->cookie, "id={$id}&code={$code}");
-		if(!$this->isredirect($data)) 
-		$this->error("notfound", true, false, 2);
-		else
-		return trim($this->redirect);
+		if($this->isredirect($data))   return trim($this->redirect);
 		return false;
     }
 	

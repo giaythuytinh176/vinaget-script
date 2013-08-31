@@ -16,31 +16,37 @@ class dl_netload_in extends Download {
 	}
 	
     public function Leech($url) {	
-		if (preg_match('@http:\/\/netload\.in\/(\w+)/(.+)\.htm@i', $url, $urlgiay) || preg_match('@http:\/\/netload\.in\/(\w+)\.htm@i', $url, $urlgiay))
+		$url = preg_replace("@https?:\/\/(www\.)netload\.in@", "http://netload.in", $url);
+		if(preg_match('@^https?:\/\/netload\.in\/(\w+)\/(.+)\.htm@i', $url, $urlgiay) || preg_match('@^https?:\/\/netload\.in\/(\w+)\.htm@i', $url, $urlgiay))
 		$url = 'http://netload.in/'.$urlgiay[1].'.htm';
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if($pass) {
-			if(!preg_match('%action="([^"]+)"%', $data, $urlp))  
+			if(!preg_match('%action="([^"]+)"%U', $data, $urlp))  
 			$this->error("Error: Cannot get Pass Link", true, false, 2);
-			else 
-			$urlpass = 'http://netload.in/'.$urlp[1];
-			$post["file_id"] = $this->lib->cut_str($data, 'type="hidden" value="', '"');
-			$post["password"] = $pass; 
-			$post["submit"] = "Show";
-			$data = $this->lib->curl($urlpass, $this->lib->cookie, $post);
-			if(stristr($data,'You have entered an incorrect password'))  $this->error("wrongpass", true, false, 2);
-			elseif (!preg_match('@http:\/\/[\d.]+\/[^|\r|\n|\'"]+@i', $data, $dl))
-			$this->error("notfound", true, false, 2); 
-			else
-			return trim($dl[0]);
+			else {
+				$urlpass = 'http://netload.in/'.$urlp[1];
+				$post["file_id"] = $this->lib->cut_str($data, 'type="hidden" value="', '"');
+				$post["password"] = $pass; 
+				$post["submit"] = "Show";
+				$data = $this->lib->curl($urlpass, $this->lib->cookie, $post);
+				if(stristr($data,'You have entered an incorrect password'))  $this->error("wrongpass", true, false, 2);
+				elseif(!$this->isredirect($data)) {
+					if (preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))
+					return trim($dl[0]);
+				}
+				else  
+				return trim($this->redirect);
+			}
 		}
 		if (stristr($data,"The file was deleted"))  $this->error("dead", true, false, 2);
 		elseif (stristr($data,'This file is password-protected'))   $this->error("reportpass", true, false);
-		elseif (!preg_match('@http:\/\/[\d.]+\/[^|\r|\n|\'"]+@i', $data, $dl))
-		$this->error("notfound", true, false, 2); 
-		else
-		return trim($dl[0]);
+		elseif(!$this->isredirect($data)) {
+			if (preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))
+			return trim($dl[0]);
+		}
+		else  
+		return trim($this->redirect);
 		return false;
     }
 

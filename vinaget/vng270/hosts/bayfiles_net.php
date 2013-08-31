@@ -26,8 +26,7 @@ class dl_bayfiles_net extends Download {
   		if (stristr($data,"<p>Invalid security token. Please check your link.</p>"))   $this->error("dead", true, false, 2);
 		elseif (stristr($data,"<p>The requested file could not be found.</p>"))   $this->error("dead", true, false, 2);
 		else {
-			$data = $this->lib->cut_str($data, '<div style="text-align: center;">', '</div>');
-			$link = $this->lib->cut_str($data, '<a class="highlighted-btn" href="', '">Premium Download</a>');
+			$link = $this->lib->cut_str($this->lib->cut_str($data, '<div style="text-align: center;">', '</div>'), '<a class="highlighted-btn" href="', '">Premium Download</a>');
 			return trim($link);	
 		}
 		return false;

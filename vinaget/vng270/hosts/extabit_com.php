@@ -24,10 +24,8 @@ class dl_extabit_com extends Download {
 		if(stristr($data,'An error occurred')) $this->error("An error occurred. Please try again later.", true, false, 2);
 		elseif (stristr($data,'File is temporary unavailable') || stristr($data,'<h3>File not found</h3>')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			if(!preg_match('@http:\/\/p\d+\.extabit\.com\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2); 
-			else 	
-			return trim($giay[0]);
+			if(preg_match('/download-file-btn"  href="(http:\/\/.+extabit\.com\/.+)"  onClick/i', $data, $link))
+			return trim($link[1]);
 		}
 		else  
 		return trim($this->redirect);

@@ -25,8 +25,8 @@ class dl_uploadbaz_com extends Download {
 		
 		$page = $this->lib->curl($url, $this->lib->cookie, $post);
 		if(preg_match('@You have reached the download-limit: \d+ Mb for last 1 days@i', $page, $limit)) $this->error($limit[0], true, false);
-		if(preg_match('@You have to wait (?:\d+ \w+,\s)?\d+ \w+ till next download@i', $page, $count)) 	$this->error($count[0], true, false);
-		if(preg_match('@You can download files up to \d+ [KMG]b only@i', $page, $sizelim)) 	$this->error($sizelim[0], true, false);
+		elseif(preg_match('@You have to wait (?:\d+ \w+,\s)?\d+ \w+ till next download@i', $page, $count)) 	$this->error($count[0], true, false);
+		elseif(preg_match('@You can download files up to \d+ [KMG]b only@i', $page, $sizelim)) 	$this->error($sizelim[0], true, false);
 		
 		$post = $this->parseForm($this->lib->cut_str($page, '<form name="F1" method="POST"', '</form>'));
 		$post['method_free'] = "Free Download";
@@ -50,13 +50,11 @@ class dl_uploadbaz_com extends Download {
 				$post['code'] = html_entity_decode($captcha);
 				$page = $this->lib->curl($url, $this->lib->cookie, $post);
 				if(stristr($page,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-				if(stristr($page,'>Skipped countdown'))  $this->error("Error: Skipped countdown?.", true, false);
-				if(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
-				if(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
-				if(preg_match('@You can download files up to \d+ [KMG]b only.@i', $page, $err))  $this->error('Error: '.$err[0], true, false);	
-				if(!preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $page, $dlink)) 
-				$this->error("notfound", true, false, 2);
-				else
+				elseif(stristr($page,'>Skipped countdown'))  $this->error("Error: Skipped countdown?.", true, false);
+				elseif(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
+				elseif(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
+				elseif(preg_match('@You can download files up to \d+ [KMG]b only.@i', $page, $err))  $this->error('Error: '.$err[0], true, false);	
+				elseif(preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $page, $dlink)) 
 				return trim($dlink[0]);
 			}
 			if(stristr($page,'<input type="password" name="password" class="myForm">')) 	$this->error("reportpass", true, false);
@@ -64,12 +62,10 @@ class dl_uploadbaz_com extends Download {
 			$page = $this->lib->curl($url, $this->lib->cookie, $post);
 
 			if(stristr($page,'>Skipped countdown'))  $this->error("Error: Skipped countdown?.", true, false);
-			if(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
-			if(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
-			if(preg_match('@You can download files up to \d+ [KMG]b only.@i', $page, $err))  $this->error('Error: '.$err[0], true, false);	
-			if(!preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $page, $dlink)) 
-			$this->error("notfound", true, false, 2);
-			else
+			elseif(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
+			elseif(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
+			elseif(preg_match('@You can download files up to \d+ [KMG]b only.@i', $page, $err))  $this->error('Error: '.$err[0], true, false);	
+			elseif(preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $page, $dlink)) 
 			return trim($dlink[0]);
 		}
 		return false;	
@@ -83,9 +79,7 @@ class dl_uploadbaz_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2); 	
-			else	
+			elseif(preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'<input type="password" name="password" class="myForm">')) 	$this->error("reportpass", true, false);
@@ -93,9 +87,7 @@ class dl_uploadbaz_com extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else 	
+			if(preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		else  

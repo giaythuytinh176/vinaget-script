@@ -26,9 +26,7 @@ class dl_4shared_com extends Download {
 		$this->save($this->lib->GetCookies($data));
 		if (stristr($data,'The file link that you requested is not valid')) $this->error("dead", true, false, 2);
 		elseif (stristr($data, 'Please enter a password to access this file')) $this->error("reportpass", true, false);
-		elseif (!preg_match('@https?:\/\/dc\d+\.4shared\.com\/download[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2); 
-		else 	
+		elseif (preg_match('@https?:\/\/dc\d+\.4shared\.com\/download[^"\'><\r\n\t]+@i', $data, $giay))
 		return trim($giay[0]);
 		return false;
     }

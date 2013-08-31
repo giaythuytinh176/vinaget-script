@@ -6,11 +6,10 @@ class dl_demo_ovh_eu extends Download {
 		$data = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($data));
  		if (preg_match('@^HTTP/1\.[0|1] 404 Not Found@i', $data))  $this->error("dead", true, false, 2);
-		elseif(!preg_match('@href="/(download/\w+/[^\"]+)"@i', $data, $dl))  
-		$this->error("notfound", true, false, 2); 
-		else 
-		$dl = "http://demo.ovh.eu/".$dl[1];
-		return trim($dl);
+		elseif(preg_match('@href="/(download/\w+/[^\"]+)"@i', $data, $dl))  {
+			$dl = "http://demo.ovh.eu/".$dl[1];
+			return trim($dl);
+		}
 		return false;
 	}
 

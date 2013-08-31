@@ -9,8 +9,17 @@ class dl_depositfiles_com extends Download {
 		else return array(false, "accinvalid");
 	}
 	
-	public function Login($user, $pass){
-		$this->error("notsupportacc");
+	public function Login($user, $pass){	
+		$post = array(			// if df requied captcha, so not work!!!
+			'login' => $user,
+			'password' => $pass,
+		);
+		$page = $this->lib->curl('http://dfiles.eu/api/user/login', '', $post, 0, 0);
+		$json = json_decode($page);
+		if($json->data->mode == "gold") {
+			$cookie = "autologin=".urlencode($json->data->token);
+			return $cookie;
+		}
 		return false;
 	}
 
@@ -23,19 +32,15 @@ class dl_depositfiles_com extends Download {
 			$post["file_password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data, 'The file\'s password is incorrect'))  $this->error("wrongpass", true, false, 2);
-			elseif (!preg_match('@http:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth-[^\r\n\t\"\'<>]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);
-			else 
-			return trim($giay[0]);
+			elseif (preg_match('@http:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth-[^\r\n\t\"\'<>]+@i', $data, $link))
+			return trim($link[0]);
 		}
 		if (stristr($data, "You have exceeded the")) $this->error("LimitAcc");
 		elseif (stristr($data,'Please, enter the password for this file')) $this->error("reportpass", true, false);
 		elseif (stristr($data, "it has been removed due to infringement of copyright")) $this->error("dead", true, false, 2);
 		elseif (stristr($data, "Such file does not exist")) $this->error("dead", true, false, 2);
-		elseif (!preg_match('@http:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth-[^\r\n\t\"\'<>]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2);
-		else 
-		return trim($giay[0]);
+		elseif (preg_match('@http:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth-[^\r\n\t\"\'<>]+@i', $data, $link))
+		return trim($link[0]);
 		return false;
     }
 	

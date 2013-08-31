@@ -34,14 +34,10 @@ class dl_mixshared_com extends Download {
 		elseif(stristr($data,'Downloads are disabled for your country')) $this->error("blockCountry", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			if(!stristr($data, "Create Download Link"))
-			$this->error("Cannot get Create Download Link", true, false);
-			else{
-				$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
-				$data = $this->lib->curl($url, $this->lib->cookie, $post);
-				$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span>'), 'href="', '">');
-				return trim($giay);
-			}
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			$giay = $this->lib->cut_str($this->lib->cut_str($data, 'dotted #bbb;padding:7px;">', '</span>'), 'href="', '">');
+			return trim($giay);
 		}
 		else  
 		return trim($this->redirect);

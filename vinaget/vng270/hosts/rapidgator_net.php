@@ -17,11 +17,9 @@ class dl_rapidgator_net extends Download {
 	
     public function Leech($url) {
 		$data = $this->lib->curl($url,"lang=en;".$this->lib->cookie,"");
-		if(stristr($data, "You have reached daily quota")) $this->error("LimitAcc");
+		if(stristr($data, "You have reached quota of downloaded information") || stristr($data, "You have reached daily quota")) $this->error("LimitAcc");
 		elseif(stristr($data,'File not found</div>'))  $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/\w+\.rapidgator\.net\/\/\?r=download\/[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2); 
-		else
+		elseif(preg_match('@https?:\/\/\w+\.rapidgator\.net\/\/\?r=download\/index[^"\'><\r\n\t]+@i', $data, $giay))
 		return trim($giay[0]);
 		return false;
     }

@@ -9,8 +9,8 @@ class dl_file1_info extends Download {
 		}
 		$data = $this->lib->curl($url, "", "");
 		if (stristr($data, "Not Found") || stristr($data, "This file does not exist or has been removed")) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/s(\d+\.)?file1\.info\/[a-z0-9]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	else 	return trim($giay[0]);
+		elseif(preg_match('@https?:\/\/s(\d+)?\.file1\.info\/[a-z0-9]+@i', $data, $giay))
+		return trim($giay[0]);
 		return false;
 	}
 

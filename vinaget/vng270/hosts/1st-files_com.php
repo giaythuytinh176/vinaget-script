@@ -23,9 +23,7 @@ class dl_1st_files_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false);
-			elseif(!preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else
+			elseif(preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'<br><b>Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
@@ -33,9 +31,7 @@ class dl_1st_files_com extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else	
+			if(preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		else  

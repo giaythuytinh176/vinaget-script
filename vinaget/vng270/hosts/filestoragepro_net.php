@@ -25,9 +25,7 @@ class dl_filestoragepro_net extends Download {
 			$post["Update"] = "Submit";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Password Error')) $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/filestoragepro\.net\/getfile\.php\?id=\d+\&a=[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2); 
-			else 	
+			elseif(preg_match('@https?:\/\/filestoragepro\.net\/getfile\.php\?id=\d+\&a=[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'name="downloadpw')) 	$this->error("reportpass", true, false);
@@ -35,9 +33,7 @@ class dl_filestoragepro_net extends Download {
 			$post["downloadverify"] = "1";
 			$post["d"] = "1";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/filestoragepro\.net\/getfile\.php\?id=\d+\&a=[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2); 
-			else 	
+			if(preg_match('@https?:\/\/filestoragepro\.net\/getfile\.php\?id=\d+\&a=[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		else  

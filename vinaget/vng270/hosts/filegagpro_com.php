@@ -27,13 +27,11 @@ class dl_filegagpro_com extends Download {
 		}
 		if (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
 		elseif(stristr($data,'Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data,'File Not Found')) $this->error("dead", true, false, 2);
+		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			if(stristr($data, "Create Download Link")){
-				$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
-				$data = $this->lib->curl($url, $this->lib->cookie, $post);
-				if($this->isredirect($data)) return trim($this->redirect);
-			}
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if($this->isredirect($data)) return trim($this->redirect);
 		}
 		else  
 		return trim($this->redirect);

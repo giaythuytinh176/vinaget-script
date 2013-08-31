@@ -14,7 +14,7 @@ function showStat(){
 }
 function showNotice(){
 	global $obj;
-	echo "{$obj->notice("notice")}<br/>";
+	echo "<blink>{$obj->notice("notice")}</blink><br/>";
 }
 function showPlugin(){
 	global $obj;

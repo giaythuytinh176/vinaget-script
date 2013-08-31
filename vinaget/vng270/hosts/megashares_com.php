@@ -27,23 +27,17 @@ class dl_megashares_com extends Download {
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {
-			if(!preg_match('%action="([^"]+)"%U', $data, $urlp))  
-			$this->error("Error: Cannot get Pass Link", true, false, 2);
-			else 
+			if(preg_match('%action="([^"]+)"%U', $data, $urlp))  
 			$urlpass = 'http://d01.megashares.com'.$urlp[1];
 			$post["passText"] = $pass;
 			$data = $this->lib->curl($urlpass, $this->lib->cookie, $post);
-			if(stristr($data,'Password incorrect! Please provide the correct password below'))  $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/(\w+)?\.megashares\.com\/index\.php\?d[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);
-			else 
+			if(stristr($data,'Password incorrect! Please provide'))  $this->error("wrongpass", true, false, 2);
+			elseif(preg_match('@https?:\/\/(\w+)?\.megashares\.com\/index\.php\?d[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'This link requires a password to continue')) 	$this->error("reportpass", true, false);
 		elseif (stristr($data,"Invalid Link") || stristr($data,"Link has been deleted") || stristr($data,"Link is invalid")) $this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/(\w+)?\.megashares\.com\/index\.php\?d[^"\'><\r\n\t]+@i', $data, $giay))
-		$this->error("notfound", true, false, 2);
-		else 
+		elseif(preg_match('@https?:\/\/(\w+)?\.megashares\.com\/index\.php\?d[^"\'><\r\n\t]+@i', $data, $giay))
 		return trim($giay[0]);
 		return false;
     }

@@ -43,18 +43,14 @@ class dl_mediafire_com extends Download {
 		}
 		elseif(stristr($data,"This file is temporarily unavailable because")) $this->error("File too big, only allowed 200MB", false, false, 2);
 		return false;
-    }	 */
+    }		 */
 	
     public function Leech($url) {
 		if(stristr($url, "mediafire.com/?")) {
 			$ex = explode("?", $url);
 			$url = "http://www.mediafire.com/download/".$ex[1];
 		}
-		if(!stristr($url, "www")) {
-			$ex = explode("mediafire.com", $url);
-			$url = "http://www.mediafire.com".$ex[1];
-		}
-		$url = preg_replace("/(view|edit|watch|listen|play)/", "download", $url);	
+		$url = preg_replace("@https?:\/\/(www\.)?mediafire\.com\/(view|edit|watch|listen|play)@", "http://www.mediafire.com/download", $url);	
 		list($url, $pass) = $this->linkpassword($url);
 		$fileID = $this->exploder('/', $url, 4);
 		if($pass) $this->lib->curl("http://www.mediafire.com/?{$fileID}",$this->lib->cookie,"downloadp=".$pass);
@@ -62,10 +58,8 @@ class dl_mediafire_com extends Download {
 		if(stristr($data,'Please enter password to unlock this file')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,"error.php"))  $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			if(!preg_match('@http:\/\/(?:(?:[\d.]+)|(:?(download\d+\.mediafire\.com)))\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else	
-			return trim($giay[0]);
+			if(preg_match('/kNO = "(http:\/\/.+)";/i', $data, $giay))
+			return trim($giay[1]);
 		}
 		else  
 		return trim($this->redirect);

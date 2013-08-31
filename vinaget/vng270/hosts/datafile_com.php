@@ -17,15 +17,9 @@ class dl_datafile_com extends Download {
   
 	public function Leech($url) {
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
-		if(stristr($data,'ErrorCode 0: Invalid Link')) $this->error("dead", true, false, 2); 
-		elseif(!$this->isredirect($data)) {
-			if(!preg_match('@https?:\/\/n(\d+\.)?datafile\.com\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2); 	
-			else	
-			return trim($giay[0]);
-		}
-		else  
-		return trim($this->redirect);
+		if(stristr($data, "ErrorCode 6: Download limit in")) $this->error("LimitAcc");
+		elseif(stristr($data,'ErrorCode 0: Invalid Link')) $this->error("dead", true, false, 2); 
+		elseif($this->isredirect($data)) 	return trim($this->redirect);
 		return false;
 	}
 	

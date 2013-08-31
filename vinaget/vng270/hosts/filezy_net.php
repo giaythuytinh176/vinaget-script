@@ -33,9 +33,7 @@ class dl_filezy_net extends Download {
 			$this->error("PACKED code not found", true, false);
 			else {
 				$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
-				if(!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
-				$this->error("notfound", true, false, 2);
-				else
+				if(preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
 				return trim($filezyLink[1]);
 			}
 		}
@@ -48,9 +46,7 @@ class dl_filezy_net extends Download {
 			$this->error("PACKED code not found", true, false);
 			else {
 				$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
-				if(!preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
-				$this->error("notfound", true, false, 2);
-				else
+				if(preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
 				return trim($filezyLink[1]);
 			}
 		}

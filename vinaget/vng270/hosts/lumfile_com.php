@@ -1,7 +1,7 @@
 <?php 
 
 class dl_lumfile_com extends Download {
-	
+
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://lumfile.com/?op=my_account", "lang=english;{$cookie}", "");
         if(stristr($data, 'Premium account expire:')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, '<TR><TD align=right >Premium account expire:</TD>', '<TD><input type="button" value="Extend Premium Account"'), '<TD><b>', '</b></TD>'));
@@ -23,9 +23,7 @@ class dl_lumfile_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			elseif(!preg_match('@https?:\/\/\w+\.lumfile\.(.*)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else 	
+			elseif(preg_match('@https?:\/\/\w+\.lumfile\.(.*)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
@@ -33,9 +31,7 @@ class dl_lumfile_com extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(!preg_match('@https?:\/\/\w+\.lumfile\.(.*)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->error("notfound", true, false, 2);	
-			else 	
+			if(preg_match('@https?:\/\/\w+\.lumfile\.(.*)?\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
 		else  

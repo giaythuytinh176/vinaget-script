@@ -30,9 +30,7 @@ class dl_queenshare_com extends Download {
 				$post1['password'] = $pass;
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
 				if(stristr($data1,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-				if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
-				$this->error("notfound", true, false, 2);
-				else
+				if(preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				return trim($giay[0]);
 			}
 			if(preg_match('@You have to wait (?:\d+ \w+,\s)?\d+ \w+ till next download@i', $data, $count)) 	$this->error($count[0], true, false);
@@ -42,9 +40,7 @@ class dl_queenshare_com extends Download {
 			else {
 				$post1 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', 'value="Create Download Link">'));
 				$data1 = $this->lib->curl($url, $this->lib->cookie, $post1);
-				if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
-				$this->error("notfound", true, false, 2);
-				else
+				if(preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data1, $giay))
 				return trim($giay[0]);
 			}
 		}
@@ -59,18 +55,14 @@ class dl_queenshare_com extends Download {
 			$post0["password"] = $pass;
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
 			if(stristr($data0,'Wrong password')) $this->error("wrongpass", true, false, 2);
-			if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
-			$this->error("notfound", true, false, 2);
-			else
+			elseif(preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
 			return trim($giay[0]);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
 		elseif(!$this->isredirect($data)) {
 		    $post0 = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST', '</Form>'));
 			$data0 = $this->lib->curl($url, $this->lib->cookie, $post0);
-			if(!preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
-			$this->error("notfound", true, false, 2);
-			else
+			if(preg_match('@http:\/\/ww\d+\.queenshare\.com(:\d+)?\/d\/[^"\'><\r\n\t]+@i', $data0, $giay))
 			return trim($giay[0]);
 		}
 		else  

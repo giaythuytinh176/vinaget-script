@@ -19,11 +19,8 @@ class dl_depfile_com extends Download {
 			$url = str_replace('http', 'https', $url);
 		}
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-        if(stristr($data,'Page Not Found!') || stristr($data,'File was not found in the') || stristr($data,'Provided link contains errors')) 
-		$this->error("dead", true, false, 2);
-		elseif(!preg_match('@https?:\/\/[a-z]+\.depfile\.com\/premdw\/\d+\/[a-z0-9]+\/[^"\'<>\r\n\t]+@i', $data, $giay)) 
-		$this->error("notfound", true, false, 2); 	
-		else     
+        if(stristr($data,'Page Not Found!') || stristr($data,'File was not found in the') || stristr($data,'Provided link contains errors')) $this->error("dead", true, false, 2);
+		elseif(preg_match('@https?:\/\/[a-z]+\.depfile\.com\/premdw\/\d+\/[a-z0-9]+\/[^"\'<>\r\n\t]+@i', $data, $giay)) 
 		return trim($giay[0]);
 		return false;
     }

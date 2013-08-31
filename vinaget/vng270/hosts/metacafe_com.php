@@ -15,8 +15,7 @@ class dl_metacafe_com extends Download {
 			if($this->isredirect($data)){
 				$this->save($this->lib->GetCookies($data));
 				$link = urldecode(urldecode($this->redirect));
-				$link = $this->lib->cut_str($link, '"highDefinitionMP4"','"access"');
-				$link = $this->lib->cut_str($link, '"mediaURL":"','",');
+				$link = $this->lib->cut_str($this->lib->cut_str($link, '"highDefinitionMP4"','"access"'), '"mediaURL":"','",');
 				$link = str_replace("\/", "/", $link);
 				return trim($link);
 			}
