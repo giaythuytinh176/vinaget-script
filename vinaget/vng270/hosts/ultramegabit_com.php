@@ -24,9 +24,10 @@ class dl_ultramegabit_com extends Download {
 			$post["csrf_token"] = $this->lib->cut_str($data, 'csrf_token" value="', '"');
 			$post["encode"] = $this->lib->cut_str($data, 'encode" value="', '"');
 			$data = $this->lib->curl("http://ultramegabit.com/file/download", $this->lib->cookie, $post);
-			if(preg_match('@https?:\/\/(\w+\.)?ultramegabit\.com(:\d+)?\/files\/\d+(.*)hash=[^"\'><\r\n\t]+@i', $data, $giay))
-			$this->save($this->lib->GetCookies($data));
-			return trim($giay[0]);
+			if($this->isredirect($data)) {
+				$this->save($this->lib->GetCookies($data));
+				return trim($this->redirect);
+			}
 		}
 		else {
 			$this->save($this->lib->GetCookies($data));

@@ -11,16 +11,16 @@ class dl_share_vnn_vn extends Download {
     
     public function Login($user, $pass){
 		$data = $this->lib->curl('https://id.vnn.vn/login?service=http%3A%2F%2Fshare.vnn.vn%2Flogin.php%3Fdo%3Dlogin%26url%3Dhttp%253A%252F%252Fshare.vnn.vn%252F', '', '');
-		if(preg_match('%JSESSIONID=(.+);%',$data,$match)) $jsid = $match[1]; 
+		if(preg_match('%jsessionid=(.+)\?%U', $data, $match)) $jsid = $match[1]; 
 		$lt = $this->lib->cut_str($data, '"lt" value="', '" />');	
-		$cookie = 'JSESSIONID='.$jsid;
-		$data = $this->lib->curl("https://id.vnn.vn/login;jsessionid={$jsid}?service=http%3A%2F%2Fshare.vnn.vn%2Flogin.php%3Fdo%3Dlogin%26url%3Dhttp%253A%252F%252Fshare.vnn.vn%252F", $cookie, "username={$user}&password={$pass}&lt={$lt}&_eventId=submit&submit=Đăng nhập");
-		$thuytinh = $this->lib->GetCookies($data);
+		$cookies = 'jsessionid='.$jsid;
+		$data = $this->lib->curl("https://id.vnn.vn/login;jsessionid={$jsid}?service=http%3A%2F%2Fshare.vnn.vn%2Flogin.php%3Fdo%3Dlogin%26url%3Dhttp%253A%252F%252Fshare.vnn.vn%252F", $cookies, "username={$user}&password={$pass}&lt={$lt}&_eventId=submit&submit=Đăng nhập");
+		$cookies1 = $this->lib->GetCookies($data);
 		if(preg_match("#Location: (.*)#", $data, $match)) {
-			$data = $this->lib->curl($match[1], $thuytinh, '');
-			$thuytinh = $thuytinh. '; ' .$this->lib->GetCookies($data);
-			if(preg_match('#PHPSESSID=ST(.+)#', $thuytinh, $matchs)) 
-			$cookie = "{$cookie};{$matchs[0]}";	
+			$data = $this->lib->curl($match[1], $cookies1, '');
+			$cookies2 = $cookies1. '; ' .$this->lib->GetCookies($data);
+			if(preg_match('#PHPSESSID=ST(.+)#', $cookies2, $cookies3)) 
+			$cookie = "{$cookies};{$cookies3[0]}";	
 		}
 		return $cookie;
     }

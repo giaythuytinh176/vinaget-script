@@ -25,10 +25,7 @@ class dl_fshare_vn extends Download {
 			$ex = explode("mega.1280.com", $url);
 			$url = "http://www.fshare.vn".$ex[1];
 		}
-		if(!stristr($url, "www")) {
-			$ex = explode("fshare.vn", $url);
-			$url = "http://www.fshare.vn".$ex[1];
-		}
+		$url = preg_replace("@https?:\/\/(www\.)?fshare\.vn@", "http://www.fshare.vn", $url);
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {
@@ -37,9 +34,7 @@ class dl_fshare_vn extends Download {
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
 			if(stristr($data,'Mật khẩu download file không đúng')) $this->error("wrongpass", true, false, 2);
 			elseif(!$this->isredirect($data)) {
-				if(!preg_match('%<form action="(http:\/\/download\d+\.fshare.vn\/vip\/.+)" method%U', $data, $giay)) 
-				$this->error("notfound", true, false, 2); 	
-				else  
+				if(preg_match('%<form action="(https?:\/\/download\d+\.fshare.vn\/vip\/.+)" method%U', $data, $giay)) 
 				return trim($giay[1]);
 			}
 			else
@@ -52,9 +47,7 @@ class dl_fshare_vn extends Download {
 		elseif(stristr($data,'Tài khoản của bạn thuộc GUEST nên chỉ tải xuống 1 lần'))	 $this->error("accinvalid", true, false);
 		elseif(stristr($data,'THÔNG TIN TẬP TIN TẢI XUỐNG') && stristr($data,'TẢI XUỐNG CHẬM'))	 $this->error("accfree", true, false);
 		elseif(!$this->isredirect($data)) {
-			if(!preg_match('%<form action="(http:\/\/download\d+\.fshare.vn\/vip\/.+)" method%U', $data, $giay)) 
-			$this->error("notfound", true, false, 2); 	
-			else  
+			if(preg_match('%<form action="(https?:\/\/download\d+\.fshare.vn\/vip\/.+)" method%U', $data, $giay)) 
 			return trim($giay[1]);
 		}
 		else

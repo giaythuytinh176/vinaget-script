@@ -19,11 +19,11 @@ class dl_filefactory_com extends Download {
 	}
 	
     public function Leech($url) {
+		$url = preg_replace("@https?:\/\/(www\.)?filefactory\.com@", "http://www.filefactory.com", $url);
 		if(!stristr($url, "/n/")) {
 			$ex =  explode("/", $url); 
 			$url = "http://www.filefactory.com/file/".$ex[4]."/n/".$ex[5];
 		}
-		$url = preg_replace("@https?:\/\/(www\.)?filefactory\.com@", "http://www.filefactory.com", $url);
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if($pass) {
@@ -32,8 +32,12 @@ class dl_filefactory_com extends Download {
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Incorrect password. Please try again'))  $this->error("wrongpass", true, false, 2);
 			elseif(stristr($data,'You have entered an incorrect password too many times'))  $this->error("You have entered an incorrect password too many times", true, false, 2);
-			elseif(preg_match('/href="(https?:\/\/.+filefactory\.com\/dlp\/.+)">Download with FileFactory Premium/i', $data, $link))	
-			return trim($link[1]);
+			elseif(!$this->isredirect($data)) {
+				if(preg_match('/href="(https?:\/\/.+filefactory\.com\/dlp\/.+)">Download with FileFactory Premium/i', $data, $link))
+				return trim($link[1]);
+			}
+			else
+			return trim($this->redirect);
 		}
 		if(stristr($data,'You are trying to access a password protected file')) 	$this->error("reportpass", true, false);
 		elseif (stristr($data,"This error is usually caused by requesting a file that does not exist")) $this->error("dead", true, false, 2);
