@@ -2,14 +2,6 @@
 
 class dl_megashares_com extends Download {
 	
-	public function PreLeech($url){
-		if(stristr($url, "megashares.com/dl/")) {
-			$ex =  explode("/", $url); 
-			$url = "http://d01.megashares.com/index.php?d01=".$ex[4];
-		}
-		return false;
-	}
-	
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://d01.megashares.com/myms.php", $cookie, "");
         if(stristr($data, 'Premium User</span>') && stristr($data, 'Period Ends')) return array(true, "Until ".$this->lib->cut_str($data, '<p class="premium_info_box">Period Ends: ','</p>'));
@@ -24,6 +16,10 @@ class dl_megashares_com extends Download {
 	}
 	
     public function Leech($url) {
+		if(stristr($url, "megashares.com/dl/")) {
+			$ex =  explode("/", $url); 
+			$url = "http://d01.megashares.com/index.php?d01=".$ex[4];
+		}
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {

@@ -77,7 +77,7 @@ class dl_uptobox_com extends Download {
 			return trim($dlink[0]);
 		}
 		return false;
-	}					
+	}						
 	
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);

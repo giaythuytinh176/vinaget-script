@@ -28,7 +28,7 @@ class dl_filepost_com extends Download {
 		$gach = explode('/', $url);
 		if (count($gach) > 5) $url = 'http://filepost.com/files/' . $gach[4];
 		$data = $this->lib->curl($url,"lang=1;".$this->lib->cookie,"");
-		if(stristr($data,'Password is required to download this file')) 	$this->error("linkpass", true, false, 2);
+		if(stristr($data,'Password is required to download this file')) 	$this->error("linkpass", true, false);
 		elseif(stristr($data,'It may have been deleted by the uploader')) $this->error("dead", true, false, 2);
 		elseif(preg_match('@https?:\/\/fs\d+\.filepost\.com(:\d+)?\/get_file\/[^"\'><\r\n\t]+@i', $data, $link))
 		return trim($link[0]);

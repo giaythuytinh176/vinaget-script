@@ -15,11 +15,32 @@ class dl_netload_in extends Download {
 		return $cookie;
 	}
 	
+	/*
+		$data = $this->lib->curl('http://urlchecker.net/', "", 'links='.urlencode($url).'&submit=Check Links');
+		$data = $this->lib->cut_str($data, '<td class="working">', 'class="live');
+		if(stristr($data,'Working</td>'))	$url = $this->lib->cut_str($data, 'href="', '" target');
+		else $this->error("dead", true, false, 2);
+		if(preg_match('@^https?:\/\/(www\.)?netload\.in\/(\w+)(.+)?@i', $url, $urlgiay))
+		$url = 'http://netload.in/'.$urlgiay[2].'.htm';
+		
+		
+		$data = $this->lib->curl('http://10s.mobi/', "", 'urllist='.urlencode($url));
+		if(stristr($data,'<img src=chk_good.png '))	$url = $this->lib->cut_str($data, '<br><B><a href=', '>');
+		else $this->error("dead", true, false, 2);
+		
+	*/
+	
     public function Leech($url) {	
-		$url = preg_replace("@https?:\/\/(www\.)netload\.in@", "http://netload.in", $url);
-		if(preg_match('@^https?:\/\/netload\.in\/(\w+)\/(.+)\.htm@i', $url, $urlgiay) || preg_match('@^https?:\/\/netload\.in\/(\w+)\.htm@i', $url, $urlgiay))
-		$url = 'http://netload.in/'.$urlgiay[1].'.htm';
 		list($url, $pass) = $this->linkpassword($url);
+		$data = $this->lib->curl('http://api.netload.in/index.php?id=2', "", 'links='.urlencode($url).'&send=Absenden');
+		$data = $this->lib->cut_str($this->lib->cut_str($data, '<h3', '</body>'), 'name="links">', '</textarea>');
+		if(stristr($data,'online')) {
+			$gach = explode(';', $data);
+			$url = 'http://www.netload.in/datei' . $gach[0]. '.htm';
+		}
+		else $this->error("dead", true, false, 2);
+		//if(preg_match('@^https?:\/\/(www\.)?netload\.in\/(\w+)(.+)?@i', $url, $urlgiay))
+		//$url = 'http://netload.in/'.$urlgiay[2].'.htm';
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if($pass) {
 			if(!preg_match('%action="([^"]+)"%U', $data, $urlp))  
@@ -32,17 +53,17 @@ class dl_netload_in extends Download {
 				$data = $this->lib->curl($urlpass, $this->lib->cookie, $post);
 				if(stristr($data,'You have entered an incorrect password'))  $this->error("wrongpass", true, false, 2);
 				elseif(!$this->isredirect($data)) {
-					if (preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))
+					if(preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))
 					return trim($dl[0]);
 				}
 				else  
 				return trim($this->redirect);
 			}
 		}
-		if (stristr($data,"The file was deleted"))  $this->error("dead", true, false, 2);
-		elseif (stristr($data,'This file is password-protected'))   $this->error("reportpass", true, false);
+		//if(stristr($data,"The file was deleted"))  $this->error("dead", true, false, 2);
+		if(stristr($data,'This file is password-protected'))   $this->error("reportpass", true, false);
 		elseif(!$this->isredirect($data)) {
-			if (preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))
+			if(preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))
 			return trim($dl[0]);
 		}
 		else  

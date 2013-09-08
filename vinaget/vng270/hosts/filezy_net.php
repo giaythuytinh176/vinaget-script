@@ -48,6 +48,7 @@ class dl_filezy_net extends Download {
 				$packed = $this->JSun_packer($js[1], $js[2], $js[3], $js[4], $js[5]);
 				if(preg_match("@href=\\\'(.+)\\\'@i", $packed, $filezyLink)) 	
 				return trim($filezyLink[1]);
+				//return trim($this->lib->cut_str($packed, "window.location.href=\'", "\'"));
 			}
 		}
 		else  

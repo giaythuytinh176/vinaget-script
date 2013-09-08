@@ -13,7 +13,10 @@ $alias['fp.io'] = 'filepost.com';
 $alias['clz.to'] = 'cloudzer.net';
 $alias['mega.1280.com'] = 'fshare.vn';
 $alias['easy-share.com'] = 'crocko.com';
-$alias['billionuploads.com'] = 'new.billionuploads.com';
+$alias['yfdisk.com'] = 'yunfile.com';
+$alias['filemarkets.com'] = 'yunfile.com';
+$alias['my.rapidshare.com'] = 'rapidshare.com';
+$alias['ifile.it'] = 'filecloud.io';
 $folderhost = opendir ( "hosts/" );
 while ( $hostname = readdir ( $folderhost ) ) {		
 	if($hostname == "." || $hostname == ".." || strpos($hostname,"bak") || $hostname == "hosts.php") {continue;}

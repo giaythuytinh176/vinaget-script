@@ -45,6 +45,17 @@ class dl_mediafire_com extends Download {
 		return false;
     }		 */
 	
+		/*	
+		$data = $this->lib->curl('http://urlchecker.net/', "", 'links='.urlencode($url).'&submit=Check Links');
+		$data = $this->lib->cut_str($data, '<td class="working">', 'class="live');
+		if(stristr($data,'Working</td>'))	$url = $this->lib->cut_str($data, 'href="', '" target');
+		else $this->error("dead", true, false, 2);
+		
+		$data = $this->lib->curl('http://10s.mobi/', "", 'urllist='.urlencode($url));
+		if(stristr($data,'<img src=chk_good.png '))	$url = $this->lib->cut_str($data, '<br><B><a href=', '>');
+		else $this->error("dead", true, false, 2);
+		*/
+		
     public function Leech($url) {
 		if(stristr($url, "mediafire.com/?")) {
 			$ex = explode("?", $url);

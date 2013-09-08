@@ -78,6 +78,6 @@ class dl_youtube_com extends Download {
 * Version: 2.7.0
 * Youtube.com Download Plugin by giaythuytinh176 [3.8.2013]
 * Downloader Class By [FZ]
-* Need update, correct filename :3. Update from youtube plugin 263
+* Need update, correct filename :3. Update from Youtube plugin RL by T3-822
 */
 ?>
