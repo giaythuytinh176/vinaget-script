@@ -13,7 +13,7 @@ class dl_ultramegabit_com extends Download {
 		$csrf = $this->lib->curl("http://ultramegabit.com/login", "", "");
 		$csrftoken = $this->lib->cut_str($csrf, 'csrf_token" value="', '"');
         $data = $this->lib->curl("http://ultramegabit.com/login", "csrf_cookie={$csrftoken}", "username={$user}&password={$pass}&csrf_token={$csrftoken}&return_url=&submit=Login");
-        $cookie = "csrf_cookie={$csrftoken};{$this->lib->GetCookies($data)}";
+        $cookie = "csrf_cookie={$csrftoken}; {$this->lib->GetCookies($data)}";
 		return $cookie;
     }
 	

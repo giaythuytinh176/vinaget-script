@@ -94,6 +94,7 @@ $lang = array (
 'cantconnect'	=> 'Our server can\'t connect to %1$s',
 'accfree'		=> 'Our %1$s account is FREE',
 'accinvalid'	=> 'Our %1$s account invalid',
+'cookieinvalid' => 'Our %1$s cookie invalid',
 'blockCountry'	=> 'Our Country has been banned by %1$s',
 'blockIP'		=> 'Our IP has been banned by %1$s',
 'blockAcc'		=> 'Our %1$s account has been blocked',
@@ -117,6 +118,6 @@ $lang = array (
 * Vinaget by ..::[H]::..
 * Version: 2.7.0 Final
 * English Language
-* Language Class By [FZ][r39]
+* Language Class By [FZ][r62]
 */
 ?>

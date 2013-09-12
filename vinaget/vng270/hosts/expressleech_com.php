@@ -4,7 +4,7 @@ class dl_expressleech_com extends Download {
     
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://expressleech.com/?op=my_account", "lang=english;{$cookie}", "");
-        if(stristr($data, '<a href="http://expressleech.com/?op=payments">Upgrade to premium</a>')) return array(false, "accfree");
+        if(stristr($data, 'http://expressleech.com/?op=payments">Upgrade to premium')) return array(false, "accfree");
         elseif(stristr($data, 'Premium Account expire:')) return array(true, "Until ".$this->lib->cut_str($data, '<TR><TD>Premium Account expire:</TD><TD><b>','</b>'));
 		else return array(false, "accinvalid");
     }
@@ -16,20 +16,25 @@ class dl_expressleech_com extends Download {
     }
     
     public function Leech($url) {
+		list($url, $pass) = $this->linkpassword($url);
         $data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(stristr($data, "No such file with this filename</font>")) $this->error("dead", true, false, 2);
-		elseif(!$this->isredirect($data)) {
-			if(!stristr($data, "Create Download Link"))
-			$this->error("Cannot get Create Download Link", true, false);
-			else {
-				$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
-				$data = $this->lib->curl($url, $this->lib->cookie, $post);
-				$link = $this->lib->cut_str($data, '<div class="news-title"><a href="', '">');
-				return trim($link);
-			}
+		if($pass) {
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$post["password"] = $pass;
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
+			$link = $this->lib->cut_str($this->lib->cut_str($data, 'background:#f9f9f9;border:1px dotted #bbb;padding:7px;">', '</span>'), 'href="', '">');
+			return trim($link);
 		}
-		else  
-		return trim($this->redirect);
+		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
+		elseif(stristr($data, "The file was deleted by its owner ")) $this->error("dead", true, false, 2);
+		elseif(!$this->isredirect($data)) {
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
+			$link = $this->lib->cut_str($this->lib->cut_str($data, 'background:#f9f9f9;border:1px dotted #bbb;padding:7px;">', '</span>'), 'href="', '">');
+			return trim($link);
+		}
+		else  	return trim($this->redirect);
 		return false;
     }
 
@@ -41,5 +46,6 @@ class dl_expressleech_com extends Download {
 * Version: 2.7.0
 * Expressleech Download Plugin by riping
 * Downloader Class By [FZ]
+* Fixed by giaythuytinh176 [12.9.2013]
 */
 ?>

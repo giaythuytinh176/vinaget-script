@@ -3,7 +3,28 @@
 class dl_mediafire_com extends Download {
 	
 	public function PreLeech($url) {
-		if(stristr($url, "/folder/")) $this->error("Not Support Folder", true, false, 2); 
+		if(stristr($url, "sharekey="))   $url = str_replace("http://www.mediafire.com/?sharekey=", "http://www.mediafire.com/folder/", $url);
+		if(stristr($url, "/folder/")) {
+			$url = explode('/', $url);
+			$sharekey = $url[4];
+			$data = $this->lib->curl("http://www.mediafire.com/api/folder/get_content.php?r=jyxt&content_type=files&order_by=name&order_direction=asc&version=2.13&folder_key={$sharekey}&response_format=json", "", "", 0);
+			if(stristr($data, 'Unknown or invalid FolderKey') || stristr($data, 'Required parameters')) $this->error("dead", true, false, 2);
+			else {
+				$quickkey = explode('"quickkey":', $data);
+				$maxqk = count($quickkey);
+				for ($i = 1; $i < $maxqk; $i++) {
+					preg_match('%"(.+)","filename%U', $quickkey[$i], $code);
+					preg_match('%filename":"(.+)",%U', $quickkey[$i], $filename);
+					preg_match('%size":"(.+)",%U', $quickkey[$i], $filesize);
+					if($filesize[1] > 1024*1024*1024) $size = round($filesize[1]/(1024*1024*1024),2).' GB';
+					else $size = round($filesize[1]/(1024*1024),2).' MB';  
+					//$list = "http://www.mediafire.com/download/".$code[1]."/".urlencode($filename[1])."<br/>";
+					$list = "<a href=http://www.mediafire.com/download/".$code[1]."/".urlencode($filename[1]).">http://www.mediafire.com/download/".$code[1]."/".urlencode($filename[1])."</a>  | <font color=blue face=Arial size=2>".$filename[1]."</font> | <font color=green face=Arial size=2>".$size."</font><br>";
+					echo $list;
+				}
+			}
+			exit;
+		}
 	}
 	
     public function CheckAcc($cookie){
@@ -22,7 +43,6 @@ class dl_mediafire_com extends Download {
 		return $cookie;
 	}
 	
-	// MediaFire Folder http://www.mediafire.com/api/folder/get_info.php?r=vdxs&folder_key=$id&response_format=json&version=1
 /*
 	public function FreeLeech($url) {
 		list($url, $pass) = $this->linkpassword($url);

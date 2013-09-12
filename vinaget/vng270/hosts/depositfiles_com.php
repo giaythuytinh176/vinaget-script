@@ -14,7 +14,7 @@ class dl_depositfiles_com extends Download {
 			'login' => $user,
 			'password' => $pass,
 		);
-		$page = $this->lib->curl('http://dfiles.eu/api/user/login', '', $post, 0, 0);
+		$page = $this->lib->curl('http://dfiles.eu/api/user/login', 'lang_current=en', $post, 0, 0);
 		$json = json_decode($page);
 		if($json->data->mode == "gold") {
 			$cookie = "autologin=".urlencode($json->data->token);

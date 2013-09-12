@@ -1,9 +1,35 @@
 <?php
 
 class dl_up_4share_vn extends Download {
-
-	public function PreLeech($url){
-		if(stristr($url, "/d/") || stristr($url, "/dlist/")) $this->error("Not Support Folder", true, false, 2);
+/*
+	public function PreLeech($url){ 
+		$url = str_replace("http://4share.vn", "http://up.4share.vn", $url);
+		$url = str_replace("up.4share.vn/d/", "up.4share.vn/dlist/", $url);
+		if(stristr($url, "/dlist/")) {
+			$data = $this->lib->curl($url, "", "");
+			$data = $this->lib->cut_str($data, '<div style="padding: 20px;">', "</div>");
+			if(stristr($data, 'up.4share.vn'))	echo '<font color=green face=Arial size=2>Các file trong thư mục</font>'. $data;
+			else $this->error("dead", true, false, 2);
+			exit;
+		}
+	}	*/
+	
+	public function PreLeech($url){ 
+		$url = str_replace("http://4share.vn", "http://up.4share.vn", $url);
+		$url = str_replace("up.4share.vn/d/", "up.4share.vn/dlist/", $url);
+		if(stristr($url, "/dlist/")) {
+			$data = $this->lib->curl($url, "", "");
+			$FID = explode('up.4share.vn', $data);
+			$maxfile = count($FID);
+			for ($i = 1; $i < $maxfile; $i++) {
+				preg_match('%\/f\/(.+)\/%U', $FID[$i], $code);
+				preg_match('%\/f\/\w+\/(.+)\/%U', $FID[$i], $fn);
+				//$list = "http://up.4share.vn/f/".$code[1]."/".$fn[1]."<br/>"; 
+				$list = "<a href=http://up.4share.vn/f/".$code[1]."/".urlencode($fn[1]).">http://up.4share.vn/f/".$code[1]."/".$fn[1]."</a>";
+				echo $list;
+			}
+			exit;
+		}
 	}
 	
 	public function CheckAcc($cookie){
@@ -23,8 +49,12 @@ class dl_up_4share_vn extends Download {
 		return $cookie;
 	}
 	
-    public function Leech($url) {
-		$url = str_replace("http://4share.vn", "http://up.4share.vn", $url);
+    public function Leech($url) {	
+		//$page = $this->lib->curl("http://up.4share.vn/?control=checkfile", $this->lib->cookie, "listfile=".urlencode($url));
+		//$data = $this->lib->cut_str($page, '<div class="content" style="margin: 10px;">', 'Nhập danh');
+		//if(stristr($data,'File OK!<'))  $url = $this->lib->cut_str($data, '<br />', '  : File OK!<');
+		//else $this->error("dead", true, false, 2);
+		
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {
@@ -32,13 +62,12 @@ class dl_up_4share_vn extends Download {
 			$post["submit"] = "DOWNLOAD";
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Bạn đã nhập sai Password download'))  $this->error("wrongpass", true, false, 2);
-			elseif($this->isredirect($data))
-			return trim($this->redirect);
+			elseif($this->isredirect($data))  return trim($this->redirect);
 		}
 		if (stristr($data,"File có password download"))  $this->error("reportpass", true, false); 
   		elseif (stristr($data,"bị khóa đến"))  $this->error("blockAcc", true, false);
-  		elseif (stristr($data,"File not found") || stristr($data,"FID Không hợp lệ") || stristr($data,"File đã bị xóa"))  $this->error("dead", true, false, 2);
-		elseif(preg_match('/href=\'(http:\/\/\w+\.4share\.vn\/\d+\/.+)\'>/', $data, $link)) 
+		elseif (stristr($data,"File not found") || stristr($data,"FID Không hợp lệ") || stristr($data,"File đã bị xóa"))  $this->error("dead", true, false, 2);
+		elseif (preg_match('/href=\'(http:\/\/.+4share\.vn\/\d+\/.+)\'>/i', $data, $link)) 
 		return trim($link[1]);
 		return false;
     }

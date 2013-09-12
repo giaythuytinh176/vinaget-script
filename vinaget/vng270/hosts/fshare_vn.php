@@ -3,9 +3,33 @@
 class dl_fshare_vn extends Download {
 
 	public function PreLeech($url){
-		if(stristr($url, "/folder/")) $this->error("Not Support Folder", true, false, 2);
-	}
-
+		$url = str_replace("mega.1280.com", "fshare.vn", $url);
+		if(stristr($url, "/folder/")) {
+			$data = $this->lib->curl("http://www.fshare.vn/check_link.php?action=check_link&arrlinks=".urlencode($url), "", "", 0);
+			$page = json_decode($data, true);
+			echo $page['chk_link_record'];
+			exit;
+		}
+	}	
+/*
+	public function PreLeech($url){
+		$url = str_replace("mega.1280.com", "fshare.vn", $url);
+		if(stristr($url, "/folder/")) {
+			$data = $this->lib->curl("http://www.fshare.vn/check_link.php?action=check_link&arrlinks=".urlencode($url), "", "", 0);
+			$page = json_decode($data, true);
+			$folder = $page['chk_link_record'];
+			$id = explode('<p><b><a href="http://www.fshare.vn/file', $folder);
+			$maxfile = count($id);
+			for ($i = 1; $i < $maxfile; $i++) {
+				preg_match('%\/(.+)" target="_blank">%U', $id[$i], $code);
+				//$list = "http://www.fshare.vn/file/".$code[1]."/<br/>"; 
+				$list = "<a href=http://www.fshare.vn/file/".$code[1].">http://www.fshare.vn/file/".$code[1]."</a><br/>";
+				echo $list;
+			}
+			exit;
+		}
+	}*/
+	
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("https://www.fshare.vn/account_info.php", $cookie, "");
 		if(stristr($data, '<dd>VIP</dd>') && stristr($data, '<dt>Thời hạn dùng:</dt>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, '<dt>Thời hạn dùng:</dt>','<dt>Loại thành viên:</dt>'), '<dd>','</dd>'));
@@ -16,15 +40,10 @@ class dl_fshare_vn extends Download {
      
     public function Login($user, $pass){
 		$data = $this->lib->curl("https://www.fshare.vn/login.php", "", "login_useremail={$user}&login_password={$pass}&auto_login=1&url_refe=https://www.fshare.vn/index.php");	
-        $cookie = $this->lib->GetCookies($data);
-        return $cookie;
+        return $this->lib->GetCookies($data);
     }
 	
     public function Leech($url) {
-		if(stristr($url, "mega.1280.com")) {
-			$ex = explode("mega.1280.com", $url);
-			$url = "http://www.fshare.vn".$ex[1];
-		}
 		$url = preg_replace("@https?:\/\/(www\.)?fshare\.vn@", "http://www.fshare.vn", $url);
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
@@ -34,24 +53,20 @@ class dl_fshare_vn extends Download {
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
 			if(stristr($data,'Mật khẩu download file không đúng')) $this->error("wrongpass", true, false, 2);
 			elseif(!$this->isredirect($data)) {
-				if(preg_match('%<form action="(https?:\/\/download\d+\.fshare.vn\/vip\/.+)" method%U', $data, $giay)) 
+				if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay)) 
 				return trim($giay[1]);
 			}
 			else
 			return trim($this->redirect);
 		}
-		if(stristr($data,'Vui lòng nhập mật khẩu để tải tập tin')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data,"Tài khoản đang được sử dụng trên máy khác")) 	$this->error("blockAcc", true, false);
- 		elseif(stristr($data,'Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt</b></font>'))  $this->error("blockAcc", true, false);
+		if(stristr($data,"Tài khoản đang được sử dụng trên máy khác") || stristr($data,'Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt')) 	$this->error("blockAcc", true, false);
 		elseif(stristr($data,'Liên kết bạn chọn không tồn tại trên hệ thống Fshare'))	$this->error("dead", true, false, 2);
-		elseif(stristr($data,'Tài khoản của bạn thuộc GUEST nên chỉ tải xuống 1 lần'))	 $this->error("accinvalid", true, false);
-		elseif(stristr($data,'THÔNG TIN TẬP TIN TẢI XUỐNG') && stristr($data,'TẢI XUỐNG CHẬM'))	 $this->error("accfree", true, false);
+		elseif(stristr($data,'Vui lòng nhập mật khẩu để tải tập tin')) 	$this->error("reportpass", true, false);
+		elseif(stristr($data,'Location: http://www.fshare.vn/logout.php')) 	$this->error("cookieinvalid", true, false);  
 		elseif(!$this->isredirect($data)) {
-			if(preg_match('%<form action="(https?:\/\/download\d+\.fshare.vn\/vip\/.+)" method%U', $data, $giay)) 
-			return trim($giay[1]);
+			if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay)) 	return trim($giay[1]);
 		}
-		else
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
     }
 	

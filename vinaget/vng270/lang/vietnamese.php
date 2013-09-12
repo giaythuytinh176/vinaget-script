@@ -93,7 +93,8 @@ $lang = array (
 'noaccount'		=> 'Không có tài khoản %1$s trong website. Liên hệ Admin!</font>',
 'cantconnect'	=> 'Máy chủ không thể kết nối đến %1$s',
 'accfree'		=> 'Tài khoản %1$s là miễn phí',
-'accinvalid'	=> 'Tài khoản %1$s không đúng',
+'accinvalid'	=> 'Tài khoản %1$s không hợp lệ',
+'cookieinvalid'	=> 'Cookie %1$s không hợp lệ',
 'blockCountry'	=> 'Đất nước của bạn đã bị khóa bởi %1$s',
 'blockIP'		=> 'IP của bạn đã bị khóa bởi %1$s',
 'blockAcc'		=> 'Tài khoản %1$s đã bị khóa',
@@ -117,6 +118,6 @@ $lang = array (
 * Vinaget by ..::[H]::..
 * Version: 2.7.0 Final
 * Language Class By [FZ]
-* Vietnamese language by giaythuytinh176 [20.8.2013][r39]
+* Vietnamese language by giaythuytinh176 [10.9.2013][r62][updated]
 */
 ?>

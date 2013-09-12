@@ -2,6 +2,13 @@
 
 class dl_ryushare_com extends Download {
 	
+	public function PreLeech($url){
+		$page = $this->lib->curl("http://ryushare.com/?op=checkfiles", "", "op=checkfiles&process=Check URLs&list=".urlencode($url));
+		$data = $this->lib->cut_str($page, '<div style="width:620px;text-align:left;">', 'Enter one URL per line');
+		if(stristr($data,'found</font>'))  $url = $this->lib->cut_str($data, 'green\'>', ' found');
+		else $this->error("dead", true, false, 2);
+	}
+	
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://ryushare.com/premium.python", "lang=english;{$cookie}", "");
 		if(stristr($data, 'Premium account expire:')) return array(true, "Until ".$this->lib->cut_str($data, '<b>Premium account expire:</b><br>','<br><br>'));
@@ -30,7 +37,6 @@ class dl_ryushare_com extends Download {
 		elseif (stristr($data,'403 Forbidden')) $this->error("blockIP", true, false);
 		elseif (stristr($data,'You have reached the download-limit')) $this->error("LimitAcc", true, false);
 		elseif (stristr($data,'This server is in maintenance mode.')) $this->error("Ryushare Under Maintenance", true, false);
-		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);

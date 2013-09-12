@@ -1191,13 +1191,8 @@ class stream_get extends getinfo
 	{
 		$login = $this->BitLylogin;
 		$apikey = $this->BitLyApi;
-		$bitly_api = 'http://api.bit.ly/v3/shorten?login='.$login.'&apiKey='.$apikey.'&uri='.urlencode($url).'&format='.$format;
-		$ch = curl_init();
-		curl_setopt($ch,CURLOPT_URL,$bitly_api);
-		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-		curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,5);
-		$data = curl_exec($ch);
-		curl_close($ch);
+		$bitly_api = "http://api.bit.ly/v3/shorten?login={$login}&apiKey={$apikey}&uri=".urlencode($url)."&format={$format}";
+		$data = $this->curl($bitly_api, "", "");
 		return $data;
 	}
 }
@@ -1320,11 +1315,11 @@ class Tools_get extends getinfo
 		elseif (strpos($url, "uploaded.to") || strpos($url, "ul.to") || strpos($url, "uploaded.net")) $site = "UT";
 		elseif (strpos($url, "uploading.com")) $site = "UP";
 		elseif (strpos($url, "1fichier.com")) $site = "1F";
-		else if(strpos($url,"rapidshare.com")) 	$site = "RS";
-		else if(strpos($url,"fshare.vn"))	   $site = "FshareVN";
-		else if(strpos($url,"up.4share.vn")  || strpos($url, "4share.vn"))  $site = "4ShareVN";
-		else if(strpos($url,"share.vnn.vn"))   $site = "share.vnn.vn";
-		else if(strpos($url,"upfile.vn"))   $site = "UpfileVN";
+		elseif (strpos($url, "rapidshare.com")) 	$site = "RS";
+		elseif (strpos($url, "fshare.vn"))	   $site = "FshareVN";
+		elseif (strpos($url, "up.4share.vn")  || strpos($url, "4share.vn"))  $site = "4ShareVN";
+		elseif (strpos($url, "share.vnn.vn"))   $site = "share.vnn.vn";
+		elseif (strpos($url, "upfile.vn"))   $site = "UpfileVN";
 		else {
 			$schema = parse_url($url);
 			$site = preg_replace("/(www\.|\.com|\.net|\.biz|\.info|\.org|\.us|\.vn|\.jp|\.fr|\.in|\.to)/", "", $schema['host']);

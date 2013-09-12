@@ -14,7 +14,7 @@ class dl_uploadbaz_com extends Download {
         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
 	}
-
+/*
     public function FreeLeech($url) {	//Thanks to Th3-822@rapidleech.com
 		list($url, $pass) = $this->linkpassword($url);
         $page = $this->lib->curl($url, "", "");
@@ -69,7 +69,7 @@ class dl_uploadbaz_com extends Download {
 			return trim($dlink[0]);
 		}
 		return false;	
-	}				
+	}				*/
 	
 	public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);

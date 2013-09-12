@@ -15,9 +15,9 @@ class dl_putlocker_com extends Download {
     }
 	
 	public function Login($user, $pass){		// use cookie auth= 
-		$this->error("notsupportacc");
-		return false;
-	}
+        $data = $this->lib->curl("http://www.putlocker.com/", "{$user}={$pass}", "");	
+		return "{$user}={$pass};{$this->lib->GetCookies($data)}";
+    }
 	
 	public function FreeLeech($url){
 		$url = $this->getredirect($url);

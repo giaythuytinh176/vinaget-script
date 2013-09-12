@@ -36,7 +36,7 @@ class dl_netload_in extends Download {
 		$data = $this->lib->cut_str($this->lib->cut_str($data, '<h3', '</body>'), 'name="links">', '</textarea>');
 		if(stristr($data,'online')) {
 			$gach = explode(';', $data);
-			$url = 'http://www.netload.in/datei' . $gach[0]. '.htm';
+			$url = 'http://netload.in/datei' . $gach[0]. '.htm';
 		}
 		else $this->error("dead", true, false, 2);
 		//if(preg_match('@^https?:\/\/(www\.)?netload\.in\/(\w+)(.+)?@i', $url, $urlgiay))

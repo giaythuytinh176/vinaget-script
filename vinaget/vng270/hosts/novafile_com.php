@@ -24,8 +24,8 @@ class dl_novafile_com extends Download {
 		else {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form action="', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			//if (stristr($data,'You have reached the download limit'))  $this->error("LimitAcc", true, false);
-			if(preg_match('/download limit: (\d+) MB <br>/', $data, $giay)) $this->error('You have reached the download limit: '.$giay[1].' MB', true, false);
+			if (stristr($data,'You have reached the download limit'))  $this->error("LimitAcc", true, false);
+			//if(preg_match('/download limit: (\d+) MB <br>/', $data, $giay)) $this->error('You have reached the download limit: '.$giay[1].' MB', true, false);
 			elseif(preg_match('@https?:\/\/s(\d+)?\.novafile\.com(:\d+)?\/[^"\'><\r\n\t]+@i', $data, $thuytinh))
 			return trim($thuytinh[0]);
 		}

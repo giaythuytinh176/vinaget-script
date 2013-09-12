@@ -2,6 +2,13 @@
 
 class dl_filechin_com extends Download {
     
+	public function PreLeech($url){
+		$page = $this->lib->curl("http://www.filechin.com/?op=checkfiles", "", "op=checkfiles&process=Check URLs&list=".urlencode($url));
+		$data = $this->lib->cut_str($page, '<Table class="tbl1" cellpadding=2>', '</Table>');
+		if(stristr($data,'>Found</td>'))  $url = $this->lib->cut_str($data, '<tr><td>', '</td><td style');
+		else $this->error("dead", true, false, 2);
+	}
+	
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://www.filechin.com/?op=my_account", "lang=english;{$cookie}", "");
         if(stristr($data, 'Premium account expire:')) return array(true, "Until ".$this->lib->cut_str($data, 'Premium account expire:</TD><TD><b>','</b></TD><TD>'));
@@ -83,7 +90,6 @@ class dl_filechin_com extends Download {
 			return trim($link[0]);
 		}
 		if(stristr($data,'type="password" name="password')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data,'<b>File Not Found</b><br><br>')) $this->error("dead", true, false, 2);
 		elseif(stristr($data,'You have reached the download-limit:')) $this->error("LimitAcc", true, false);
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1" method="POST"', '</Form>'));
