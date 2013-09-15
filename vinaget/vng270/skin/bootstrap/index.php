@@ -60,9 +60,11 @@
 					if(isset($plugin[$val['site']])) $plugin[$val['site']] .= "{$key}\n";
 					else $plugin[$val['site']] = "{$key}\n";
 				}
-				foreach($plugin as $key=>$val){
-					$val = substr($val, 0, -1);
-					echo "<img src='skin/bootstrap/icons/{$key}.png' title='{$val}' alt='{$val}'/> ";
+				foreach($plugin as $key=>$val){		// Thanks to shahril@rapidleech.com  - Fixed lag when loading new vng
+				  $val = substr($val, 0, -1);
+				  $icon = "./skin/bootstrap/icons/{$key}.png";
+				  if(file_exists($icon)) echo "<img src='{$icon}' title='{$val}' alt='{$val}'/> ";
+				  echo $val.'<br>';
 				}
 				?>
 				</div>

@@ -343,7 +343,7 @@ class stream_get extends getinfo
 	function stream_get()
 	{
 		$this->config();
-		$this->max_size_other_host = 10240;
+		$this->max_size_other_host = 20500;
 		$this->load_jobs();
 		$this->load_cookies();
 		$this->cookie = '';

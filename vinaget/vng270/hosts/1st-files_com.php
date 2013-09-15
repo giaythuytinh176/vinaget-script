@@ -28,7 +28,7 @@ class dl_1st_files_com extends Download {
 		if(stristr($data,'<br><b>Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,'>File Not Found<')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			$post = $this->parseForm();
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))	return trim($giay[0]);
 		}
