@@ -14,7 +14,7 @@ class dl_uptobox_com extends Download {
         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
     }
-/*	
+/*
     public function FreeLeech($url) {	//Thanks to Th3-822@rapidleech.com
 		list($url, $pass) = $this->linkpassword($url);
 		$page = $this->lib->curl($url, "", "");
@@ -63,7 +63,7 @@ class dl_uptobox_com extends Download {
 				elseif(stristr($page,'>Skipped countdown'))  $this->error("Error: Skipped countdown?.", true, false);
 				elseif(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
 				elseif(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
-				elseif(preg_match('/a href="(https?:\/\/.+uptobox\.com\/d\/.+)">Click here/i', $page, $link))	return trim($link[1]);
+				elseif(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $page, $link))	return trim($link[1]);
 			}
 			if(stristr($page,'type="password" name="password'))  $this->error("reportpass", true, false);
 			
@@ -72,10 +72,10 @@ class dl_uptobox_com extends Download {
 			if(stristr($page,'>Skipped countdown'))  $this->error("Error: Skipped countdown?.", true, false);
 			elseif(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
 			elseif(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
-			elseif(preg_match('/a href="(https?:\/\/.+uptobox\.com\/d\/.+)">Click here/i', $page, $link))	return trim($link[1]);
+			elseif(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $page, $link))	return trim($link[1]);
 		}
 		return false;
-	}				*/			
+	}				*/
 	
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
@@ -85,14 +85,14 @@ class dl_uptobox_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(preg_match('/a href="(https?:\/\/.+uptobox\.com\/d\/.+)">Click here/i', $data, $link))	return trim($link[1]);
+			elseif(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $data, $link))	return trim($link[1]);
 		}
 		if(stristr($data,'type="password" name="password'))  $this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(preg_match('/a href="(https?:\/\/.+uptobox\.com\/d\/.+)">Click here/i', $data, $link))	return trim($link[1]);
+			if(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $data, $link))	return trim($link[1]);
 		}
 		else  
 		return trim($this->redirect);

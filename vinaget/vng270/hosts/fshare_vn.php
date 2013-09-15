@@ -23,7 +23,7 @@ class dl_fshare_vn extends Download {
 			for ($i = 1; $i < $maxfile; $i++) {
 				preg_match('%\/(.+)" target="_blank">%U', $id[$i], $code);
 				//$list = "http://www.fshare.vn/file/".$code[1]."/<br/>"; 
-				$list = "<a href=http://www.fshare.vn/file/".$code[1].">http://www.fshare.vn/file/".$code[1]."</a><br/>";
+				$list = "<a href=http://www.fshare.vn/file/{$code[1]}>http://www.fshare.vn/file/{$code[1]}/</a><br/>";
 				echo $list;
 			}
 			exit;
@@ -40,7 +40,8 @@ class dl_fshare_vn extends Download {
      
     public function Login($user, $pass){
 		$data = $this->lib->curl("https://www.fshare.vn/login.php", "", "login_useremail={$user}&login_password={$pass}&auto_login=1&url_refe=https://www.fshare.vn/index.php");	
-        return $this->lib->GetCookies($data);
+        $cookie = $this->lib->GetCookies($data);
+		return $cookie;
     }
 	
     public function Leech($url) {
@@ -53,20 +54,19 @@ class dl_fshare_vn extends Download {
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
 			if(stristr($data,'Mật khẩu download file không đúng')) $this->error("wrongpass", true, false, 2);
 			elseif(!$this->isredirect($data)) {
-				if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay)) 
-				return trim($giay[1]);
+				if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay))  return trim($giay[1]);
 			}
-			else
-			return trim($this->redirect);
+			else	return trim($this->redirect);
 		}
-		if(stristr($data,"Tài khoản đang được sử dụng trên máy khác") || stristr($data,'Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt')) 	$this->error("blockAcc", true, false);
-		elseif(stristr($data,'Liên kết bạn chọn không tồn tại trên hệ thống Fshare'))	$this->error("dead", true, false, 2);
-		elseif(stristr($data,'Vui lòng nhập mật khẩu để tải tập tin')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data,'Location: http://www.fshare.vn/logout.php')) 	$this->error("cookieinvalid", true, false);  
+		if(stristr($data,"Location: http://www.fshare.vn/logout.php")) 	$this->error("cookieinvalid", true, false);  
+		elseif(stristr($data,"Tài khoản đang được sử dụng trên máy khác") || stristr($data,"Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt")) 	$this->error("blockAcc", true, true);
+		elseif(stristr($data,"Thông tin tập tin tải xuống") && stristr($data,"TẢI XUỐNG CHẬM"))  $this->error("accfree", true, false);
+		elseif(stristr($data,"Liên kết bạn chọn không tồn tại trên hệ thống Fshare"))	$this->error("dead", true, false, 2);
+		elseif(stristr($data,"Vui lòng nhập mật khẩu để tải tập tin")) 	$this->error("reportpass", true, false);
 		elseif(!$this->isredirect($data)) {
 			if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay)) 	return trim($giay[1]);
 		}
-		else  return trim($this->redirect);
+		else	return trim($this->redirect);
 		return false;
     }
 	

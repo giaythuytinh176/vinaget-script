@@ -19,13 +19,13 @@ class dl_up_4share_vn extends Download {
 		$url = str_replace("up.4share.vn/d/", "up.4share.vn/dlist/", $url);
 		if(stristr($url, "/dlist/")) {
 			$data = $this->lib->curl($url, "", "");
-			$FID = explode('up.4share.vn', $data);
+			$FID = explode('br />http://up.4share.vn', $data);
 			$maxfile = count($FID);
 			for ($i = 1; $i < $maxfile; $i++) {
 				preg_match('%\/f\/(.+)\/%U', $FID[$i], $code);
-				preg_match('%\/f\/\w+\/(.+)\/%U', $FID[$i], $fn);
+				preg_match('%\/f\/\w+\/(.+)<%U', $FID[$i], $fn);
 				//$list = "http://up.4share.vn/f/".$code[1]."/".$fn[1]."<br/>"; 
-				$list = "<a href=http://up.4share.vn/f/".$code[1]."/".urlencode($fn[1]).">http://up.4share.vn/f/".$code[1]."/".$fn[1]."</a>";
+				$list = "<a href=http://up.4share.vn/f/{$code[1]}/".urlencode($fn[1]).">http://up.4share.vn/f/{$code[1]}/{$fn[1]}</a><br/>";
 				echo $list;
 			}
 			exit;
@@ -67,8 +67,7 @@ class dl_up_4share_vn extends Download {
 		if (stristr($data,"File có password download"))  $this->error("reportpass", true, false); 
   		elseif (stristr($data,"bị khóa đến"))  $this->error("blockAcc", true, false);
 		elseif (stristr($data,"File not found") || stristr($data,"FID Không hợp lệ") || stristr($data,"File đã bị xóa"))  $this->error("dead", true, false, 2);
-		elseif (preg_match('/href=\'(http:\/\/.+4share\.vn\/\d+\/.+)\'>/i', $data, $link)) 
-		return trim($link[1]);
+		elseif (preg_match('/href=\'(http:\/\/.+4share\.vn\/\d+\/.+)\'>/i', $data, $link)) 	return trim($link[1]);
 		return false;
     }
 

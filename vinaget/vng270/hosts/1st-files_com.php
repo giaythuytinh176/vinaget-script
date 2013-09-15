@@ -10,7 +10,7 @@ class dl_1st_files_com extends Download {
     }
     
     public function Login($user, $pass){
-        $data = $this->lib->curl("http://www.1st-files.com/login.html", "lang=english", "login={$user}&password={$pass}&op=login&redirect=http://www.1st-files.com/");
+        $data = $this->lib->curl("http://www.1st-files.com/", "lang=english", "login={$user}&password={$pass}&op=login&redirect=");
         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
         return $cookie;
     }
@@ -23,19 +23,16 @@ class dl_1st_files_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false);
-			elseif(preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
-			return trim($giay[0]);
+			elseif(preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))	return trim($giay[0]);
 		}
 		if(stristr($data,'<br><b>Password:</b> <input type="password"')) 	$this->error("reportpass", true, false);
-		elseif(stristr($data,'<b>File Not Found</b><br><br>')) $this->error("dead", true, false, 2);
+		elseif(stristr($data,'>File Not Found<')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$post = $this->parseForm();
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))
-			return trim($giay[0]);
+			if(preg_match('@http:\/\/(\w+\.)?1st-files\.com\/d\/[^"\'><\r\n\t]+@i', $data, $giay))	return trim($giay[0]);
 		}
-		else  
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
     }
 	

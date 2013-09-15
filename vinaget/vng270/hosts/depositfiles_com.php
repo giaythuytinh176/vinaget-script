@@ -1,6 +1,6 @@
 <?php
 
-class dl_depositfiles_com extends Download {
+class dl_depositfiles_com extends Download { 
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://depositfiles.com/gold/payment_history.php", "lang_current=en;{$cookie}", "");
@@ -8,21 +8,12 @@ class dl_depositfiles_com extends Download {
 		else if(stristr($data, 'Your current status: FREE - member')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}
-	
-	public function Login($user, $pass){	
-		$post = array(			// if df requied captcha, so not work!!!
-			'login' => $user,
-			'password' => $pass,
-		);
-		$page = $this->lib->curl('http://dfiles.eu/api/user/login', 'lang_current=en', $post, 0, 0);
-		$json = json_decode($page);
-		if($json->data->mode == "gold") {
-			$cookie = "autologin=".urlencode($json->data->token);
-			return $cookie;
-		}
+		
+	public function Login($user, $pass){
+		$this->error("notsupportacc");
 		return false;
 	}
-
+/*	
     public function Leech($url) {
 		$url = preg_replace("@(depositfiles\.org|depositfiles\.net|dfiles\.eu|dfiles\.ru)@", "depositfiles.com", $url);
 		list($url, $pass) = $this->linkpassword($url);
@@ -36,12 +27,27 @@ class dl_depositfiles_com extends Download {
 			elseif(preg_match('@https?:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth\-[^"\'<>\r\n\t]+@i', $data, $link))
 			return trim($link[0]);
 		}
-		if (stristr($data, "You have exceeded the")) $this->error("LimitAcc");
-		elseif (stristr($data,'Please, enter the password for this file')) $this->error("reportpass", true, false);
-		elseif (stristr($data, "it has been removed due to infringement of copyright")) $this->error("dead", true, false, 2);
-		elseif (stristr($data, "Such file does not exist")) $this->error("dead", true, false, 2);
-		elseif (preg_match('@https?:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth\-[^"\'<>\r\n\t]+@i', $data, $link))
+		if(stristr($data, "You have exceeded the")) $this->error("LimitAcc");
+		elseif(stristr($data,'Please, enter the password for this file')) $this->error("reportpass", true, false);
+		elseif(stristr($data, "it has been removed due to infringement of copyright") || stristr($data, "Such file does not exist")) $this->error("dead", true, false, 2);
+		elseif(preg_match('@https?:\/\/fileshare\d+\.'.$name.'\.'.$domain.'\/auth\-[^"\'<>\r\n\t]+@i', $data, $link))
 		return trim($link[0]);
+		return false;
+		//if(preg_match('%<a href="(https?:\/\/fileshare.+depositfiles\.com\/auth.+)" onClick%U', $data, $redir2))
+    }	*/
+	
+    public function Leech($url) {
+		list($url, $pass) = $this->linkpassword($url);
+		$url = preg_replace("@(depositfiles\.org|depositfiles\.net|dfiles\.eu|dfiles\.ru)@", "depositfiles.com", $url);
+		$url = preg_replace("@https?:\/\/(www\.)?depositfiles\.com\/(\w+\/)?files@", "http://depositfiles.com/files", $url);
+		preg_match('@http:\/\/depositfiles\.com\/files\/(.*)@i', $url, $DFid);
+		$data = $this->lib->curl("http://depositfiles.com/api/download/file?file_id={$DFid[1]}&file_password={$pass}", "lang_current=en;".$this->lib->cookie, "", 0);
+		$page = json_decode($data, true);
+		if($page['status'] !== "OK" && $page['error'] == "FileIsPasswordProtected")  $this->error("reportpass", true, false);
+		elseif($page['status'] !== "OK" && $page['error'] == "FileDoesNotExist")   $this->error("dead", true, false, 2);
+		elseif($page['status'] !== "OK" && $page['error'] == "FilePasswordIsIncorrect")   $this->error("wrongpass", true, false, 2);
+		elseif($page['status'] == "OK" && isset($page['data']['download_url']))  return trim($page['data']['download_url']);
+		else $this->error($page['error'], true, false);
 		return false;
     }
 	

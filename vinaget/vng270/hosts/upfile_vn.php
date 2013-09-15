@@ -10,14 +10,13 @@ class dl_upfile_vn extends Download {
 	}
 
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://upfile.vn/login.html","","loginUsername={$user}&loginPassword={$pass}&submitme=1&submit=Đăng nhập");
+		$data = $this->lib->curl("http://upfile.vn/login.html", "", "loginUsername={$user}&loginPassword={$pass}&submitme=1&submit=Đăng%20nhập");
 		$cookie = $this->lib->GetCookies($data);
 		return $cookie;
 	}
 	
     public function Leech($url) {
-		if(preg_match('@http:\/\/upfile\.vn\/[^"\'><\r\n\t]+@i', $url, $giay))
-		return trim($giay[0]);
+		return trim($url);
 		return false;
     }	
 

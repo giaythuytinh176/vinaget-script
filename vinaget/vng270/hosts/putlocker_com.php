@@ -14,10 +14,11 @@ class dl_putlocker_com extends Download {
 		else return array(false, "accinvalid");
     }
 	
-	public function Login($user, $pass){		// use cookie auth= 
-        $data = $this->lib->curl("http://www.putlocker.com/", "{$user}={$pass}", "");	
-		return "{$user}={$pass};{$this->lib->GetCookies($data)}";
-    }
+	public function Login($user, $pass){
+		$this->error("notsupportacc");
+		return false;
+	}
+
 	
 	public function FreeLeech($url){
 		$url = $this->getredirect($url);
