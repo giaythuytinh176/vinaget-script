@@ -19,7 +19,7 @@ class dl_uptobox_com extends Download {
 		list($url, $pass) = $this->linkpassword($url);
 		$page = $this->lib->curl($url, "", "");
 		$this->save($this->lib->GetCookies($page));
-		$page2 = $this->lib->cut_str($page, 'Form method="POST" action=', '</form>'); 
+		$page2 = $this->lib->cut_str($page, '<Form', '</Form>'); 
 		$post = array();
 		$post['op'] = $this->lib->cut_str($page2, 'name="op" value="', '"');
 		$post['usr_login'] = (empty($this->lib->cookie['xfss'])) ? '' : $this->lib->cookie['xfss'];
@@ -33,7 +33,7 @@ class dl_uptobox_com extends Download {
 		elseif(preg_match('@You have to wait (?:\d+ \w+,\s)?\d+ \w+ till next download@i', $page, $count)) 	$this->error($count[0], true, false);
 		elseif(preg_match('@charger des fichiers de taille sup&eacute;rieur &agrave (\d+) Mb.@i', $page, $sizelim)) $this->error('You can download files up to '.$sizelim[1].' Mb.', true, false);
 		
-		$page2 = $this->lib->cut_str($page, '<form name="F1" method="POST"', '</form>');  
+		$page2 = $this->lib->cut_str($page, '<Form', '</Form>');  
 		$post = array();
 		$post['op'] = $this->lib->cut_str($page2, 'name="op" value="', '"');
 		$post['id'] = $this->lib->cut_str($page2, 'name="id" value="', '"');
@@ -54,7 +54,7 @@ class dl_uptobox_com extends Download {
 			sleep($count[1]);
 			
 			if($pass) {
-				$post = $this->parseForm($this->lib->cut_str($page, '<form name="F1" method="POST"', '</form>'));
+				$post = $this->parseForm($this->lib->cut_str($page, '<Form', '</Form>'));
 				$post['method_free'] = "Free Download";
 				$post["password"] = $pass;
 				$post['code'] = html_entity_decode($captcha);
@@ -81,7 +81,7 @@ class dl_uptobox_com extends Download {
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {
-			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form', '</Form>'));
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
@@ -90,12 +90,11 @@ class dl_uptobox_com extends Download {
 		if(stristr($data,'type="password" name="password'))  $this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$post = $this->parseForm($this->lib->cut_str($data, '<Form', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $data, $link))	return trim($link[1]);
 		}
-		else  
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
     }
 	
@@ -107,6 +106,6 @@ class dl_uptobox_com extends Download {
 * Version: 2.7.0
 * Uptobox Download Plugin
 * Downloader Class By [FZ]
-* Support file password by giaythuytinh176 [26.7.2013]
+* Support file password by giaythuytinh176 [26.7.2013][18.9.2013][Fixed]
 */
 ?>

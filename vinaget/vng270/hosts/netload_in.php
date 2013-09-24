@@ -36,10 +36,12 @@ class dl_netload_in extends Download {
 		$data = $this->lib->cut_str($this->lib->cut_str($data, '<h3', '</body>'), 'name="links">', '</textarea>');
 		if(stristr($data,'online')) {
 			$gach = explode(';', $data);
-			$url = 'http://netload.in/datei' . $gach[0]. '.htm';
+			$url = 'http://netload.in/datei'.$gach[0].'.htm';
+			$this->lib->reserved['filename'] = $gach[1];
+			$this->lib->reserved['filesize'] = $gach[2];
 		}
 		else $this->error("dead", true, false, 2);
-		//if(preg_match('@^https?:\/\/(www\.)?netload\.in\/(\w+)(.+)?@i', $url, $urlgiay))
+		//preg_match('@^https?:\/\/(www\.)?netload\.in\/(\w+)(.+)?@i', $url, $urlgiay);
 		//$url = 'http://netload.in/'.$urlgiay[2].'.htm';
 		$data = $this->lib->curl($url, $this->lib->cookie, "");	
 		if($pass) {
@@ -53,21 +55,17 @@ class dl_netload_in extends Download {
 				$data = $this->lib->curl($urlpass, $this->lib->cookie, $post);
 				if(stristr($data,'You have entered an incorrect password'))  $this->error("wrongpass", true, false, 2);
 				elseif(!$this->isredirect($data)) {
-					if(preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))
-					return trim($dl[0]);
+					if(preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))	return trim($dl[0]);
 				}
-				else  
-				return trim($this->redirect);
+				else  return trim($this->redirect);
 			}
 		}
 		//if(stristr($data,"The file was deleted"))  $this->error("dead", true, false, 2);
 		if(stristr($data,'This file is password-protected'))   $this->error("reportpass", true, false);
 		elseif(!$this->isredirect($data)) {
-			if(preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))
-			return trim($dl[0]);
+			if(preg_match('@https?:\/\/[\d.]+\/[^"\'><\r\n\t]+@i', $data, $dl))	return trim($dl[0]);
 		}
-		else  
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
     }
 

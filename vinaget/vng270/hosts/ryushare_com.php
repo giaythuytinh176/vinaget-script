@@ -2,13 +2,6 @@
 
 class dl_ryushare_com extends Download {
 	
-	public function PreLeech($url){
-		$page = $this->lib->curl("http://ryushare.com/?op=checkfiles", "", "op=checkfiles&process=Check URLs&list=".urlencode($url));
-		$data = $this->lib->cut_str($page, '<div style="width:620px;text-align:left;">', 'Enter one URL per line');
-		if(stristr($data,'found</font>'))  $url = $this->lib->cut_str($data, 'green\'>', ' found');
-		else $this->error("dead", true, false, 2);
-	}
-	
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://ryushare.com/premium.python", "lang=english;{$cookie}", "");
 		if(stristr($data, 'Premium account expire:')) return array(true, "Until ".$this->lib->cut_str($data, '<b>Premium account expire:</b><br>','<br><br>'));
@@ -17,7 +10,7 @@ class dl_ryushare_com extends Download {
 	}
 	
 	public function Login($user, $pass){
-		$data = $this->lib->curl("http://ryushare.com/", "lang=english", "op=login&redirect=http%3A%2F%2Fryushare.com%2F&login={$user}&password={$pass}&loginFormSubmit=Login");
+		$data = $this->lib->curl("http://ryushare.com/", "lang=english", "op=login&login={$user}&password={$pass}&loginFormSubmit=Login&redirect=http://ryushare.com/");
 		$cookie = "lang=english;".$this->lib->GetCookies($data);
 		return $cookie;
 	}
@@ -30,21 +23,19 @@ class dl_ryushare_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(preg_match('@http:\/\/(\w+\.)?ryushare\.com(:\d+)?\/files\/dl\/[^"\'<>\r\n\t]+@i', $data, $giay))
-			return trim($giay[0]);
+			elseif(preg_match('@http:\/\/(\w+\.)?ryushare\.com(:\d+)?\/files\/dl\/[^"\'<>\r\n\t]+@i', $data, $giay))	return trim($giay[0]);
 		}
 		if (stristr($data,'<input type="password" name="password" class="myForm">')) $this->error("reportpass", true, false);
 		elseif (stristr($data,'403 Forbidden')) $this->error("blockIP", true, false);
 		elseif (stristr($data,'You have reached the download-limit')) $this->error("LimitAcc", true, false);
-		elseif (stristr($data,'This server is in maintenance mode.')) $this->error("Ryushare Under Maintenance", true, false);
+		elseif (stristr($data,'This server is in maintenance mode.')) $this->error("unavailable", true, false);
+		elseif (stristr($data,'>File Not Found<') || stristr($data,'>404 - Not Found<')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form name="F1"', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(preg_match('@https?:\/\/(\w+\.)?ryushare\.com(:\d+)?\/files\/dl\/[^"\'<>\r\n\t]+@i', $data, $giay))
-			return trim($giay[0]);
+			if(preg_match('@https?:\/\/(\w+\.)?ryushare\.com(:\d+)?\/files\/dl\/[^"\'<>\r\n\t]+@i', $data, $giay))	return trim($giay[0]);
 		}
-		else  
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
     }
 	

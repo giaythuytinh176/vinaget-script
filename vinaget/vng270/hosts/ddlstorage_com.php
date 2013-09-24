@@ -31,11 +31,10 @@ class dl_ddlstorage_com extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form method="POST" name="F1', '</form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(preg_match('/onclick="parent.location=\'(http:\/\/\w+\.ddlstorage\.com:182\/d\/.+)\'">/', $data, $link))
+			if(preg_match('/onclick="parent.location=\'(https?:\/\/.+)\'"></', $data, $link))
 			return trim($link[1]);
 		} 
-		else  
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
     }
 	
