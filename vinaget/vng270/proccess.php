@@ -18,6 +18,7 @@ if($page == 'config'){
 			elseif(is_numeric($cval)) $cval = intval($cval);
 			else $cval = $cval;
 			$obj->config[$ckey] = $cval;
+			setcookie("debug", print_r($obj->config, true));
 		}
 		$obj->save_json($obj->fileconfig, $obj->config);
 		$msg = "Config Saved!";

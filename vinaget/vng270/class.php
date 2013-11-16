@@ -709,6 +709,7 @@ class stream_get extends getinfo
 	
 	function get($url)
 	{
+		$this->reserved = array();
 		$this->CheckMBIP();
 		$dlhtml = '';
 		if (count($this->jobs) >= $this->max_jobs) {
@@ -772,7 +773,7 @@ class stream_get extends getinfo
 		else{
 			$size_name = Tools_get::size_name($link, $this->cookie);
 			$filesize = $size_name[0];
-			$filename = $size_name[1];
+			$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : $size_name[1];
 		}
 
 		$hosting = Tools_get::site_hash($Original);
