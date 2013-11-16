@@ -21,7 +21,7 @@ class dl_metacafe_com extends Download {
 * Open Source Project
 * Vinaget by ..::[H]::..
 * Version: 2.7.0
-* Metacafe Download Plugin [Fixed][16.9.2013]
+* Metacafe Download Plugin 
 * Downloader Class By [FZ]
 */
 ?>
