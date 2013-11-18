@@ -16,14 +16,13 @@ class dl_hotfile_com extends Download {
 	}
 	
     public function Leech($url) {
-		$data = $this->lib->curl($url,"{$this->lib->cookie};lang=en;","");
+		$data = $this->lib->curl($url, "{$this->lib->cookie}", "");
 		if(stristr($data,"removed due to copyright claim") || stristr($data,"404 - Not Found"))   $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			if(preg_match('@https?:\/\/s\d+\.hotfile\.com\/get\/[^"\'><\r\n\t]+@i', $data, $link))
+			if(preg_match('@https?:\/\/(s\d+\.)?hotfile\.com\/get\/[^"\'><\r\n\t]+@i', $data, $link))
 			return trim($link[0]);
 		}
-		else  
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
     }
 
@@ -35,7 +34,7 @@ class dl_hotfile_com extends Download {
 * Version: 2.7.0
 * Hotfile Download Plugin 
 * Downloader Class By [FZ]
-* Add check acc by giaythuytinh176 [19.8.2013]
-* Thanks to Rapid61@rapidleech.com for your hotfile account.
+* Add check acc by giaythuytinh176 [19.8.2013][24.10.2013][fixed link]
+* Thanks to Rapid61@rapidleech.com for your hotfile account. 
 */
 ?>

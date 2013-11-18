@@ -4,26 +4,29 @@ class dl_share_online_biz extends Download {
     
     public function CheckAcc($cookie){
         $data = $this->lib->curl("https://www.share-online.biz/user/profile", "page_language=english;".$cookie, "");
-        if(stristr($data, 'Penalty-Premium        </p>') || stristr($data, 'Premium        </p>') && stristr($data, '<span class=\'red\'>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Account valid until:','Registration date:'), '<span class=\'red\'>', '</span>'));
-		elseif(stristr($data, 'Penalty-Premium        </p>') || stristr($data, 'Premium        </p>') && stristr($data, '<span class=\'green\'>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, 'Account valid until:','Registration date:'), '<span class=\'green\'>', '</span>'));
+		$dt = $this->lib->cut_str($data, ">Account valid until:", ">Registration date");
+        if(stristr($data, 'Premium        </p>') && stristr($dt, "<span class='red'>")) 	return array(true, "Until ".$this->lib->cut_str($dt, "<span class='red'>", '</span>'));
+		elseif(stristr($data, 'Premium        </p>') && stristr($dt, "<span class='green'>"))	 return array(true, "Until ".$this->lib->cut_str($dt, "<span class='green'>", '</span>'));
 		else return array(false, "accinvalid");
     }
     
     public function Login($user, $pass){
-        $data = $this->lib->curl("https://www.share-online.biz/user/login", "page_language=english", "user={$user}&pass={$pass}&l_rememberme=1&submit=Log in");
-        $cookie = "page_language=english;".$this->lib->GetCookies($data);
+		$data = $this->lib->curl("https://www.share-online.biz/user/login", "animations=1;newsscrl=1;page_language=english", "user={$user}&pass={$pass}&l_rememberme=0&submit=Log%20in");
+        $cookie = "animations=1;newsscrl=1;page_language=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
     }
-    
+
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
+		$this->save($this->lib->GetCookies($data)); 
 		if(stristr($data, 'The requested file is not available'))   $this->error("dead", true, false, 2);
-		if(!preg_match('/var dl="(\w+)";/', $data, $en64)) 
-		$this->error("Cannot get base64_encode", true, false, 2);	
-		else { 		
-			$de64 = base64_decode($en64[1]);
-			return trim($de64);
+		if(!preg_match('/var dl="(.*)";var file/', $data, $en64)) $this->error("Cannot get base64_encode", true, false);	
+		else { 	
+			$link = base64_decode($en64[1]);
+			return trim($link);
 		}
+		//$enlink = $this->lib->cut_str($data, 'var dl="', '";var file;');
+		//return trim(base64_decode($enlink));
 		return false;
     }
 	
@@ -33,7 +36,7 @@ class dl_share_online_biz extends Download {
 * Open Source Project
 * Vinaget by ..::[H]::..
 * Version: 2.7.0
-* Share-online.biz Download Plugin by giaythuytinh176 [29.7.2013]
+* Share-online.biz Download Plugin by giaythuytinh176 [29.7.2013][16.11.2013][Fixed can't connect to SO]
 * Downloader Class By [FZ]
 */
 ?>

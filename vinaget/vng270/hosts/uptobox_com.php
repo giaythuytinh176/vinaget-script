@@ -88,7 +88,7 @@ class dl_uptobox_com extends Download {
 			elseif(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $data, $link))	return trim($link[1]);
 		}
 		if(stristr($data,'type="password" name="password'))  $this->error("reportpass", true, false);
-		elseif(stristr($data,'The file was deleted by its owner')) $this->error("dead", true, false, 2);
+		elseif(stristr($data,'The file was deleted by its owner') || stristr($data,'Page not found / La page')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);

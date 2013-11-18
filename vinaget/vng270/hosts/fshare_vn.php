@@ -58,7 +58,11 @@ class dl_fshare_vn extends Download {
 			}
 			else	return trim($this->redirect);
 		}
-		if(stristr($data,"Location: http://www.fshare.vn/logout.php")) 	$this->error("cookieinvalid", true, false);  
+		if(stristr($data,"Location: http://www.fshare.vn/logout.php")) 	{
+			$this->lib->cookie = "";
+			$this->save("");
+			$this->error("cookieinvalid", true, false);  
+		}
 		elseif(stristr($data,"Tài khoản đang được sử dụng trên máy khác") || stristr($data,"Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt")) 	$this->error("blockAcc", true, true);
 		elseif(stristr($data,"Thông tin tập tin tải xuống") && stristr($data,"TẢI XUỐNG CHẬM"))  $this->error("accfree", true, false);
 		elseif(stristr($data,"Liên kết bạn chọn không tồn tại trên hệ thống Fshare"))	$this->error("dead", true, false, 2);

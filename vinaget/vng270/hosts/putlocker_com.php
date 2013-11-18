@@ -2,11 +2,6 @@
 
 class dl_putlocker_com extends Download {
 	
-	public function PreLeech($url) {
-		$url = str_replace("http://putlocker.com", "http://www.putlocker.com", $url);
-		$url = str_replace("/embed/", "/file/", $url);
-	}
-	
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://www.putlocker.com/profile.php?pro", "{$cookie}", "");
         if(stristr($data, 'profile.php?pro" class="logout_link">Pro Status</a>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, '<td>Expiring </td>','</tr>'), '<td>','</td>'));
@@ -17,15 +12,16 @@ class dl_putlocker_com extends Download {
 	public function Login($user, $pass){
 		$this->error("notsupportacc");
 		return false;
-	}
-
-	
+	}  
+/*
 	public function FreeLeech($url){
+		$url = preg_replace("@https?:\/\/(www\.)?putlocker\.com\/embed\/@", "http://www.putlocker.com/file/", $url);
 		$url = $this->getredirect($url);
 		if (stristr($url,'404')) $this->error("dead", true, false, 2);
 		list($url, $pass) = $this->linkpassword($url);
 		$data = $this->lib->curl($url, "", "");
 		$this->lib->cookie = $this->lib->GetCookies($data);
+		$this->lib->reserved['filename'] = $this->lib->cut_str($data, 'var name = "', '";');
 		$hash = $this->lib->cut_str($data, '<input type="hidden" value="','" name="hash">');
 		if(stristr($data,'name="captcha_code"'))  $this->error("Captcha required!", true, false);
 		if(preg_match('@var countdownNum = (\d+);@i', $data, $count) && $count[1] > 0) 
@@ -35,35 +31,36 @@ class dl_putlocker_com extends Download {
 			$post["file_password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			$this->lib->cookie .= ";".$this->lib->GetCookies($data);
-			$id = $this->lib->cut_str($data, '<a href="/get_file.php?id=','"');
+			$id = $this->lib->cut_str($data, '<a href="/get_file.php?id=', '" class="download_file_link');
 			$data = $this->lib->curl("http://www.putlocker.com/get_file.php?id=".trim($id),$this->lib->cookie,"");
 			if($this->isredirect($data)) return trim($this->redirect);
-			return false;
 		}
 		if(stristr($data,'This file requires a password. Please enter it.')) 	$this->error("reportpass", true, false);
 		if(stristr($data,'You have exceeded the daily download limit for your country')) 	$this->error("LimitAcc", true, false);
 		$this->lib->cookie .= ";".$this->lib->GetCookies($data);
-		$id = $this->lib->cut_str($data, '<a href="/get_file.php?id=','"');
-		$data = $this->lib->curl("http://www.putlocker.com/get_file.php?id=".trim($id),$this->lib->cookie,"");
+		$id = $this->lib->cut_str($data, '<a href="/get_file.php?id=', '" class="download_file_link');
+		$data = $this->lib->curl("http://www.putlocker.com/get_file.php?id=".trim($id), $this->lib->cookie, "");
 		if($this->isredirect($data)) return trim($this->redirect);
 		return false;
     }	
-	
+	*/
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
+		$url = preg_replace("@https?:\/\/(www\.)?putlocker\.com\/embed\/@", "http://www.putlocker.com/file/", $url);
 		$url = $this->getredirect($url);
-		if (stristr($url,'404'))  $this->error("dead", true, false, 2);
-		$data =  $this->lib->curl($url, $this->lib->cookie, "");
+		if(stristr($url,'404'))  $this->error("dead", true, false, 2);
+		$data = $this->lib->curl($url, $this->lib->cookie, "");
+		$this->lib->reserved['filename'] = $this->lib->cut_str($data, 'var name = "', '";');
 		if($pass) {
 			$post["file_password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(preg_match('/<a href="(\/get_file\.php\?id=.+)" class/', $data, $id)) 
-			$data = $this->lib->curl("http://www.putlocker.com".trim($id[1]),$this->lib->cookie,"");
+			$id = $this->lib->cut_str($data, '<a href="/get_file.php?id=', '" class="download_file_link');
+			$data = $this->lib->curl("http://www.putlocker.com/get_file.php?id=".trim($id), $this->lib->cookie, "");
 			if($this->isredirect($data)) return trim($this->redirect);
 		}
 		if(stristr($data, "This file requires a password")) $this->error("reportpass", true, false);
-		elseif(preg_match('/<a href="(\/get_file\.php\?id=.+)" class/', $data, $id)) 
-		$data = $this->lib->curl("http://www.putlocker.com".trim($id[1]),$this->lib->cookie,"");
+		$id = $this->lib->cut_str($data, '<a href="/get_file.php?id=', '" class="download_file_link');
+		$data = $this->lib->curl("http://www.putlocker.com/get_file.php?id=".trim($id), $this->lib->cookie, "");
 		if($this->isredirect($data)) return trim($this->redirect);
 		return false;
     }

@@ -25,8 +25,8 @@ class dl_bitshare_com extends Download {
 		elseif(stristr($data,'Your Traffic is used up for today')) 	$this->error("LimitAcc", true, false);
 		elseif(!$this->isredirect($data)) {
 			$ajaxid = $this->lib->cut_str($data, 'var ajaxdl = "', '";');
-			$data = $this->lib->curl("http://bitshare.com/files-ajax/".$fileID[1]."/request.html", $this->lib->cookie, "request=generateID&ajaxid={$ajaxid}");	
-			$data = $this->lib->curl("http://bitshare.com/files-ajax/".$fileID[1]."/request.html", $this->lib->cookie, "request=getDownloadURL&ajaxid={$ajaxid}");
+			$data = $this->lib->curl("http://bitshare.com/files-ajax/{$fileID[1]}/request.html", $this->lib->cookie, "request=generateID&ajaxid={$ajaxid}");	
+			$data = $this->lib->curl("http://bitshare.com/files-ajax/{$fileID[1]}/request.html", $this->lib->cookie, "request=getDownloadURL&ajaxid={$ajaxid}");
 			if(preg_match('/SUCCESS\#(https?:\/\/.+)/', $data, $link))  return trim($link[1]);
 		}
 		else return trim($this->redirect);

@@ -4,7 +4,7 @@ class dl_wipfiles_net extends Download {
     
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://wipfiles.net/?op=my_account", "lang=english;{$cookie}", "");
-        if(stristr($data, 'Premium account expire:')) return array(true, "Until ".$this->lib->cut_str($data, '<TR><TD>Premium account expire:</TD><TD><b>','</b>'));
+        if(stristr($data, 'Premium account expire:')) return array(true, "Until ".$this->lib->cut_str($data, '<TR><TD>Premium account expire:</TD><TD><b>', '</b>'));
         else if(stristr($data, 'Payment info') && !stristr($data, 'Premium account expire:')) return array(false, "accfree");
 		else return array(false, "accinvalid");
     }

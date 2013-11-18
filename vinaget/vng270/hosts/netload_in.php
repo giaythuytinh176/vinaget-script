@@ -38,7 +38,7 @@ class dl_netload_in extends Download {
 			$gach = explode(';', $data);
 			$url = 'http://netload.in/datei'.$gach[0].'.htm';
 			$this->lib->reserved['filename'] = $gach[1];
-			$this->lib->reserved['filesize'] = $gach[2];
+			//$this->lib->reserved['filesize'] = $gach[2];
 		}
 		else $this->error("dead", true, false, 2);
 		//preg_match('@^https?:\/\/(www\.)?netload\.in\/(\w+)(.+)?@i', $url, $urlgiay);

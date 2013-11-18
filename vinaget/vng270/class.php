@@ -934,6 +934,9 @@ class stream_get extends getinfo
 		}
 		// ########### End short link  ##########
 		else $lik = $linkdown;
+		echo "<br>"; 
+        echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize}) [/color][/url][/b][/center]' onClick='this.select()'>";
+        echo " <br>"; 
 		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl && !$this->acc[$site]['direct'] ? "<a href='{$link}'>Direct<a> " : "") . ($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : "") . "</a></b>";
 		return $dlhtml;
 	}

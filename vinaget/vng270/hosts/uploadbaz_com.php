@@ -5,7 +5,7 @@ class dl_uploadbaz_com extends Download {
     public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://www.uploadbaz.com/?op=my_account", "lang=english;{$cookie}", "");
 		if(stristr($data, '<a href="http://www.uploadbaz.com/?op=payments">Upgrade to premium</a>')) return array(false, "accfree");
-		elseif(stristr($data, 'Premium Account expire:')) return array(true, "Until ".$this->lib->cut_str($data, '<TR><TD>Premium Account expire:</TD><TD><b>','</b>'));
+		elseif(stristr($data, 'Premium Account expire:')) return array(true, "Until ".$this->lib->cut_str($data, '<TR><TD>Premium Account expire:</TD><TD><b>','</b>')."<br/> Traffic available today: ".$this->lib->cut_str($data, 'Traffic available today:</TD><TD><b>','</b></TD><TD></TD></TR>'));
 		else return array(false, "accinvalid");
 	}
 	
@@ -90,8 +90,7 @@ class dl_uploadbaz_com extends Download {
 			if(preg_match('@https?:\/\/(\w+\.)?uploadbaz\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
-		else  
-		return trim($this->redirect);
+		else 	return trim($this->redirect);
 		return false;
     }
 

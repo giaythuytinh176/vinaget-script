@@ -2,7 +2,7 @@
 
 class dl_turbobit_net extends Download {
 
-    public function CheckAcc($cookie){
+    public function CheckAcc($cookie) {
         $data = $this->lib->curl("http://turbobit.net", "user_lang=en;".$cookie, "");
         if (stristr($data, '<u>Turbo Access</u> to')) return array(true, "Until ".$this->lib->cut_str($data, '<u>Turbo Access</u> to','</div>'));
         else if(stristr($data, '<u>Turbo Access</u> denied.')) return array(false, "accfree");
@@ -16,14 +16,17 @@ class dl_turbobit_net extends Download {
     }
          
     public function Leech($url) {
-        $data = $this->lib->curl($url,$this->lib->cookie,"");
+        if(strpos($url, "/download/free/") == true) {
+			$gach = explode('/', $url);
+			$url = "http://turbobit.net/{$gach[5]}.html";		
+		}
+		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		$this->save($this->lib->GetCookies($data));
-        if (stristr($data,'site is temporarily unavailable')) $this->error("dead", true, false, 2);
-        elseif (stristr($data,'Please wait, searching file')) $this->error("dead", true, false, 2);
-        elseif (stristr($data, 'You have reached the <a href=\'/user/messages\'>daily</a> limit of premium downloads') || stristr($data, 'You have reached the <a href=\'/user/messages\'>monthly</a> limit of premium downloads')) $this->error("LimitAcc");
-		elseif (stristr($data, '<u>Turbo Access</u> denied')) $this->error("blockAcc");
-		elseif (preg_match('@https?:\/\/turbobit\.net\/\/download\/redirect\/[^"\'><\r\n\t]+@i', $data, $giay))
-		return trim($giay[0]);
+        if(stristr($data,'site is temporarily unavailable') || stristr($data,'This document was not found in System')) $this->error("dead", true, false, 2);
+        elseif(stristr($data,'Please wait, searching file')) $this->error("dead", true, false, 2);
+        elseif(stristr($data, 'You have reached the <a href=\'/user/messages\'>daily</a> limit of premium downloads') || stristr($data, 'You have reached the <a href=\'/user/messages\'>monthly</a> limit of premium downloads')) $this->error("LimitAcc");
+		elseif(stristr($data, '<u>Turbo Access</u> denied')) $this->error("blockAcc", true, false);
+ 		elseif(preg_match('@https?:\/\/turbobit\.net\/\/download\/redirect\/[^"\'><\r\n\t]+@i', $data, $link))	 return trim($link[0]);
 		return false;
     }
 	

@@ -4,7 +4,7 @@ class dl_ultramegabit_com extends Download {
     
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://ultramegabit.com/user/billing", $cookie, "");
-        if(stristr($data, '"Premium Member"')) return array(true, "Until ".$this->lib->cut_str($data, '<h4>Next rebill at','</h4>'));
+        if(stristr($data, '"Premium Member"')) return array(true, "Until ".$this->lib->cut_str($data, '>Next rebill at ', '</'));
         else if(stristr($data, 'Active storage') && !stristr($data, '"Premium Member"')) return array(false, "accfree");
 		else return array(false, "accinvalid");
     }
@@ -19,7 +19,7 @@ class dl_ultramegabit_com extends Download {
 	
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(stristr($data,'<h4>File has been deleted.</h4>') || stristr($data,'File has been deleted in compliance with the')) $this->error("dead", true, false, 2);
+		if(stristr($data,'>File not available.<') || stristr($data,'>File has been deleted.</') || stristr($data,'File has been deleted in compliance with the')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
 			$post["csrf_token"] = $this->lib->cut_str($data, 'csrf_token" value="', '"');
 			$post["encode"] = $this->lib->cut_str($data, 'encode" value="', '"');

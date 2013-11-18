@@ -32,8 +32,7 @@ class dl_cloudzer_net extends Download {
 			if (preg_match('@https?:\/\/[a-z0-9-]+stor\d+\.cloudzer\.net(:\d+)?\/dl\/[^"\'><\r\n\t]+@i', $data, $giay))
 			return trim($giay[0]);
 		}
-		else  
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
 	}
 	
