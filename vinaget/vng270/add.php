@@ -17,6 +17,7 @@ if (!empty($_POST["accounts"])) {
 	if(check_account($type,$account)) die("false duplicate");
 	require_once ('hosts/' . $obj->list_host[$type]['file']);
 	$download = new $obj->list_host[$type]['class']($obj, $type);
+	if($download->lib->acc[$download->site]['proxy'] != "") $download->lib->proxy = $download->lib->acc[$download->site]['proxy'];
 	if(method_exists($download, "CheckAcc")) {
 		if (strpos($account, ":")) {
 			list($user, $pass) = explode(':',$account);

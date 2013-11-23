@@ -6,6 +6,7 @@ if (isset($_POST["check"])) {
 	if(count($acc["accounts"])>0){
 		require_once ('hosts/' . $obj->list_host[$check]['file']);
 		$download = new $obj->list_host[$check]['class']($obj, $check);
+		if($download->lib->acc[$download->site]['proxy'] != "") $download->lib->proxy = $download->lib->acc[$download->site]['proxy'];
 		echo 
 		'<table id="table-'.$check.'" class="table table-bordered">
               <thead>

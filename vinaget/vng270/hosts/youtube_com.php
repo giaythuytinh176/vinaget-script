@@ -92,7 +92,7 @@ class dl_youtube_com extends Download {
 		//$this->lib->reserved['filename'] = str_replace(str_split('\\:*?"<>|=;'."\t\r\n\f"), '_', html_entity_decode(trim($response['title']), ENT_QUOTES));
 		//if (!empty($_REQUEST['cleanname'])) $this->lib->reserved['filename'] = preg_replace('@[^ A-Za-z_\-\d\.,\(\)\[\]\{\}&\!\'\@\%\#]@u', '_', $this->lib->reserved['filename']);
 		//$this->lib->reserved['filename'] .= " [YT-f$fmt][{$video_id}]$ext";
- 		$this->lib->reserved['filename'] = str_replace(str_split('\\/:*?"<>|'), '_', html_entity_decode(trim($response['title']), ENT_QUOTES)) . "-$ext";
+ 		$this->lib->reserved['filename'] = urldecode(urldecode(str_replace(str_split('\\/:*?"<>|'), '_', html_entity_decode(trim($response['title']), ENT_QUOTES)))) . "$ext";
 		return trim($furl);
 		return false;
 	}

@@ -410,14 +410,25 @@ class stream_get extends getinfo
 			$scheme = "";
 		}
 		$hosts = $scheme . $host . ':' . $port;
-		// $fp = @stream_socket_client($hosts, $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
-		$fp = @stream_socket_client($job['proxy'] == 0 ? $hosts : 'tcp://' . $job['proxy'], $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
+		if($job['proxy'] != 0){
+			if(strpos($job['proxy'], "|")){
+				list($ip, $user) = explode("|", $job['proxy']);
+				$auth = base64_encode($user);
+			}
+			else $ip = $job['proxy'];
+			$data = "GET {$link} HTTP/1.1\r\n";
+			if(isset($auth)) $data.= "Proxy-Authorization: Basic $auth\r\n";
+			$fp = @stream_socket_client("tcp://{$ip}", $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
+		}
+		else {
+			$data = "GET {$path} HTTP/1.1\r\n";
+			$fp = @stream_socket_client($hosts, $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
+		}
 		if (!$fp) {
 			sleep(15);
 			header("HTTP/1.1 404 Not Found");
 			die("HTTP/1.1 404 Not Found");
 		}
-		$data = "GET {$path} HTTP/1.1\r\n";
 		$data.= "User-Agent: " . $this->UserAgent . "\r\n";
 		$data.= "Host: {$host}\r\n";
 		$data.= "Accept: */*\r\n";
@@ -436,6 +447,17 @@ class stream_get extends getinfo
 			else $header.= stream_get_line($fp, $this->unit);
 		}
 		while (strpos($header, "\r\n\r\n") === false);
+		/* debug */
+		if(isset($_GET['debug'])){
+			echo "<pre>";
+			echo "connected to : $hosts ".($job['proxy'] == 0 ? "" : "via {$job['proxy']}")."\r\n";
+			echo "$data\r\n\r\n";
+			echo "Server replied: \r\n";
+			echo $header;
+			echo "</pre>";
+			die();
+		}
+		/* debug */
 		// Must be fresh start
 		if (headers_sent()) die('Headers Sent');
 		// Required for some browsers
@@ -527,7 +549,6 @@ class stream_get extends getinfo
 	{
 		$ch = @curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_HEADER, $header);
 		if ($json == 1) {
 			$head[] = "Content-type: application/json";
 			$head[] = "X-Requested-With: XMLHttpRequest";
@@ -541,18 +562,27 @@ class stream_get extends getinfo
 		$head[] = "Accept-Language: en-us,en;q=0.5";
 		if ($cookies) curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 		curl_setopt($ch, CURLOPT_USERAGENT, $this->UserAgent);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_REFERER, $ref == 0 ? $url : $ref);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $head);
+		if($header == -1){
+			curl_setopt($ch, CURLOPT_HEADER, 1);
+			curl_setopt($ch, CURLOPT_NOBODY, 1);
+		}
+		else curl_setopt($ch, CURLOPT_HEADER, $header);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		if ($post) {
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 		}
 		if ($this->proxy != false) {
-			list($prox, $port) = explode(":", $this->proxy);
-			curl_setopt($ch, CURLOPT_PROXYPORT, $port);
+			if(strpos($this->proxy, "|")) {
+				list($ip, $auth) = explode("|", $this->proxy);
+				curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
+				curl_setopt($ch, CURLOPT_PROXYUSERPWD, $auth);
+			}
+			else $ip = $this->proxy;
 			curl_setopt($ch, CURLOPT_PROXYTYPE, 'HTTP');
-			curl_setopt($ch, CURLOPT_PROXY, $prox);
+			curl_setopt($ch, CURLOPT_PROXY, $ip);
 		}
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -816,7 +846,7 @@ class stream_get extends getinfo
 			'owner' => $this->owner,
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'type' => 'direct',
-			'proxy' => $this->proxy == "" ? 0 : $this->proxy,
+			'proxy' => $this->proxy == false ? 0 : $this->proxy,
 			'directlink' => array(
 				'url' => urlencode($link) ,
 				'cookies' => $this->cookie,
@@ -1261,16 +1291,27 @@ class Tools_get extends getinfo
 		if ($scheme != "ssl://") {
 			$scheme = "";
 		}
-
-		$data = "GET {$path} HTTP/1.1\r\n";
+		$errno = 0;
+		$errstr = "";
+		$hosts = $scheme . $host . ':' . $port;
+		if($this->proxy != 0){
+			if(strpos($this->proxy, "|")){
+				list($ip, $user) = explode("|", $this->proxy);
+				$auth = base64_encode($user);
+			}
+			else $ip = $this->proxy;
+			$data = "GET {$link} HTTP/1.1\r\n";
+			if(isset($auth)) $data.= "Proxy-Authorization: Basic $auth\r\n";
+			$fp = @stream_socket_client("tcp://{$ip}", $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
+		}
+		else {
+			$data = "GET {$path} HTTP/1.1\r\n";
+			$fp = @stream_socket_client($hosts, $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
+		}
 		$data.= "User-Agent: " . $this->UserAgent . "\r\n";
 		$data.= "Host: {$host}\r\n";
 		$data.= $cookie ? "Cookie: $cookie\r\n" : '';
 		$data.= "Connection: Close\r\n\r\n";
-		$errno = 0;
-		$errstr = "";
-		$hosts = $scheme . $host . ':' . $port;
-		$fp = @stream_socket_client($this->proxy == false ? $hosts : 'tcp://' . $this->proxy, $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
 		if (!$fp) return -1;
 		fputs($fp, $data);
 		fflush($fp);
@@ -1469,18 +1510,10 @@ class Download {
 	}
 	
 	public function getredirect($link, $cookie=""){
-		if($cookie == ""){
-			$headers = get_headers($link,1);
-			if(isset($headers["Location"])) {
-				$link = $headers["Location"];
-				while(is_array($link)) $link = $link[0];
-			}
-		}
-		else{
-			$data = $this->lib->curl($link,$this->lib->cookie,"");
-			if (preg_match('/ocation: (.*)/',$data,$match)) $link = trim($match[1]);
-			$this->lib->cookie = $this->lib->GetCookies($data);
-		}
+		$data = $this->lib->curl($link,$this->lib->cookie,"",-1);
+		if (preg_match('/ocation: (.*)/',$data,$match)) $link = trim($match[1]);
+		$cookie = $this->lib->GetCookies($data);
+		if($cookie != "") $this->lib->cookie = $cookie;
 		return $link;
 	}
 	
@@ -1513,7 +1546,7 @@ class Download {
 	public function forcelink($link, $a){
 		$link = str_replace(" ", "%20", $link);
 		for($i=0;$i<$a;$i++){
-			if($this->lib->getsize($link, $this->lib->cookie) <= 0) {
+			if($size = $this->lib->getsize($link, $this->lib->cookie) <= 0) {
 				$link = $this->getredirect($link, $this->lib->cookie);
 			}
 			else return $link;

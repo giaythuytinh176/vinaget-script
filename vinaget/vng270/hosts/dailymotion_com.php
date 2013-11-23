@@ -11,8 +11,8 @@ class dl_dailymotion_com extends Download {
 			$data = str_replace("\/", "/", $this->lib->cut_str($data, "http:\/\/www.dailymotion.com\/cdn\/", '",'));
 			$link = "http://www.dailymotion.com/cdn/{$data}";
 			$ext = $this->lib->cut_str($data, '.','?auth=');
-			$this->lib->reserved['filename'] = str_replace(str_split('\\/:*?"<>|'), '_', html_entity_decode(trim($title), ENT_QUOTES)) . ".$ext";
-			return trim($link);
+			$this->lib->reserved['filename'] = urldecode(str_replace(str_split('\\/:*?"<>|'), '_', html_entity_decode(trim($title), ENT_QUOTES))) . ".$ext";
+			return $this->getredirect(trim($link));
 		}
 		else $this->error("dead", true, false, 2);
 		return false;
