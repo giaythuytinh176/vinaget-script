@@ -12,7 +12,7 @@ class dl_easybytez_com extends Download {
     public function Login($user, $pass){
 		$cutrand = $this->lib->curl("http://www.easybytez.com/", "lang=english", "");
 		$rand = $this->lib->cut_str($cutrand, 'name="rand" value="', '">');
-        $data = $this->lib->curl("http://www.easybytez.com/", "lang=english", "login={$user}&password={$pass}&op=login1&rand={$rand}&redirect=http://www.easybytez.com/");
+        $data = $this->lib->curl("http://www.easybytez.com/", "lang=english", "login={$user}&password={$pass}&op=login2&rand={$rand}&redirect=http://www.easybytez.com/");
         $cookie = "lang=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
     }
@@ -25,20 +25,19 @@ class dl_easybytez_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false);
-			elseif(preg_match('@https?:\/\/(\w+\.)?easybytez\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $this->lib->cut_str($data, 'dotted #bbb;padding:7px;line-height:29px;">', '">http'), $giay))
-			return trim($giay[0]);
+			elseif(preg_match('/href="(http.+)">http/i', $this->lib->cut_str($data, 'background:#f9f9f9;border:1px dotted #bbb;padding:7px', '</span>'), $link))
+			return trim($link[1]);
 		}
-        if($this->isredirect($data)) return trim($this->redirect);
-		elseif (stristr($data,'You have reached the download-limit'))  $this->error("LimitAcc", true, false);
-		elseif(stristr($data,'<b>File Not Found</b><br><br>')) $this->error("dead", true, false, 2);
+		if(stristr($data,'>Password:</b> <input type="password" name="password')) 	$this->error("reportpass", true, false);
+ 		elseif(stristr($data,'>The uploader deleted the file.<') || stristr($data,'>File Not Found<')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
-			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
+			$post = $this->parseForm($this->lib->cut_str($data, 'Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(preg_match('@https?:\/\/(\w+\.)?easybytez\.com(:\d+)?\/(?:(?:files\/\d+)|(?:d))\/[a-z0-9]+\/[^/|\"|\'|<|>|\r|\n|\t]+@i', $this->lib->cut_str($data, 'dotted #bbb;padding:7px;line-height:29px;">', '">http'), $giay))
-			return trim($giay[0]);
+			$cut = $this->lib->cut_str($data, 'background:#f9f9f9;border:1px dotted #bbb;padding:7px', '</span>');
+			if(preg_match('/href="(http.+)">http/i', $this->lib->cut_str($data, 'background:#f9f9f9;border:1px dotted #bbb;padding:7px', '</span>'), $link))
+			return trim($link[1]);
 		}
-		else  
-		return trim($this->redirect);
+		else  return trim($this->redirect);
 		return false;
     }
 	
@@ -48,7 +47,7 @@ class dl_easybytez_com extends Download {
 * Open Source Project
 * Vinaget by ..::[H]::..
 * Version: 2.7.0
-* Easybytez Download Plugin by giaythuytinh176 [10.8.2013]
+* Easybytez Download Plugin by giaythuytinh176 [10.8.2013][22.11.2013]
 * Downloader Class By [FZ]
 */
 ?>

@@ -4,16 +4,17 @@ class dl_depositfiles_com extends Download {
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://depositfiles.com/gold/payment_history.php", "lang_current=en;{$cookie}", "");
-		if(stristr($data, 'You have Gold access until:')) return array(true, "Until ".$this->lib->cut_str($data, '<div class="access">You have Gold access until: <b>','</b></div>'));
-		else if(stristr($data, 'Your current status: FREE - member')) return array(false, "accfree");
+		$checksubscribe = $this->lib->curl("http://depositfiles.com/gold/payment_subscribe_manage.php", "{$cookie}", "");
+		if(stristr($data, 'You have Gold access until:'))   return array(true, "Until ".$this->lib->cut_str($data, '<div class="access">You have Gold access until: <b>','</b></div>') ."<br/> ". (strpos($checksubscribe, '>You are subscribed to automatically prolonged Gold account.<') ? "You are subscribed" : "You are not subscribed"));
+		elseif(stristr($data, 'Your current status: FREE - member')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}
 		
 	public function Login($user, $pass){
-		$this->error("notsupportacc");
+		$this->error("notsupportacc", true, false);
 		return false;
 	}
-/*	
+	/*
     public function Leech($url) {
 		$url = preg_replace("@(depositfiles\.org|depositfiles\.net|dfiles\.eu|dfiles\.ru)@", "depositfiles.com", $url);
 		list($url, $pass) = $this->linkpassword($url);
@@ -35,13 +36,15 @@ class dl_depositfiles_com extends Download {
 		return false;
 		//if(preg_match('%<a href="(https?:\/\/fileshare.+depositfiles\.com\/auth.+)" onClick%U', $data, $redir2))
     }	*/
-	
+
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
 		$url = preg_replace("@(depositfiles\.org|depositfiles\.net|dfiles\.eu|dfiles\.ru)@", "depositfiles.com", $url);
 		$url = preg_replace("@https?:\/\/(www\.)?depositfiles\.com\/(\w+\/)?files@", "http://depositfiles.com/files", $url);
-		preg_match('@http:\/\/depositfiles\.com\/files\/(.*)@i', $url, $DFid);
-		$data = $this->lib->curl("http://depositfiles.com/api/download/file?file_id={$DFid[1]}&file_password={$pass}", "lang_current=en;".$this->lib->cookie, "", 0);
+		$tachid = explode("/", $url);  $DFid = substr($tachid[4],0,9);
+		//$data = $this->lib->curl($url, "lang_current=en", "");		
+		//$DFid = $this->lib->cut_str($data, 'last_file=', ';');
+		$data = $this->lib->curl("http://depositfiles.com/api/download/file?file_id={$DFid}&file_password={$pass}", "lang_current=en;".$this->lib->cookie, "", 0);
 		$page = json_decode($data, true);
 		if($page['status'] !== "OK" && $page['error'] == "FileIsPasswordProtected")  $this->error("reportpass", true, false);
 		elseif($page['status'] !== "OK" && $page['error'] == "FileDoesNotExist")   $this->error("dead", true, false, 2);

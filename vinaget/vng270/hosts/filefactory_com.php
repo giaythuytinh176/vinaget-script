@@ -42,8 +42,9 @@ class dl_filefactory_com extends Download {
 		list($url, $pass) = $this->linkpassword($url);
 		$url = preg_replace("@https?:\/\/(www\.)?filefactory\.com@", "http://www.filefactory.com", $url);
 		$url = $this->getredirect($url);
-		if(stristr($url,'code=273'))  $this->error("You have exceeded the file or folder password attempt limit. Please try the download again later. ", true, false);
-		elseif(stristr($url,'code=251')) $this->error("dead", true, false, 2);
+		if(stristr($url,'code=273'))   $this->error("You have exceeded the file or folder password attempt limit. Please try the download again later.", true, false);
+		elseif(stristr($url,'code=251'))  $this->error("dead", true, false, 2);
+		elseif(stristr($url,'code=253'))  $this->error("Server Maintenance", true, false);
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {
 			$post["password"] = $pass;

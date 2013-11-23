@@ -29,7 +29,7 @@ class getinfo
 		$this->fileinfo_ext = "vng";
 		$this->banned = explode(' ', '.htaccess .htpasswd .php .php3 .php4 .php5 .phtml .asp .aspx .cgi .pl');
 		$this->unit = 512;
-		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/23.01';
+		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/25.0.1';
 		$this->config = $this->load_json($this->fileconfig);
 		include ("config.php");
 		if(count($this->config) == 0) {	

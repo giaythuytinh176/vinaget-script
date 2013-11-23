@@ -96,7 +96,7 @@ class dl_mediafire_com extends Download {
 		$url = preg_replace("@https?:\/\/(www\.)?mediafire\.com\/(view|edit|watch|listen|play)@", "http://www.mediafire.com/download", $url);	
 		list($url, $pass) = $this->linkpassword($url);
 		$fileID = $this->exploder('/', $url, 4);
-		if($pass) $this->lib->curl("http://www.mediafire.com/?{$fileID}",$this->lib->cookie,"downloadp=".$pass);
+		if($pass)   $data = $this->lib->curl("http://www.mediafire.com/?{$fileID}",$this->lib->cookie,"downloadp={$pass}");
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
 		if(stristr($data,'Please enter password to unlock this file')) 	$this->error("reportpass", true, false);
 		elseif(stristr($data,"error.php"))  $this->error("dead", true, false, 2);

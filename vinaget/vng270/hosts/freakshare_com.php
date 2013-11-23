@@ -23,13 +23,16 @@ class dl_freakshare_com extends Download {
 	}
          
 	public function Leech($url) {
+		$data = $this->lib->curl("http://freakshare.com/?language=US", "", "");
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-        if (stristr($data,'our Traffic is used up for today')) $this->error("LimitAcc");
-		elseif (stristr($data,'This file does not exist!')) $this->error("dead", true, false, 2);
-		elseif (!$this->isredirect($data)) {
-			preg_match('/type="hidden" value="(\d+)" name="did"/i', $data, $did);
+        if(stristr($data, 'our Traffic is used up for today'))    $this->error("LimitAcc", true, false);
+		elseif(stristr($data, '503 Service Temporarily Unavailable'))    $this->error("unavailable", true, false);
+		elseif(stristr($data, 'This file does not exist!'))    $this->error("dead", true, false, 2);
+		elseif(!$this->isredirect($data)) {
+			preg_match('/type="hidden" value="(\d+)" name="did"/i', $this->lib->cut_str($data, "waitingtime","clear:both;margin"), $did);
 			$data = $this->lib->curl($url, $this->lib->cookie, "did={$did[1]}&section=waitingtime&submit=Download");
-			if($this->isredirect($data))  return trim($this->redirect);
+			if(stristr($data, '503 Service Temporarily Unavailable'))    $this->error("unavailable", true, false);
+			elseif($this->isredirect($data))  return trim($this->redirect);
 		}
 		else return trim($this->redirect);
 		return false;

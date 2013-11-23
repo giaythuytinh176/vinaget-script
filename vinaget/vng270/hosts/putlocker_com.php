@@ -13,7 +13,7 @@ class dl_putlocker_com extends Download {
 		$this->error("notsupportacc");
 		return false;
 	}  
-/*
+
 	public function FreeLeech($url){
 		$url = preg_replace("@https?:\/\/(www\.)?putlocker\.com\/embed\/@", "http://www.putlocker.com/file/", $url);
 		$url = $this->getredirect($url);
@@ -43,7 +43,7 @@ class dl_putlocker_com extends Download {
 		if($this->isredirect($data)) return trim($this->redirect);
 		return false;
     }	
-	*/
+	
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
 		$url = preg_replace("@https?:\/\/(www\.)?putlocker\.com\/embed\/@", "http://www.putlocker.com/file/", $url);

@@ -58,8 +58,7 @@ class dl_fshare_vn extends Download {
 			}
 			else	return trim($this->redirect);
 		}
-		if(stristr($data,"Location: http://www.fshare.vn/logout.php")) 	{
-			$this->lib->cookie = "";
+		if(stristr($data, "ocation: http://www.fshare.vn/logout.php")) 	{
 			$this->save("");
 			$this->error("cookieinvalid", true, false);  
 		}
@@ -68,9 +67,9 @@ class dl_fshare_vn extends Download {
 		elseif(stristr($data,"Liên kết bạn chọn không tồn tại trên hệ thống Fshare"))	$this->error("dead", true, false, 2);
 		elseif(stristr($data,"Vui lòng nhập mật khẩu để tải tập tin")) 	$this->error("reportpass", true, false);
 		elseif(!$this->isredirect($data)) {
-			if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay)) 	return trim($giay[1]);
+			if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay))  return trim($giay[1]);
 		}
-		else	return trim($this->redirect);
+		else return trim($this->redirect);
 		return false;
     }
 	

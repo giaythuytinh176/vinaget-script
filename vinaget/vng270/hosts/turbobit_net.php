@@ -4,8 +4,12 @@ class dl_turbobit_net extends Download {
 
     public function CheckAcc($cookie) {
         $data = $this->lib->curl("http://turbobit.net", "user_lang=en;".$cookie, "");
-        if (stristr($data, '<u>Turbo Access</u> to')) return array(true, "Until ".$this->lib->cut_str($data, '<u>Turbo Access</u> to','</div>'));
-        else if(stristr($data, '<u>Turbo Access</u> denied.')) return array(false, "accfree");
+        if (stristr($data, '<u>Turbo Access</u> to')) {
+			$bw = $this->lib->curl("http://turbobit.net/jy23sro5uer6.html", "user_lang=en;".$cookie, "");
+			if(stristr($bw, '> limit of premium downloads'))   return array(true, "LimitAcc");
+			else return array(true, "Until ".$this->lib->cut_str($data, '<u>Turbo Access</u> to','</div>'));
+        }
+		else if(stristr($data, '<u>Turbo Access</u> denied.')) return array(false, "accfree");
 		else return array(false, "accinvalid");
     }
          
