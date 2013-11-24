@@ -182,12 +182,13 @@ function donate(obj){
 	var suc1 = '<b><font color="#FF3300">'+lang["success"]+'</font></b>';
 	var suc2 = '<b><font color="#86a5d5">'+lang["dsuccess"]+'</font></b>';
 	var loading = '<img src="images/loading.gif"><br/>'+lang["getloading"];
+	var account = encodeURIComponent($("#accounts").val());
 	if($("#accounts").val().length > 10) {
 		$("#wait").html(loading);
 		$.ajax({
 			type: "POST",
 			url: "add.php?rand="+ Math.random(),
-			data: "type="+$("#type").val()+"&accounts="+$("#accounts").val(),
+			data: "type="+$("#type").val()+"&accounts="+account,
 			success: function(html) {
 				if(html == 'true') {
                     $("#wait").html('');

@@ -1510,10 +1510,10 @@ class Download {
 	}
 	
 	public function getredirect($link, $cookie=""){
-		$data = $this->lib->curl($link,$this->lib->cookie,"",-1);
+		$data = $this->lib->curl($link,$cookie,"",-1);
 		if (preg_match('/ocation: (.*)/',$data,$match)) $link = trim($match[1]);
-		$cookie = $this->lib->GetCookies($data);
-		if($cookie != "") $this->lib->cookie = $cookie;
+		$cookies = $this->lib->GetCookies($data);
+		if($cookies != "") $this->save($cookies);
 		return $link;
 	}
 	

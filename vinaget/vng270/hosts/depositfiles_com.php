@@ -3,9 +3,10 @@
 class dl_depositfiles_com extends Download { 
 
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("http://depositfiles.com/gold/payment_history.php", "lang_current=en;{$cookie}", "");
-		$checksubscribe = $this->lib->curl("http://depositfiles.com/gold/payment_subscribe_manage.php", "{$cookie}", "");
-		if(stristr($data, 'You have Gold access until:'))   return array(true, "Until ".$this->lib->cut_str($data, '<div class="access">You have Gold access until: <b>','</b></div>') ."<br/> ". (strpos($checksubscribe, '>You are subscribed to automatically prolonged Gold account.<') ? "You are subscribed" : "You are not subscribed"));
+		$domain = $this->lib->cut_str($this->getredirect("http://depositfiles.com/gold/payment_history.php"), "//", "/");
+		$data = $this->lib->curl("http://{$domain}/gold/payment_history.php", "lang_current=en;{$cookie}", "");
+		$checksubscribe = $this->lib->curl("http://{$domain}/gold/payment_subscribe_manage.php", "lang_current=en;{$cookie}", "");
+		if(stristr($data, 'You have Gold access until:'))   return array(true, "Until ".$this->lib->cut_str($data, '<div class="access">You have Gold access until: <b>','</b></div>') ."<br/> ". (strpos($checksubscribe, '>You are subscribed to automatically') ? "You are subscribed" : "You are not subscribed"));
 		elseif(stristr($data, 'Your current status: FREE - member')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}
@@ -39,17 +40,15 @@ class dl_depositfiles_com extends Download {
 
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
-		$url = preg_replace("@(depositfiles\.org|depositfiles\.net|dfiles\.eu|dfiles\.ru)@", "depositfiles.com", $url);
-		$url = preg_replace("@https?:\/\/(www\.)?depositfiles\.com\/(\w+\/)?files@", "http://depositfiles.com/files", $url);
-		$tachid = explode("/", $url);  $DFid = substr($tachid[4],0,9);
-		//$data = $this->lib->curl($url, "lang_current=en", "");		
-		//$DFid = $this->lib->cut_str($data, 'last_file=', ';');
+		$domain = $this->lib->cut_str($this->getredirect("http://depositfiles.com/gold/payment_history.php"), "//", "/");
+		$tachid = explode("/", $url);  
+		$DFid = $tachid[4];
 		$data = $this->lib->curl("http://depositfiles.com/api/download/file?file_id={$DFid}&file_password={$pass}", "lang_current=en;".$this->lib->cookie, "", 0);
 		$page = json_decode($data, true);
 		if($page['status'] !== "OK" && $page['error'] == "FileIsPasswordProtected")  $this->error("reportpass", true, false);
 		elseif($page['status'] !== "OK" && $page['error'] == "FileDoesNotExist")   $this->error("dead", true, false, 2);
 		elseif($page['status'] !== "OK" && $page['error'] == "FilePasswordIsIncorrect")   $this->error("wrongpass", true, false, 2);
-		elseif($page['status'] == "OK" && isset($page['data']['download_url']))  return trim($page['data']['download_url']);
+		elseif($page['status'] == "OK" && isset($page['data']['download_url'])) return trim(str_replace("depositfiles.com", $domain, $page['data']['download_url']));
 		else $this->error($page['error'], true, false);
 		return false;
     }
@@ -67,5 +66,6 @@ class dl_depositfiles_com extends Download {
 * Fix download by giaythuytinh176 [21.7.2013]
 * Fixed check account by giaythuytinh176 [24.7.2013]
 * Add support file password by giaythuytinh176 [29.7.2013]
+* Fix domain conflict, miss CheckAcc by Fz [24.11.2013]
 */
 ?>

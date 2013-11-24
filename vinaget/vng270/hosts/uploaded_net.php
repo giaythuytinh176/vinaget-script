@@ -31,8 +31,6 @@ class dl_uploaded_net extends Download {
 	}
          
 	public function Leech($url) {
-		$url = $this->getredirect($url);
-		if (stristr($url,'uploaded.net/404')) $this->error("dead", true, false, 2);
 		$data = $this->lib->curl($url, $this->lib->cookie, ""); 
 		if (stristr($data,">Extend traffic<")) $this->error("LimitAcc");
 		elseif (stristr($data,"Hybrid-Traffic is completely exhausted")) $this->error("LimitAcc");
@@ -42,7 +40,10 @@ class dl_uploaded_net extends Download {
 		elseif(!$this->isredirect($data)) {
 			if (preg_match('/action="(https?:\/\/.+)" style/i', $data, $link))	return trim($link[1]);
 		}
-		else  return trim($this->redirect);
+		else{
+			if (stristr($this->redirect,'uploaded.net/404')) $this->error("dead", true, false, 2);
+			else return trim($this->redirect);
+		}
 		return false;
 	}
 
