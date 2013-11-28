@@ -19,6 +19,7 @@ $config['colorfilename'] = "green";
 $config['colorfilesize'] = "red";
 $config['listfile'] = true;
 $config['showdirect'] = true;
+$config['bbcode'] = true;
 $config['longurl'] = true;
 $config['privatefile'] = false;
 $config['privateip'] = false;
