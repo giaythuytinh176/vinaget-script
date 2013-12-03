@@ -87,6 +87,7 @@ class getinfo
 		$this->max_jobs = $this->config['max_jobs'];
 		$this->max_load = $this->config['max_load'];
 		$this->max_size_default = $this->config['max_size_default'];
+		$this->file_size_limit = $this->config['file_size_limit'];
 		$this->zlink = $this->config['ziplink'];
 		$this->link_zip = $this->config['apiadf'];
 		$this->link_rutgon = $this->config['apirutgon'];	
@@ -98,9 +99,11 @@ class getinfo
 		$this->badword = explode(", ", $this->config['badword']);	
 		$this->act = array('rename' => $this->config['rename'], 'delete' => $this->config['delete']);
 		$this->listfile = $this->config['listfile'];
+		$this->showlinkdown = $this->config['showlinkdown'];
 		$this->checkacc = $this->config['checkacc'];
 		$this->privatef = $this->config['privatefile'];
 		$this->privateip = $this->config['privateip'];
+		$this->redirdl = $this->config['redirectdl'];
 		$this->check3x = $this->config['checklinksex'];
 		$this->colorfn = $this->config['colorfilename'];
 		$this->colorfs = $this->config['colorfilesize'];
@@ -115,8 +118,9 @@ class getinfo
 		return isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($this->config['admin']) ? true : $this->admin;
 	}
 	function getversion(){
-		$version = $this->cut_str($this->curl("https://code.google.com/p/vinaget-script/source/list", "", ""), '"detail?r=','"');
-		return intval($version);
+		//$version = $this->cut_str($this->curl("https://code.google.com/p/vinaget-script/source/list", "", ""), '"detail?r=','"');
+		//return intval($version);
+		return 74;
 	}
 	function notice($id="notice")
 	{
@@ -344,7 +348,7 @@ class stream_get extends getinfo
 	function stream_get()
 	{
 		$this->config();
-		$this->max_size_other_host = 20500;
+		$this->max_size_other_host = $this->file_size_limit;
 		$this->load_jobs();
 		$this->load_cookies();
 		$this->cookie = '';
@@ -389,6 +393,16 @@ class stream_get extends getinfo
 			sleep(15);
 			header("HTTP/1.1 404 Not Found");
 			$this->error1('erroracc');
+		}
+		if($job['proxy'] != 0 && $this->redirdl == true) {
+			list($ip, ) = explode(":", $job['proxy']);
+			if($_SERVER['REMOTE_ADDR'] != $ip) { 
+				$this->wrong_proxy($job['proxy']);
+			}
+			else {
+				header('Location: '.$link);
+				die;
+			}
 		}
 		$range = '';
 		if (isset($_SERVER['HTTP_RANGE'])) {
@@ -784,6 +798,8 @@ class stream_get extends getinfo
 		if (!$link) {
 			$domain = str_replace("www.", "", $this->cut_str($Original, "://", "/"));
 			if(strpos($domain, "1fichier.com")) $domain = "1fichier.com";
+			if(strpos($domain, "letitbit.net"))   $domain = "letitbit.net";
+			if(strpos($domain, "shareflare.net")) $domain = "shareflare.net";
 			if(isset($this->list_host[$domain])){
 				require_once ('hosts/' . $this->list_host[$domain]['file']);
 				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);
@@ -966,12 +982,24 @@ class stream_get extends getinfo
 		}
 		// ########### End short link  ##########
 		else $lik = $linkdown;
-		echo "<br>"; 
-        if($this->bbcode){
-			echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize}) [/color][/url][/b][/center]' onClick='this.select()'>";
-			echo " <br>"; 
+		
+		if($this->bbcode){
+			if($this->proxy != false && $this->redirdl == true) {
+				if(strpos($this->proxy, "|")){
+					list($prox, $userpass) = explode("|", $this->proxy);
+					list($ip, $port) = explode(":", $prox);
+					list($user, $pass) = explode(":", $userpass);
+				}
+				else list($ip, $port) = explode(":", $this->proxy);
+				echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize})[/color]  [/b][/url][b] [br] ([color=green]You must add this proxy[/color] ".(strpos($this->proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').")[/b][/center]' onClick='this.select()'>";
+				echo "<br>"; 
+			}
+			else {
+				echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize}) [/color][/url][/b][/center]' onClick='this.select()'>";
+				echo "<br>"; 
+			}
 		}
-		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl && !$this->acc[$site]['direct'] ? "<a href='{$link}'>Direct<a> " : "") . ($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : "") . "</a></b>";
+		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl && !$this->acc[$site]['direct'] ? "<a href='{$link}'>Direct<a> " : ""). "</a>" .($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : ""). "</b>".(($this->proxy != false && $this->redirdl == true) ? "<br/><b><font color=\"green\">You must add proxy or you can not download this link</font></b>" : "");
 		return $dlhtml;
 	}
 
@@ -1056,7 +1084,7 @@ class stream_get extends getinfo
 			$data.= "
       <tr class='flistmouseoff' align='center'>
         <td><input name='checkbox[]' value='$file[2]+++$file[3]' type='checkbox'></td>
-        <td><a href='" . $linkdown . "' style='font-weight: bold; color: rgb(0, 0, 0);'>$file[3]" . ($file[8] != 0 ? "<br/>({$file[8]})" : "") . "</a></td>
+        ".($this->showlinkdown ? "<td><a href='$linkdown' style='font-weight: bold; color: rgb(0, 0, 0);'>$file[3]" . ($file[8] != 0 ? "<br/>({$file[8]})" : "") . "</a></td>" : "<td>$file[3]</td>" )."
         ".($this->directdl ? "<td><a href='$file[7]' style='color: rgb(0, 0, 0);'>" . $hosting . "</a></td>" : "")."
         <td><a href='$file[0]' style='color: rgb(0, 0, 0);'>" . $hosting . "</a></td>
         <td>" . $file[6] . "</td>
@@ -1232,6 +1260,26 @@ class stream_get extends getinfo
 		$bitly_api = "http://api.bit.ly/v3/shorten?login={$login}&apiKey={$apikey}&uri=".urlencode($url)."&format={$format}";
 		$data = $this->curl($bitly_api, "", "");
 		return $data;
+	}
+								// Credit to France10s  
+	function wrong_proxy($proxy) 		
+	{	
+		if(strpos($proxy, "|")){
+			list($prox, $userpass) = explode("|", $proxy);
+			list($ip, $port) = explode(":", $prox);
+			list($user, $pass) = explode(":", $userpass);
+		}
+		else list($ip, $port) = explode(":", $proxy);
+		die('<title>You must add this proxy '.(strpos($proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').'</title><center><b><span style="color:#076c4e">You must add this proxy</span> <span style="color:#30067d">('.(strpos($proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').')</span> <br><span style="color:red">PLEASE REMEMBER: IF YOU DO NOT ADD THE PROXY, YOU CAN NOT DOWNLOAD THIS LINK!</span><br><br>  Open IDM > Downloads > Options.<br><img src="'.$this->urlhost(3).'/images/prox/1.png"><br><br>  Proxy/Socks > Choose "Use Proxy" > Add proxy server: <font color=\'red\'>'.$ip.'</font>, port: <font color=\'red\'>'.$port.'</font> '.(strpos($proxy, "|") ? ', username: <font color=\'red\'>'.$user.'</font> and password: <font color=\'red\'>'.$pass.'</font>' : '').' > Choose http > OK.<br>'.(strpos($proxy, "|") ? '<img src="'.$this->urlhost(3).'/images/prox/2.png">' : '<img src="'.$this->urlhost(3).'/images/prox/2.1.png">').'<br><br>  Copy your link > Paste in IDM > OK.<br><img src="'.$this->urlhost(3).'/images/prox/3.png"><br><br>  It will work > Start Download > Enjoy!<br><img src="'.$this->urlhost(3).'/images/prox/4.png"></b></center>');
+	}
+	function urlhost($so) 
+	{
+		$a = $this->self;
+		$b = explode('/', $a);
+		$max = count($b)-$so;
+		for ($i=3; $i<$max; $i++) $namefolder .= "/".$b[$i];
+		$full = "http://".$_SERVER['HTTP_HOST'].$namefolder;
+		return $full;
 	}
 }
 

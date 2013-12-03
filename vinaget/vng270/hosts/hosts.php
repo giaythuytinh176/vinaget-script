@@ -17,6 +17,7 @@ $alias['yfdisk.com'] = 'yunfile.com';
 $alias['filemarkets.com'] = 'yunfile.com';
 $alias['my.rapidshare.com'] = 'rapidshare.com';
 $alias['ifile.it'] = 'filecloud.io';
+$alias['k2s.cc'] = 'keep2share.cc';
 $folderhost = opendir ( "hosts/" );
 while ( $hostname = readdir ( $folderhost ) ) {		
 	if($hostname == "." || $hostname == ".." || strpos($hostname,"bak") || $hostname == "hosts.php") {continue;}

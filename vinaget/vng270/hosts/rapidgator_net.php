@@ -8,7 +8,7 @@ class dl_rapidgator_net extends Download {
 		elseif(stristr($data, 'Premium till')) {
 			$oob = $this->lib->curl("http://rapidgator.net/file/79674811", "lang=en;{$cookie}", "");
 			if(stristr($oob, 'You have reached quota of downloaded information')) return array(true, "Until ".$this->lib->cut_str($data, 'Premium till','<span'). "<br> Account out of BW");
-			else return array(true, "Until ".$this->lib->cut_str($data, 'Premium till','<span'));
+			else return array(true, "Until ".$this->lib->cut_str($data, 'Premium till','<span')." <br/>Bandwith available:" .$this->lib->cut_str($this->lib->cut_str($data, 'Bandwith available</td>','<div style='), '<td>','</br>'));
 		}
 		else return array(false, "accinvalid");
 	}

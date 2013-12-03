@@ -18,8 +18,12 @@ class dl_uploaded_net extends Download {
 	}  
   
 	public function CheckAcc($cookie){
+		$data = $this->lib->curl("http://uploaded.net/language/en", $cookie, "");
 		$data = $this->lib->curl("http://uploaded.net/", $cookie, "");
-		if(stristr($data, '<a href="register"><em>Premium</em></a>')) return array(true, $this->lib->cut_str($this->lib->cut_str($data, "Duration:</td>","/th>"), "<th>","<")."<br/> Traffic Avaiable: ". $this->lib->cut_str($data, '<th class="aT"><em class="cB">', '</em></th>'));
+		$dt = $this->lib->curl("http://uploaded.net/file/wojimfnt", $cookie, ""); 
+		if(stristr($dt, 'You used too many different IPs')) return array(true, "blockAcc");
+		elseif(stristr($dt, 'Hybrid-Traffic is completely exhausted')) return array(true, "LimitAcc");
+		elseif(stristr($data, '<a href="register"><em>Premium</em></a>')) return array(true, $this->lib->cut_str($this->lib->cut_str($data, "Duration:</td>", "/th>"), "<th>", "<"));
 		elseif(stristr($data, '<li><a href="logout">Logout</a></li>')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}

@@ -3,10 +3,12 @@
 class dl_depositfiles_com extends Download { 
 
 	public function CheckAcc($cookie){
-		$domain = $this->lib->cut_str($this->getredirect("http://depositfiles.com/gold/payment_history.php"), "//", "/");
+		$domain = $this->lib->cut_str($this->getredirect("http://depositfiles.com/"), "//", "/");
 		$data = $this->lib->curl("http://{$domain}/gold/payment_history.php", "lang_current=en;{$cookie}", "");
-		$checksubscribe = $this->lib->curl("http://{$domain}/gold/payment_subscribe_manage.php", "lang_current=en;{$cookie}", "");
-		if(stristr($data, 'You have Gold access until:'))   return array(true, "Until ".$this->lib->cut_str($data, '<div class="access">You have Gold access until: <b>','</b></div>') ."<br/> ". (strpos($checksubscribe, '>You are subscribed to automatically') ? "You are subscribed" : "You are not subscribed"));
+		if(stristr($data, 'You have Gold access until:'))  {
+			$checksubscribe = $this->lib->curl("http://{$domain}/gold/payment_subscribe_manage.php", "lang_current=en;{$cookie}", "");
+			return array(true, "Until ".$this->lib->cut_str($data, '<div class="access">You have Gold access until: <b>','</b></div>') ."<br/> ". (strpos($checksubscribe, '>You are subscribed to automatically') ? "You are subscribed" : "You are not subscribed"));
+		}
 		elseif(stristr($data, 'Your current status: FREE - member')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}
@@ -40,9 +42,11 @@ class dl_depositfiles_com extends Download {
 
     public function Leech($url) {
 		list($url, $pass) = $this->linkpassword($url);
-		$domain = $this->lib->cut_str($this->getredirect("http://depositfiles.com/gold/payment_history.php"), "//", "/");
+		$domain = $this->lib->cut_str($this->getredirect("http://depositfiles.com/"), "//", "/");
 		$tachid = explode("/", $url);  
-		$DFid = $tachid[4];
+		if(preg_match("/\/files\/(.*)\/(.+)/i", $url, $id)) $DFid = $id[1];
+		elseif(count($tachid) == 5)  $DFid = $tachid[4];
+		else $DFid = $tachid[5];
 		$data = $this->lib->curl("http://depositfiles.com/api/download/file?file_id={$DFid}&file_password={$pass}", "lang_current=en;".$this->lib->cookie, "", 0);
 		$page = json_decode($data, true);
 		if($page['status'] !== "OK" && $page['error'] == "FileIsPasswordProtected")  $this->error("reportpass", true, false);
@@ -59,13 +63,12 @@ class dl_depositfiles_com extends Download {
 * Open Source Project
 * Vinaget by ..::[H]::..
 * Version: 2.7.0
-* Depositfiles.com Download Plugin 
-* Develop by farizemo
-* Plugin Download Class By giaythuytinh176
+* Depositfiles.com Download Plugin  
 * Date: 16.7.2013
 * Fix download by giaythuytinh176 [21.7.2013]
 * Fixed check account by giaythuytinh176 [24.7.2013]
 * Add support file password by giaythuytinh176 [29.7.2013]
 * Fix domain conflict, miss CheckAcc by Fz [24.11.2013]
+* Fixed link by giay [29.11.2013]
 */
 ?>
