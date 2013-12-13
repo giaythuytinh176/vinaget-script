@@ -10,18 +10,20 @@ include("class.php");
 $obj = new stream_get(); 
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'config';
-
+if($obj->Deny && isset($_POST['config'])) header("Location: index.php");
 if($page == 'config'){
 	if(isset($_POST['submit'])){
-		foreach($_POST['config'] as $ckey => $cval){
-			if($cval == 'on' || $cval == 'off') $cval = $cval == 'on' ? true : false;
-			elseif(is_numeric($cval)) $cval = intval($cval);
-			else $cval = $cval;
-			$obj->config[$ckey] = $cval;
+		if(isset($_POST['config'])) {
+			foreach($_POST['config'] as $ckey => $cval){
+				if($cval == 'on' || $cval == 'off') $cval = $cval == 'on' ? true : false;
+				elseif(is_numeric($cval)) $cval = intval($cval);
+				else $cval = $cval;
+				$obj->config[$ckey] = $cval;
+			}
+			$msg = "Config Saved!";
 		}
-		setcookie("cfg", base64_encode("[".implode("][", $obj->config)."]"));
+		else $msg = base64_encode("[".implode("][", $obj->config)."]");
 		$obj->save_json($obj->fileconfig, $obj->config);
-		$msg = "Config Saved!";
 	}
 }
 elseif($page == 'cookie'){
