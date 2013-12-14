@@ -31,43 +31,54 @@ class dl_fshare_vn extends Download {
 	}*/
 	
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("https://www.fshare.vn/account_info.php", $cookie, "");
+		$data = $this->lib->curl("http://www.fshare.vn/account_info.php", $cookie, "");
 		if(stristr($data, '<dd>VIP</dd>') && stristr($data, '<dt>Thời hạn dùng:</dt>')) return array(true, "Until ".$this->lib->cut_str($this->lib->cut_str($data, '<dt>Thời hạn dùng:</dt>','<dt>Loại thành viên:</dt>'), '<dd>','</dd>'));
-		else if(stristr($data, 'Tổng file upload:') && stristr($data, '<dd>VIP</dd>')) return array(true, "Account is lifetime!!!");
-		else if(stristr($data, 'Free Member')) return array(false, "accfree");
+		elseif(stristr($data, 'Tổng file upload:') && stristr($data, '<dd>VIP</dd>')) return array(true, "Account is lifetime!!!");
+		elseif(stristr($data, 'Free Member')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}
      
     public function Login($user, $pass){
-		$data = $this->lib->curl("https://www.fshare.vn/login.php", "", "login_useremail={$user}&login_password={$pass}&auto_login=1&url_refe=https://www.fshare.vn/index.php");	
+		$data = $this->lib->curl("https://www.fshare.vn/login.php", "", "login_useremail={$user}&login_password={$pass}&auto_login=1&url_refe=https://www.fshare.vn/");	
         $cookie = $this->lib->GetCookies($data);
 		return $cookie;
     }
 	
     public function Leech($url) {
 		$url = preg_replace("@https?:\/\/(www\.)?fshare\.vn@", "http://www.fshare.vn", $url);
-		list($url, $pass) = $this->linkpassword($url);
+		list($url, $pass) = $this->linkpassword($url);  
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		if($pass) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<form action="', '</form>'));
 			$post["link_file_pwd_dl"] = $pass;
-			$data = $this->lib->curl($url, $this->lib->cookie, $post);	
+			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Mật khẩu download file không đúng')) $this->error("wrongpass", true, false, 2);
-			elseif(!$this->isredirect($data)) {
-				if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay))  return trim($giay[1]);
+			if(stristr($data,"Tài khoản đang được sử dụng trên máy khác") || stristr($data,"Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt"))  {
+				$this->lib->curl("{$this->lib->self}?id=check&rand=".time(), "secureid={$_COOKIE["secureid"]}", "check=fshare.vn");
+				$this->error("blockAcc", true, false);
 			}
-			else	return trim($this->redirect);
+			elseif(stristr($data, "ocation: http://www.fshare.vn/logout.php")) 	{
+				$this->lib->curl("{$this->lib->self}?id=check&rand=".time(), "secureid={$_COOKIE["secureid"]}", "check=fshare.vn");
+				$this->error("cookieinvalid", true, false);  
+			}
+			elseif(!$this->isredirect($data)) {
+				if(preg_match('%"(http:\/\/download.*\.fshare.vn\/vip\/.+)"%U', $data, $giay))  return trim($giay[1]);
+			}
+			else  return trim($this->redirect);
 		}
-		if(stristr($data, "ocation: http://www.fshare.vn/logout.php")) 	{
-			$this->save("");
+		if(stristr($data,"Tài khoản đang được sử dụng trên máy khác") || stristr($data,"Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt"))  {
+			$this->lib->curl("{$this->lib->self}?id=check&rand=".time(), "secureid={$_COOKIE["secureid"]}", "check=fshare.vn");
+			$this->error("blockAcc", true, false);
+		}
+		elseif(stristr($data, "ocation: http://www.fshare.vn/logout.php")) 	{
+			$this->lib->curl("{$this->lib->self}?id=check&rand=".time(), "secureid={$_COOKIE["secureid"]}", "check=fshare.vn");
 			$this->error("cookieinvalid", true, false);  
 		}
-		elseif(stristr($data,"Tài khoản đang được sử dụng trên máy khác") || stristr($data,"Thông tin xác thực không hợp lệ. Xin vui lòng xóa cookie của trình duyệt")) 	$this->error("blockAcc", true, true);
 		elseif(stristr($data,"Thông tin tập tin tải xuống") && stristr($data,"TẢI XUỐNG CHẬM"))  $this->error("accfree", true, false);
 		elseif(stristr($data,"Liên kết bạn chọn không tồn tại trên hệ thống Fshare"))	$this->error("dead", true, false, 2);
 		elseif(stristr($data,"Vui lòng nhập mật khẩu để tải tập tin")) 	$this->error("reportpass", true, false);
 		elseif(!$this->isredirect($data)) {
-			if(preg_match('%"(http:\/\/download\d+\.fshare.vn\/vip\/.+)"%U', $data, $giay))  return trim($giay[1]);
+			if(preg_match('%"(http:\/\/download.*\.fshare.vn\/vip\/.+)"%U', $data, $giay))  return trim($giay[1]);
 		}
 		else return trim($this->redirect);
 		return false;

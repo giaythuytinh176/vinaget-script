@@ -1240,7 +1240,7 @@ class stream_get extends getinfo
 		$postData = array('longUrl' => $longUrl, 'key' => $GoogleApiKey);
 		$jsonData = json_encode($postData);
 		$curlObj = curl_init(); 
-		curl_setopt($curlObj, CURLOPT_URL, 'https://www.googleapis.com/urlshortener/v1/url');
+		curl_setopt($curlObj, CURLOPT_URL, "https://www.googleapis.com/urlshortener/v1/url?key={$GoogleApiKey}");
 		curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt($curlObj, CURLOPT_HEADER, 0);
