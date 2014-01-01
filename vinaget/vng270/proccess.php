@@ -10,7 +10,8 @@ include("class.php");
 $obj = new stream_get(); 
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'config';
-if($obj->Deny && isset($_POST['config'])) { header("Location: index.php"); ob_end_flush(); exit; }
+if(!isset($_COOKIE['secureid']))  { header("Location: index.php"); ob_end_flush(); exit; }
+if($_COOKIE["secureid"] != md5($obj->config['admin'])  && isset($_POST['config'])) { header("Location: index.php"); ob_end_flush(); exit; }
 if($page == 'config'){
 	if(isset($_POST['submit'])){
 		if(isset($_POST['config'])) {

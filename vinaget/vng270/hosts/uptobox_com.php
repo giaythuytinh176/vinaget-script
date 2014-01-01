@@ -4,7 +4,7 @@ class dl_uptobox_com extends Download {
     
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://uptobox.com/?op=my_account", "lang=english;{$cookie}", "");
-        if(stristr($data, 'Premium-Account expire')) return array(true, "Until ".$this->lib->cut_str($data, '<TR><TD>Premium-Account expire:</TD><TD><b>','</b></TD><TD>'));
+        if(stristr($data, 'Premium-Account expire')) return array(true, "Until ".$this->lib->cut_str($data, '>Premium-Account expire:', '</'));
         else if(stristr($data, 'My affiliate link:') && !stristr($data, 'Premium-Account expire')) return array(false, "accfree");
 		else return array(false, "accinvalid");
     }
@@ -63,7 +63,7 @@ class dl_uptobox_com extends Download {
 				elseif(stristr($page,'>Skipped countdown'))  $this->error("Error: Skipped countdown?.", true, false);
 				elseif(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
 				elseif(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
-				elseif(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $page, $link))	return trim($link[1]);
+				elseif(preg_match('/a href="(https?:\/\/.*\/d\/.*)">Click here/i', $page, $link))	return trim($link[1]);
 			}
 			if(stristr($page,'type="password" name="password'))  $this->error("reportpass", true, false);
 			
@@ -72,7 +72,7 @@ class dl_uptobox_com extends Download {
 			if(stristr($page,'>Skipped countdown'))  $this->error("Error: Skipped countdown?.", true, false);
 			elseif(stristr($page,'>Wrong captcha<'))  $this->error("Error: Unknown error after sending decoded captcha.", true, false);
 			elseif(stristr($page,'>Expired session<'))  $this->error("Error: Expired Download Session.", true, false);
-			elseif(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $page, $link))	return trim($link[1]);
+			elseif(preg_match('/a href="(https?:\/\/.*\/d\/.*)">Click here/i', $page, $link))	return trim($link[1]);
 		}
 		return false;
 	}				*/
@@ -85,14 +85,14 @@ class dl_uptobox_com extends Download {
 			$post["password"] = $pass;
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
 			if(stristr($data,'Wrong password'))  $this->error("wrongpass", true, false, 2);
-			elseif(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $data, $link))	return trim($link[1]);
+			elseif(preg_match('/a href="(https?:\/\/.*\/d\/.*)">Click here/i', $data, $link))	return trim($link[1]);
 		}
 		if(stristr($data,'type="password" name="password'))  $this->error("reportpass", true, false);
 		elseif(stristr($data,'The file was deleted by its owner') || stristr($data,'Page not found / La page')) $this->error("dead", true, false, 2);
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if(preg_match('/a href="(https?:\/\/.+\/d\/.+)">Click here/i', $data, $link))	return trim($link[1]);
+			if(preg_match('/a href="(https?:\/\/.*\/d\/.*)">Click here/i', $data, $link))	return trim($link[1]);
 		}
 		else  return trim($this->redirect);
 		return false;
