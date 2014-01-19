@@ -43,6 +43,10 @@ allow from all
 allow from all
 </files>
 
+<files debug.php>
+allow from all
+</files>
+
 <files proccess.php>
 allow from all
 </files>

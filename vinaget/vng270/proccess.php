@@ -11,9 +11,8 @@ $obj = new stream_get();
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'config';
 
-if(!isset($_COOKIE['secureid']) && count($obj->config) != 0)  { header("Location: index.php"); ob_end_flush(); exit; }
-if($_COOKIE["secureid"] != md5($obj->config['admin'])  && isset($_POST['config']) && count($obj->config) != 0) { header("Location: index.php"); ob_end_flush(); exit; }
-if($page == 'config'){
+if(!$obj->isadmin() && isset($_POST['config'])) { header("Location: index.php"); ob_end_flush(); exit; }
+elseif($page == 'config'){
 	if(isset($_POST['submit'])){
 		if(isset($_POST['config'])) {
 			foreach($_POST['config'] as $ckey => $cval){
@@ -75,7 +74,7 @@ else{
 	header("Location: index.php");
 }
 
-setcookie("msg", $msg);
+setcookie("msg", empty($msg) ? "" : $msg);
 header("Location: index.php?id=admin&page={$page}");
 ob_end_flush();
 ?>

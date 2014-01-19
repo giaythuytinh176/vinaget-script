@@ -2,10 +2,12 @@
 echo '<h3><a href="?id=admin&page=config">Config</a> | 
 	  <a href="?id=admin&page=host">Host</a> | 
 	  <a href="?id=admin&page=account">Account</a> | 
-	  <a href="?id=admin&page=cookie">Cookie</a></h3>';
+	  <a href="?id=admin&page=cookie">Cookie</a> | 
+	  <a href="?id=admin&page=debug">Debug</a></h3>';
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'config';
-echo "<form method='POST' action='proccess.php?page={$page}'>";
+if($page == "debug") echo "<form method='POST' action='debug.php' target='debug'>";
+else echo "<form method='POST' action='proccess.php?page={$page}'>";
 if($obj->msg) echo "<b>{$obj->msg}</b>";
 if($page == 'config'){
 	include ("config.php");
@@ -149,6 +151,21 @@ elseif($page == 'host'){
 	}
 	echo "</table>";
 	echo "<button class='btn btn-primary' id='submit' name='submit' type='submit'>Save</button>";
+}
+elseif($page == 'debug'){
+?>
+<table style="width:70%;">
+	<tr><td>URL </td><td> : </td><td><input type="text" id="link" name="link" style="width:100%;"></td></tr>
+	<tr><td>POST</td><td> : </td><td><input type="text" id="post" name="post" style="width:100%;"></td></tr>
+	<tr><td>COOKIE</td><td> : </td><td><input type="text" id="cookie" name="cookie" style="width:100%;"></td></tr>
+	<tr><td>PROXY</td><td> : </td><td><input type="text" id="proxy" name="proxy" style="width:100%;"></td></tr>
+</table>
+<input type='submit' value='Debug'>
+<input type='button' onClick="form.reset()" value='Reset'>
+</form>
+<br/>
+<iframe name="debug" width="700" height="400" style="background:white" src="debug.php"></iframe>
+<?php
 }
 else{
 	echo "<b>Page not available</b>";

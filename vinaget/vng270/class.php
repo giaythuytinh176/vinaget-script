@@ -822,12 +822,12 @@ class stream_get extends getinfo
 			$filesize = $size_name[0];
 			$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : $size_name[1];
 		}
-
+		
 		$hosting = Tools_get::site_hash($Original);
 		if (!isset($filesize)) {
 			$this->error2('notsupport', $Original);
 		}
-
+		$this->max_size = $this->acc[$site]['max_size'];
 		if (!isset($this->max_size)) $this->max_size = $this->max_size_other_host;
 		$msize = Tools_get::convertmb($filesize);
 		$hash = md5($_SERVER['REMOTE_ADDR'] . $Original);
@@ -1230,7 +1230,7 @@ class stream_get extends getinfo
 		die($msg);
 	}
 	function error2($msg, $a = "", $b = "", $c = "", $d = ""){
-		if(isset($this->lang[$msg])) $msg = sprintf($this->lang[$msg], $a, $b, $c, $d);
+		if(isset($this->lang[$msg])) $msg = sprintf($this->lang[$msg], $b, $c, $d);
 		$msg = sprintf($this->lang["error2"], $msg, $a);
 		die($msg);
 	}
