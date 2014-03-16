@@ -18,6 +18,10 @@ $alias['filemarkets.com'] = 'yunfile.com';
 $alias['my.rapidshare.com'] = 'rapidshare.com';
 $alias['ifile.it'] = 'filecloud.io';
 $alias['k2s.cc'] = 'keep2share.cc';
+$alias['putlocker.com'] = 'firedrive.com';
+$alias['rg.to'] = 'rapidgator.net';
+$alias['dl3.junocloud.me'] = 'junocloud.me';
+$alias['lumfile.com'] = 'terafile.co';  
 $folderhost = opendir ( "hosts/" );
 while ( $hostname = readdir ( $folderhost ) ) {		
 	if($hostname == "." || $hostname == ".." || strpos($hostname,"bak") || $hostname == "hosts.php") {continue;}

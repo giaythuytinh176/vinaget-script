@@ -3,9 +3,9 @@
 class dl_datafile_com extends Download {
   
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("https://www.datafile.com/profile.html", "lang=en;{$cookie}", "");
-		if(stristr($data, '(<a href="/getpremium.html">Prolong</a>)')) return array(true, "Until ".$this->lib->cut_str($data, '<td class="el" >',  '(<a href="/getpremium.html">Prolong</a>)'));
-		else if(stristr($data, '(<span class="yellow"><a href="/getpremium.html">Upgrade</a></span>)')) return array(false, "accfree"); 
+		$data = $this->lib->curl("http://www.datafile.com/profile.html", "lang=en;{$cookie}", "");
+		if(stristr($data, '>Premium Expires:<')) return array(true, "Until " .$this->lib->cut_str($data, '<td class="el" >',  '&nbsp; ('). "<br/>On the left today: " .$this->lib->cut_str($this->lib->cut_str($data, 'On the left today:</td>',  '</tr>'), '<td>', '</td>'));
+		else if(stristr($data, '">Upgrade</a></span>)')) return array(false, "accfree"); 
 		else return array(false, "accinvalid"); 
 	}
   
@@ -17,9 +17,17 @@ class dl_datafile_com extends Download {
   
 	public function Leech($url) {
 		$data = $this->lib->curl($url,$this->lib->cookie,"");
-		if(stristr($data, "ErrorCode 6: Download limit in")) $this->error("LimitAcc");
+		if($this->isredirect($data)) {
+			$link = trim("http://www.datafile.com" .$this->redirect);
+			$data = $this->lib->curl($link,$this->lib->cookie,"");
+			if(stristr($data, "ErrorCode 6: Download limit in")) $this->error("LimitAcc", true, false);
+			if($this->isredirect($data)) $redir = trim($this->redirect); 
+			$name = $this->lib->getname($redir, $this->lib->cookie);
+			$tach = explode(';', $name);
+			$this->lib->reserved['filename'] = $tach[0];
+			return $redir;
+		}
 		elseif(stristr($data,'ErrorCode 0: Invalid Link')) $this->error("dead", true, false, 2); 
-		elseif($this->isredirect($data)) 	return trim($this->redirect);
 		return false;
 	}
 	

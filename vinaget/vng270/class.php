@@ -29,7 +29,7 @@ class getinfo
 		$this->fileinfo_ext = "vng";
 		$this->banned = explode(' ', '.htaccess .htpasswd .php .php3 .php4 .php5 .phtml .asp .aspx .cgi .pl');
 		$this->unit = 512;
-		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/25.0.1';
+		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/27.0.1';
 		$this->config = $this->load_json($this->fileconfig);
 		include ("config.php");
 		if(count($this->config) == 0) {	
@@ -1236,9 +1236,11 @@ class stream_get extends getinfo
 	}
 	function Googlzip($longUrl)
 	{
-		$GoogleApiKey = $this->googlapikey;   //Get API key from : http://code.google.com/apis/console/
-		$postData = array('longUrl' => $longUrl, 'key' => $GoogleApiKey);
-		$jsonData = json_encode($postData);
+		$GoogleApiKey = $this->googlapikey;   //Get API key from : https://code.google.com/apis/console/
+		$postData = array(
+			'longUrl' => $longUrl,
+			'key' => $GoogleApiKey,
+		);
 		$curlObj = curl_init(); 
 		curl_setopt($curlObj, CURLOPT_URL, "https://www.googleapis.com/urlshortener/v1/url?key={$GoogleApiKey}");
 		curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
@@ -1246,7 +1248,7 @@ class stream_get extends getinfo
 		curl_setopt($curlObj, CURLOPT_HEADER, 0);
 		curl_setopt($curlObj, CURLOPT_HTTPHEADER, array('Content-type:application/json'));
 		curl_setopt($curlObj, CURLOPT_POST, 1);
-		curl_setopt($curlObj, CURLOPT_POSTFIELDS, $jsonData);
+		curl_setopt($curlObj, CURLOPT_POSTFIELDS, json_encode($postData));
 		$response = curl_exec($curlObj);
 		$json = json_decode($response, true);
 		curl_close($curlObj);
@@ -1256,8 +1258,7 @@ class stream_get extends getinfo
 	{
 		$login = $this->BitLylogin;
 		$apikey = $this->BitLyApi;
-		$bitly_api = "http://api.bit.ly/v3/shorten?login={$login}&apiKey={$apikey}&uri=".urlencode($url)."&format={$format}";
-		$data = $this->curl($bitly_api, "", "");
+		$data = $this->curl("http://api.bit.ly/v3/shorten?login={$login}&apiKey={$apikey}&uri=".urlencode($url)."&format={$format}", "", "");
 		return $data;
 	}
 								// Credit to France10s  
@@ -1269,16 +1270,7 @@ class stream_get extends getinfo
 			list($user, $pass) = explode(":", $userpass);
 		}
 		else list($ip, $port) = explode(":", $proxy);
-		die('<title>You must add this proxy '.(strpos($proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').'</title><center><b><span style="color:#076c4e">You must add this proxy</span> <span style="color:#30067d">('.(strpos($proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').')</span> <br><span style="color:red">PLEASE REMEMBER: IF YOU DO NOT ADD THE PROXY, YOU CAN NOT DOWNLOAD THIS LINK!</span><br><br>  Open IDM > Downloads > Options.<br><img src="'.$this->urlhost(3).'/images/prox/1.png"><br><br>  Proxy/Socks > Choose "Use Proxy" > Add proxy server: <font color=\'red\'>'.$ip.'</font>, port: <font color=\'red\'>'.$port.'</font> '.(strpos($proxy, "|") ? ', username: <font color=\'red\'>'.$user.'</font> and password: <font color=\'red\'>'.$pass.'</font>' : '').' > Choose http > OK.<br>'.(strpos($proxy, "|") ? '<img src="'.$this->urlhost(3).'/images/prox/2.png">' : '<img src="'.$this->urlhost(3).'/images/prox/2.1.png">').'<br><br>  Copy your link > Paste in IDM > OK.<br><img src="'.$this->urlhost(3).'/images/prox/3.png"><br><br>  It will work > Start Download > Enjoy!<br><img src="'.$this->urlhost(3).'/images/prox/4.png"></b></center>');
-	}
-	function urlhost($so) 
-	{
-		$a = $this->self;
-		$b = explode('/', $a);
-		$max = count($b)-$so;
-		for ($i=3; $i<$max; $i++) $namefolder .= "/".$b[$i];
-		$full = "http://".$_SERVER['HTTP_HOST'].$namefolder;
-		return $full;
+		die('<title>You must add this proxy to IDM '.(strpos($proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').'</title><center><b><span style="color:#076c4e">You must add this proxy to IDM </span> <span style="color:#30067d">('.(strpos($proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' and Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').')</span> <br><span style="color:red">PLEASE REMEMBER: IF YOU DO NOT ADD THE PROXY, YOU CAN NOT DOWNLOAD THIS LINK!</span><br><br>  Open IDM > Downloads > Options.<br><img src="http://i.imgur.com/v7FR3HE.png"><br><br>  Proxy/Socks > Choose "Use Proxy" > Add proxy server: <font color=\'red\'>'.$ip.'</font>, port: <font color=\'red\'>'.$port.'</font> '.(strpos($proxy, "|") ? ', username: <font color=\'red\'>'.$user.'</font> and password: <font color=\'red\'>'.$pass.'</font>' : '').' > Choose http > OK.<br>'.(strpos($proxy, "|") ? '<img src="http://i.imgur.com/LUTpGyN.png">' : '<img src="http://i.imgur.com/zExhNVR.png">').'<br><br>  Copy your link > Paste in IDM > OK.<br><img src="http://i.imgur.com/S355c5J.png"><br><br>  It will work > Start Download > Enjoy!<br><img src="http://i.imgur.com/vlh2vZf.png"></b></center>');
 	}
 }
 

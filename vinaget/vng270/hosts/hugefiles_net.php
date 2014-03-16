@@ -23,7 +23,7 @@ class dl_hugefiles_net extends Download {
 		elseif(!$this->isredirect($data)) {
 			$post = $this->parseForm($this->lib->cut_str($data, '<Form name="F1"', '</Form>'));
 			$data = $this->lib->curl($url, $this->lib->cookie, $post);
-			if($this->isredirect($data))   return trim($this->redirect);
+			if($this->isredirect($data)) return trim($this->redirect);
 		} 
 		else return trim($this->redirect);
 		return false;

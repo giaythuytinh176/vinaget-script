@@ -44,7 +44,7 @@ class dl_letitbit_net extends Download {
     }*/
 	
     public function Leech($url) {
-		$this->lib->cookie = preg_replace("/; PHPSESSID=[a-z0-9]+;/", "", $this->lib->cookie);	
+		$this->lib->cookie = preg_replace("/(; PHPSESSID=(.+);)|(; download_link=(.+);)|(; appid=(.+);)|(; jspcid=(.+);)/", "", $this->lib->cookie);	
 		if(strpos($url, "//letitbit.net")) { 
 			$data = $this->lib->curl($url, $this->lib->cookie, "");
 			if(strpos($data, "TTP/1.0 200 OK") || strpos($data, "TTP/1.1 200 OK") || strpos($data, "404 Not Found"))  $this->error("dead", true, false, 2);

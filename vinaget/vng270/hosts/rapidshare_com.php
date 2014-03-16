@@ -10,12 +10,12 @@ class dl_rapidshare_com extends Download {
 		if(stristr($cookie, "=")) {
 			$ckc =  explode("=", $cookie); 
 			$cookie = $ckc[1];
-		} 
+		}
         $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "lang=en", "sub=getaccountdetails&withcookie=1&withpublicid=1&withsession=1&cookie={$cookie}&cbf=RSAPIDispatcher&cbid=1");	
 		if(preg_match('/nbilleduntil=([0-9]+)/', $data, $giay))	{
 			if($giay[1] == 0) return array(false, "accfree");
  			elseif(time() > $giay[1]) return array(false, "Account Expired!");
-			else return array(true, "Until ".date('H:i:s Y-m-d',$giay[1]));
+			else return array(true, "Until " .date('H:i:s Y-m-d', $giay[1]));
 		}
 		else return array(false, "accinvalid");
     }
@@ -23,9 +23,8 @@ class dl_rapidshare_com extends Download {
 	public function Login($user, $pass){
         $data = $this->lib->curl("http://api.rapidshare.com/cgi-bin/rsapi.cgi", "lang=en", "sub=getaccountdetails&withcookie=1&withpublicid=1&login={$user}&cbf=RSAPIDispatcher&cbid=2&password={$pass}");
 		preg_match('/ncookie=([A-Z0-9]+)/', $data, $thuytinh);
-		$cookie = "enc={$thuytinh[1]};lang=en";
-		return $cookie;
-    }	
+		return "enc={$thuytinh[1]}; lang=en";
+    }
 
     public function Leech($url) {
 		if(stristr($url, 'rapidshare') && stristr($url, 'download|')) {
@@ -59,13 +58,13 @@ class dl_rapidshare_com extends Download {
 			}
 		}
 		$checkfile = file_get_contents("http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=checkfiles&files={$idfiles}&filenames={$idnames}");
-		if(stristr($checkfile,'0,0,0,0,0')) 	$this->error("dead", true, false, 2);
-		$cookie = preg_replace("/\s+/", "", preg_replace("/(; lang=en;)/", "", preg_replace("/(enc=|ENC=|Enc=)/", "", $this->lib->cookie)));
+		if(stristr($checkfile,'0,0,0,0,0')) $this->error("dead", true, false, 2);
+		$cookie = preg_replace("/(enc=|ENC=|Enc=|\s+|;|lang=en)/", "", $this->lib->cookie);
 		$data = $this->lib->curl("https://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=download&cookie={$cookie}&fileid={$idfiles}&filename={$idnames}", "", "", 0);
-		if(stristr($data, "File owner's public traffic exhausted"))  $this->error("File owner's public traffic exhausted", true, false);
-		elseif(stristr($data, "Download permission denied by uploader"))  $this->error("Download permission denied by uploader", true, false);
+		if(stristr($data, "File owner's public traffic exhausted")) $this->error("File owner's public traffic exhausted", true, false);
+		elseif(stristr($data, "Download permission denied by uploader")) $this->error("Download permission denied by uploader", true, false);
 		elseif(preg_match('/DL\:(.+rapidshare.com),/i', $data, $rssv)) {
-			$link = "https://{$rssv[1]}/cgi-bin/rsapi.cgi?sub=download&cookie={$cookie}&fileid={$idfiles}&filename={$idnames}";
+			$link = "http://{$rssv[1]}/cgi-bin/rsapi.cgi?sub=download&cookie={$cookie}&fileid={$idfiles}&filename={$idnames}";
 			return trim($link);
 		}
 		//$data = $this->lib->curl($url, "lang=en;".$this->lib->cookie, ""); 

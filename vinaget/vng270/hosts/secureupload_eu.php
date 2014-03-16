@@ -4,7 +4,7 @@ class dl_secureupload_eu extends Download {
     
     public function CheckAcc($cookie){
         $data = $this->lib->curl("http://www.secureupload.eu/account.html", "lang=english;{$cookie}", "");
-        if(stristr($data, 'Premium account expire:')) return array(true, "Until ".$this->lib->cut_str($data, 'expire:</td><td>&nbsp;', '<input type'));
+        if(stristr($data, 'Premium account expire:')) return array(true, "Until " .$this->lib->cut_str($this->lib->cut_str($data, 'Premium account expire:</td>', '</tr>'), '<td>', '<a h'));
         else if(stristr($data, '>Username:</') && !stristr($data, 'Premium account expire:')) return array(false, "accfree");
 		else return array(false, "accinvalid");
     }

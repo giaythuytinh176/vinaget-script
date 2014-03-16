@@ -54,11 +54,11 @@ class dl_youtube_com extends Download {
 		
 		if (isset($_REQUEST['step']) || preg_match('@Location: https?://(www\.)?youtube\.com/das_captcha@i', $data))   $this->error("ytb_captcha", true, false);	
 				
-		if (empty($response['url_encoded_fmt_stream_map']))   $this->error("ytb_Error", true, false);	 
+		if (empty($response['url_encoded_fmt_stream_map'])) $this->error("ytb_Error", true, false);	 
 		
 		$fmt_url_maps = explode(',', $response['url_encoded_fmt_stream_map']);
 
-		$this->fmts = array(38,37,46,22,45,44,35,43,34,18,6,5);
+		$this->fmts = array(38,37,46,22,45,44,35,43,34,18,6,5,36,17);
 		$yt_fmt = empty($_REQUEST['yt_fmt']) ? '' : $_REQUEST['yt_fmt'];
 		$this->fmturlmaps = $this->GetVideosArr($fmt_url_maps);
  
@@ -79,7 +79,7 @@ class dl_youtube_com extends Download {
 		}
 		
 		$ext = '.flv';
-		$fmtexts = array('.mp4' => array(18,22,37,38), '.webm' => array(43,44,45,46));
+		$fmtexts = array('.mp4' => array(18,22,37,38), '.webm' => array(43,44,45,46), '.3gp' => array(36,17));
 		foreach ($fmtexts as $k => $v) {
 			if (!is_array($v)) $v = array($v);  
 			if (in_array($fmt, $v)) {

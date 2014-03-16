@@ -44,6 +44,7 @@ elseif($page == 'account'){
 			$obj->acc[$_POST['type']]['proxy'] = "";
 			$obj->acc[$_POST['type']]['direct'] = false;
 		}
+		$_POST['account'] = str_replace(" ", "", $_POST['account']);
 		$obj->save_account($_POST['type'], $_POST['account']);
 		$msg = "{$_POST['type']} Account Added!";
 	}
