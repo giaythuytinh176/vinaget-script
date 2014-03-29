@@ -15,26 +15,26 @@
 */
 $using = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'default';
 $using = isset($_REQUEST['using']) ? $_REQUEST['using'] : $using;
-setcookie("using", $using);
+setcookie('using', $using);
 ob_start();
-ob_implicit_flush (TRUE);
-ignore_user_abort (0);
-if( !ini_get('safe_mode') )set_time_limit(30);
+ob_implicit_flush(TRUE);
+ignore_user_abort(0);
+if (!ini_get('safe_mode')) set_time_limit(30);
 define('vinaget', 'yes');
-include("class.php");
+require_once('class.php');
 $obj = new stream_get(); 
 $obj->using = $using;
-$obj->current_version = 83;
+$obj->current_version = 84;
 $obj->msg = false;
-if(isset($_COOKIE['msg']))$obj->msg = $_COOKIE['msg'];
-setcookie("msg", "");
+if (!empty($_COOKIE['msg'])) $obj->msg = htmlspecialchars($_COOKIE['msg']);
+setcookie('msg', '');
 $host = $obj->list_host;
 $skin = "skin/{$obj->skin}";
 error_reporting($obj->display_error ? E_ALL : 0);
 if ($obj->Deny == false){
-	include("{$skin}/function.php");
-	if(isset($_POST['urllist'])) $obj->main();
-	elseif(isset($_GET['infosv'])) showStat();
+	require_once("{$skin}/function.php");
+	if (isset($_POST['urllist'])) $obj->main();
+	elseif (isset($_GET['infosv'])) showStat();
 	elseif (!isset($_POST['urllist'])) include("{$skin}/index.php");
 }
 else include("{$skin}/login.php");

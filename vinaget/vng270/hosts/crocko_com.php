@@ -7,7 +7,7 @@ class dl_crocko_com extends Download {
 	}
 
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("http://www.crocko.com/accounts", "language=en;".$cookie, "");
+		$data = $this->lib->curl("https://www.crocko.com/accounts", "language=en;".$cookie, "");
 		if(stristr($data, 'Premium membership: Active<br />') || stristr($data, 'Premium membership: Expiring<br />')) return array(true, "Until ".$this->lib->cut_str($data, 'Ends:  ',', in'));
 		else if(stristr($data, '<h4>Premium account <strong>active</strong></h4>')) return array(true, "Until ".$this->lib->cut_str($data, 'End time:  ',', in'));
 		else if(stristr($data, 'Premium membership: No premium')) return array(false, "accfree");
@@ -17,15 +17,16 @@ class dl_crocko_com extends Download {
     public function Login($user, $pass){
 		$post["login"]= $user;
 		$post["password"]= $pass;
-		$data = $this->lib->curl("http://www.crocko.com/accounts/login", "language=en", $post);                        
-		$cookie = "language=en;{$this->lib->GetCookies($data)}";
+		$data = $this->lib->curl("https://www.crocko.com/accounts/login", "language=en", $post);                        
+		$cookie = "language=en; {$this->lib->GetCookies($data)}";
 		return $cookie;
 	}
 	
     public function Leech($url) {
+		$url = str_replace('http://', 'https://', $url);
 		if(stristr($url, "easy-share.com")) $url = str_replace("easy-share.com", "crocko.com", $url);
-		$data = $this->lib->curl($url, "language=en;".$this->lib->cookie, "");	
-		if(stristr($data,"Sorry,<br />the page you're looking for<br />isn't here") || stristr($data,"Please go to home page or one of this links") || stristr($data,"Information is not available at this time"))   $this->error("dead", true, false, 2);
+		$data = $this->lib->curl($url, $this->lib->cookie, "");	
+		if(stristr($data,">the page you're looking for<br") || stristr($data,"Please go to home page or one of this links") || stristr($data,"Information is not available at this time")) $this->error("dead", true, false, 2);
 		elseif($this->isredirect($data)) return trim($this->redirect);
 		return false;
     }

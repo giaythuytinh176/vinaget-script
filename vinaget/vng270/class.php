@@ -40,7 +40,7 @@ class getinfo
 		}
 		else{
 			foreach($config as $key=>$val){
-				if(!isset($this->config[$key])) $this->config[$key] = $val;
+				if (!isset($this->config[$key])) $this->config[$key] = $val;
 			}
 			if ($this->config['secure'] == false) $this->Deny = false;
 			$password = explode(", ", $this->config['password']);
@@ -115,7 +115,7 @@ class getinfo
 		$this->bbcode = $this->config['bbcode'];
 	}
 	function isadmin(){
-		return isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($this->config['admin']) ? true : $this->admin;
+		return (isset($_COOKIE['secureid']) && $_COOKIE['secureid'] == md5($this->config['admin']) ? true : $this->admin);
 	}
 	function getversion(){
 		$version = $this->cut_str($this->curl("https://code.google.com/p/vinaget-script/source/list", "", ""), '"detail?r=','"');
@@ -393,7 +393,7 @@ class stream_get extends getinfo
 			header("HTTP/1.1 404 Not Found");
 			$this->error1('erroracc');
 		}
-		if($job['proxy'] != 0 && $this->redirdl == true) {
+		if ($job['proxy'] != 0 && $this->redirdl == true) {
 			list($ip, ) = explode(":", $job['proxy']);
 			if($_SERVER['REMOTE_ADDR'] != $ip) { 
 				$this->wrong_proxy($job['proxy']);
@@ -462,13 +462,9 @@ class stream_get extends getinfo
 		}
 		while (strpos($header, "\r\n\r\n") === false);
 		/* debug */
-		if(isset($_GET['debug'])){
-			echo "<pre>";
-			echo "connected to : $hosts ".($job['proxy'] == 0 ? "" : "via {$job['proxy']}")."\r\n";
-			echo "$data\r\n\r\n";
-			echo "Server replied: \r\n";
-			echo $header;
-			echo "</pre>";
+		if ($this->isadmin() && isset($_GET['debug'])) {
+			// Uncomment next line for enable to admins this debug code.
+			// echo "<pre>connected to : $hosts ".($job['proxy'] == 0 ? '' : "via {$job['proxy']}")."\r\n$data\r\n\r\nServer replied: \r\n$header</pre>";
 			die();
 		}
 		/* debug */
@@ -1498,9 +1494,7 @@ class Tools_get extends getinfo
 
 
 class Download {
-	
 	public $last = false;
-	
 	public function __construct ($lib, $site) {
 		$this->lib = $lib;
 		$this->site = $site;

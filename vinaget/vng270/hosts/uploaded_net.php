@@ -18,9 +18,9 @@ class dl_uploaded_net extends Download {
 	}  
   
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("https://uploaded.net/language/en", $cookie, "");
-		$data = $this->lib->curl("https://uploaded.net/", $cookie, "");
-		$dt = $this->lib->curl("https://uploaded.net/file/wojimfnt", $cookie, ""); 
+		$data = $this->lib->curl("http://uploaded.net/language/en", $cookie, "");
+		$data = $this->lib->curl("http://uploaded.net/", $cookie, "");
+		$dt = $this->lib->curl("http://uploaded.net/file/wojimfnt", $cookie, ""); 
 		if(stristr($dt, 'You used too many different IPs')) return array(true, "blockAcc");
 		elseif(stristr($dt, 'Hybrid-Traffic is completely exhausted')) return array(true, "LimitAcc");
 		elseif(stristr($data, '<a href="register"><em>Premium</em></a>')) return array(true, $this->lib->cut_str($this->lib->cut_str($data, "Duration:</td>", "/th>"), "<th>", "<"));
@@ -29,13 +29,13 @@ class dl_uploaded_net extends Download {
 	}
          
 	public function Login($user, $pass){
-		$data = $this->lib->curl("https://uploaded.net/io/login", "", "id={$user}&pw={$pass}");
+		$data = $this->lib->curl("http://uploaded.net/io/login", "", "id={$user}&pw={$pass}");
 		$cookie = $this->lib->GetCookies($data);
 		return $cookie;
 	}
          
 	public function Leech($url) {
-		$url = str_replace("http://", "https://", $url);
+		//$url = str_replace("http://", "https://", $url);
 		$data = $this->lib->curl($url, $this->lib->cookie, ""); 
 		if (stristr($data,">Extend traffic<")) $this->error("LimitAcc");
 		elseif (stristr($data,"Hybrid-Traffic is completely exhausted")) $this->error("LimitAcc");
