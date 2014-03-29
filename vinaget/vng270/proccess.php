@@ -53,7 +53,7 @@ switch ($page) {
 			$_POST['account'] = str_replace(' ', '', $_POST['account']);
 			$obj->save_account($_POST['type'], $_POST['account']);
 			$msg = $_POST['type'] . 'Account Added!';
-		} elseif (!empty($_GET['del']) && !empty($_GET['host'])) {
+		} elseif (isset($_GET['del']) && !empty($_GET['host'])) {
 			$acc = $obj->acc[$_GET['host']]['accounts'];
 			unset($obj->acc[$_GET['host']]['accounts']);
 			foreach ($acc as $key => $val) {
