@@ -351,8 +351,14 @@ class stream_get extends getinfo
 		$this->load_jobs();
 		$this->load_cookies();
 		$this->cookie = '';
-		if (preg_match('%^(http.+.index.php)/(.*?)/(.*?)/%U', $this->self, $redir)) $this->download($redir[3]);
-		elseif (isset($_REQUEST['file'])) $this->download($_REQUEST['file']);
+		if (preg_match('%^(http.+.index.php)/(.*?)/(.*?)/%U', $this->self, $redir)) {
+			if (stristr($redir[3], 'mega_')) $this->downloadmega($redir[3]);
+			else $this->download($redir[3]);
+		}
+		elseif (isset($_REQUEST['file'])) {
+			if (stristr($_REQUEST['file'], 'mega_')) $this->downloadmega($_REQUEST['file']);
+			else $this->download($_REQUEST['file']);
+		}
 		else{
 			include ("hosts/hosts.php");
 			ksort($host);
@@ -525,6 +531,46 @@ class stream_get extends getinfo
 		exit;
 	}
 
+	function downloadmega($hash)
+	{
+		error_reporting(0);
+		$job = $this->lookup_job($hash);
+		if (!$job) {
+			sleep(15);
+			header("HTTP/1.1 404 Not Found");
+			die($this->lang['errorget']);
+		}
+		if (($_SERVER['REMOTE_ADDR'] !== $job['ip']) && $this->privateip == true) {
+			sleep(15);
+			die($this->lang['errordl']);
+		}
+		if ($this->get_load() > $this->max_load) sleep(15);
+		$link = '';
+		$filesize = $job['size'];
+		$filename = $this->download_prefix . Tools_get::convert_name($job['filename']) . $this->download_suffix;
+		$directlink = urldecode($job['directlink']['url']);
+		$this->cookie = $job['directlink']['cookies'];
+		$link = $directlink;
+		$link = str_replace(" ", "%20", $link);
+		if (!$link) {
+			sleep(15);
+			header("HTTP/1.1 404 Not Found");
+			$this->error1('erroracc');
+		}
+		if ($job['proxy'] != 0 && $this->redirdl == true) {
+			list($ip, ) = explode(":", $job['proxy']);
+			if($_SERVER['REMOTE_ADDR'] != $ip) { 
+				$this->wrong_proxy($job['proxy']);
+			}
+			else {
+				header('Location: '.$link);
+				die;
+			}
+		}
+		$megafile = new MEGA(urldecode($job['url'])); 
+		$megafile->stream_download(); 
+	}
+	
 	function CheckMBIP()
 	{
 		$this->countMBIP = 0;
@@ -681,7 +727,10 @@ class stream_get extends getinfo
 
 		if (isset($url) && strlen($url) > 10) {
 			if (substr($url, 0, 4) == 'www.') $url = "http://" . $url;
-			if (!$this->check3x) $dlhtml = $this->get($url);
+			if (!$this->check3x) {
+				if (stristr($url, 'mega.co.nz')) $dlhtml = $this->mega($url);
+				else $dlhtml = $this->get($url);
+			}
 			else {
 
 				// ################## CHECK 3X #########################
@@ -700,7 +749,10 @@ class stream_get extends getinfo
 					}
 				}
 
-				if ($check3x == false) $dlhtml = $this->get($url);
+				if ($check3x == false) {
+					if (stristr($url, 'mega.co.nz')) $dlhtml = $this->mega($url);
+					else $dlhtml = $this->get($url);
+				}
 				else {
 					$dlhtml = printf($this->lang['issex'], $url);
 					unset($check3x);
@@ -748,7 +800,7 @@ class stream_get extends getinfo
 	}
 	
 	function get($url)
-	{
+	{	
 		$this->reserved = array();
 		$this->CheckMBIP();
 		$dlhtml = '';
@@ -998,6 +1050,227 @@ class stream_get extends getinfo
 		return $dlhtml;
 	}
 
+	function mega($url)
+	{	
+		$this->reserved = array();
+		$this->CheckMBIP();
+		$dlhtml = '';
+		if (count($this->jobs) >= $this->max_jobs) {
+			$this->error1('manyjob');
+		}
+		if ($this->countMBIP >= $this->limitMBIP) {
+			$this->error1('countMBIP', Tools_get::convertmb($this->limitMBIP * 1024 * 1024) , Tools_get::convert_time($this->ttl * 60) , Tools_get::convert_time($this->timebw));
+		}
+		/* check 1 */
+		$checkjobs = $this->Checkjobs();
+		$heute = $checkjobs[0];
+		$lefttime = $checkjobs[1];
+		if ($heute >= $this->limitPERIP) {
+			$this->error1('limitPERIP', $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60) , $lefttime);
+		}
+		/* /check 1 */
+		if ($this->lookup_ip($_SERVER['REMOTE_ADDR']) >= $this->max_jobs_per_ip) {
+			$this->error1('limitip');
+		}
+
+		$url = trim($url);
+		
+		if (empty($url)) return;
+		$Original = $url;
+		$link = '';
+		$user = '';
+		$pass = '';
+		$cookie = '';
+		$report = false; 
+		
+		$megafile = new MEGA(urldecode($url));
+		
+		$info = $megafile->file_info();
+		
+		$link = $info['binary_url'];
+		 
+		$filesize = $info['size'];
+		$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : Tools_get::convert_name($info['attr']['n']);
+		
+		$hosting = Tools_get::site_hash($Original);
+		if (!isset($filesize)) {
+			$this->error2('notsupport', $Original);
+		}
+		$this->max_size = $this->acc[$site]['max_size'];
+		if (!isset($this->max_size)) $this->max_size = $this->max_size_other_host;
+		$msize = Tools_get::convertmb($filesize);
+		$hash = md5($_SERVER['REMOTE_ADDR'] . $Original);
+		if ($hash === false) {
+			$this->error1('cantjob');
+		}
+		
+		if ($filesize > $this->max_size * 1024 * 1024) {
+			$this->error2('filebig', $Original, $msize, Tools_get::convertmb($this->max_size * 1024 * 1024));
+		}
+		
+		if (($this->countMBIP + $filesize / (1024 * 1024)) >= $this->limitMBIP) {
+			$this->error1('countMBIP', Tools_get::convertmb($this->limitMBIP * 1024 * 1024) , Tools_get::convert_time($this->ttl * 60) , Tools_get::convert_time($this->timebw));
+		}
+		
+		/* check 2 */
+		$checkjobs = $this->Checkjobs();
+		$heute = $checkjobs[0];
+		$lefttime = $checkjobs[1];
+		if ($heute >= $this->limitPERIP) {
+			$this->error1('limitPERIP', $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60) , $lefttime);
+		}
+		/* /check 2 */
+		$job = array(
+			'hash' => "mega_".substr(md5($hash) , 0, 10) ,
+			'path' => substr(md5(rand()) , 0, 5) ,
+			'filename' => urlencode($filename) ,
+			'size' => $filesize,
+			'msize' => $msize,
+			'mtime' => time() ,
+			'speed' => 0,
+			'url' => urlencode($Original) ,
+			'owner' => $this->owner,
+			'ip' => $_SERVER['REMOTE_ADDR'],
+			'type' => 'direct',
+			'proxy' => 0,
+			'directlink' => array(
+				'url' => urlencode($link) ,
+				'cookies' => $this->cookie,
+			) ,
+		);
+		$this->jobs[$hash] = $job;
+		$this->save_jobs();
+		$tiam = time() . rand(0, 999);
+		$gach = explode('/', $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+		$sv_name = "";
+		for ($i = 0; $i < count($gach) - 1; $i++) $sv_name.= $gach[$i] . "/";
+		if($this->acc[$site]['direct']) $linkdown = $link;
+		elseif($this->longurl){
+			if(function_exists("apache_get_modules") && in_array('mod_rewrite',@apache_get_modules())) $linkdown = 'http://'.$sv_name.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
+			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
+		}
+		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
+		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
+		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false && empty($this->bitly) == true) {
+			$datalink = $this->Googlzip($linkdown);
+			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+			else $lik = $linkdown;
+		}
+		elseif (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == true && empty($this->bitly) == false) {
+			$datalink = $this->bitly($linkdown);
+			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+			else $lik = $linkdown;
+		}
+		elseif (empty($this->zlink) == false && empty($link) == false) {
+			if (empty($this->Googlzip) == true && empty($this->bitly) == true) {
+				if (empty($this->link_zip) == false) {
+					if (empty($this->link_rutgon) == true) {
+						$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
+						if (preg_match('%(http:\/\/.++)%U', $apizip2, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+				elseif (empty($this->link_zip) == true) {
+					if (empty($this->link_rutgon) == true) {
+						$lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$datalink = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+			}
+			elseif (empty($this->Googlzip) == false && empty($this->bitly) == true) {
+				if (empty($this->link_zip) == false) {
+					if (empty($this->link_rutgon) == true) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$datalink = $this->Googlzip($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
+						$datalink = $this->Googlzip($apizip2);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+				elseif (empty($this->link_zip) == true) {
+					if (empty($this->link_rutgon) == true) {
+						$datalink = $this->Googlzip($linkdown);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
+						$datalink = $this->Googlzip($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+			}
+			elseif (empty($this->Googlzip) == true && empty($this->bitly) == false) {
+				if (empty($this->link_zip) == false) {
+					if (empty($this->link_rutgon) == true) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$datalink = $this->bitly($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
+						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
+						$datalink = $this->bitly($apizip2);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+				elseif (empty($this->link_zip) == true) {
+					if (empty($this->link_rutgon) == true) {
+						$datalink = $this->bitly($linkdown);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+					elseif (empty($this->link_rutgon) == false) {
+						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
+						$datalink = $this->bitly($apizip);
+						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
+						else $lik = $linkdown;
+					}
+				}
+			}
+		}
+		// ########### End short link  ##########
+		else $lik = $linkdown;
+		
+		if($this->bbcode){
+			if($this->proxy != false && $this->redirdl == true) {
+				if(strpos($this->proxy, "|")){
+					list($prox, $userpass) = explode("|", $this->proxy);
+					list($ip, $port) = explode(":", $prox);
+					list($user, $pass) = explode(":", $userpass);
+				}
+				else list($ip, $port) = explode(":", $this->proxy);
+				echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize})[/color]  [/b][/url][b] [br] ([color=green]You must add this proxy[/color] ".(strpos($this->proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').")[/b][/center]' onClick='this.select()'>";
+				echo "<br>"; 
+			}
+			else {
+				echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize}) [/color][/url][/b][/center]' onClick='this.select()'>";
+				echo "<br>"; 
+			}
+		}
+		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl && !$this->acc[$site]['direct'] ? "<a href='{$link}'>Direct<a> " : ""). "</a>" .($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : ""). "</b>".(($this->proxy != false && $this->redirdl == true) ? "<br/><b><font color=\"green\">You must add proxy or you can not download this link</font></b>" : "");
+		return $dlhtml;
+	}
+	
 	function datecmp($a, $b)
 	{
 		return ($a[1] < $b[1]) ? 1 : 0;
@@ -1643,4 +1916,235 @@ class Download {
 	}
 }
 
+/**
+ * Mega.co.nz downloader
+ * Require mcrypt, curl
+ * @license GNU GPLv3 http://opensource.org/licenses/gpl-3.0.html
+ * @author ZonD80
+ */
+class MEGA {
+
+    private $seqno, $f;
+
+    /**
+     * Class constructor
+     * @param string $file_hash File hash, coming after # in mega URL
+     */
+    function __construct($file_hash) {
+        $this->seqno = 0;
+        $this->f = $this->mega_get_file_info($file_hash);
+    }
+
+    function a32_to_str($hex) {
+        return call_user_func_array('pack', array_merge(array('N*'), $hex));
+    }
+
+    function aes_ctr_decrypt($data, $key, $iv) {
+        return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $data, 'ctr', $iv);
+    }
+
+    function base64_to_a32($s) {
+        return $this->str_to_a32($this->base64urldecode($s));
+    }
+
+    function base64urldecode($data) {
+        $data .= substr('==', (2 - strlen($data) * 3) % 4);
+        $data = str_replace(array('-', '_', ','), array('+', '/', ''), $data);
+        return base64_decode($data);
+    }
+
+    function str_to_a32($b) {
+        // Add padding, we need a string with a length multiple of 4
+        $b = str_pad($b, 4 * ceil(strlen($b) / 4), "\0");
+        return array_values(unpack('N*', $b));
+    }
+
+    /**
+     * Handles query to mega servers
+     * @param array $req data to be sent to mega
+     * @return type
+     */
+    function mega_api_req($req) {
+
+        $ch = curl_init('https://g.api.mega.co.nz/cs?id=' . ($this->seqno++)/* . ($sid ? '&sid=' . $sid : '') */);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array($req)));
+        $resp = curl_exec($ch);
+        curl_close($ch);
+        $resp = json_decode($resp, true);
+        return $resp[0];
+    }
+
+    function aes_cbc_decrypt($data, $key) {
+        return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CBC, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
+    }
+
+    function mega_dec_attr($attr, $key) {
+        $attr = trim($this->aes_cbc_decrypt($attr, $this->a32_to_str($key)));
+        if (substr($attr, 0, 6) != 'MEGA{"') {
+            return false;
+        }
+        return json_decode(substr($attr, 4), true);
+    }
+
+    /**
+     * Downloads file from megaupload
+     * @param string $as_attachment Download file as attachment, default true
+     * @param string $local_path Save file to specified by $local_path folder
+     * @return boolean True
+     */
+    function download($as_attachment = true, $local_path = null) {
+        $ch = curl_init($this->f['binary_url']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //curl_setopt($ch, CURLOPT_VERBOSE, true);
+        $data_enc = curl_exec($ch);
+        curl_close($ch);
+        $data = $this->aes_ctr_decrypt($data_enc, $this->a32_to_str($this->f['k']), $this->a32_to_str($this->f['iv']));
+        if ($as_attachment) {
+            //die(var_dump($this->f['attr']['n']));
+            header("Content-Disposition: attachment;filename=\"{$this->f['attr']['n']}\"");
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header("Content-Transfer-Encoding: binary");
+            header("Content-Length: " . $this->f['size']);
+            header('Pragma: no-cache');
+            header('Expires: 0');
+            print $data;
+            return true;
+        } else {
+            file_put_contents($local_path . DIRECTORY_SEPARATOR . $this->f['attr']['n'], $data);
+            return true;
+        }
+        /* $file_mac = cbc_mac($data, $k, $iv);
+          print "\nchecking mac\n";
+          if (array($file_mac[0] ^ $file_mac[1], $file_mac[2] ^ $file_mac[3]) != $meta_mac) {
+          echo "MAC mismatch";
+          } */
+    }
+
+    function get_chunks($size) {
+        $chunks = array();
+        $p = $pp = 0;
+
+        for ($i = 1; $i <= 8 && $p < $size - $i * 0x20000; $i++) {
+            $chunks[$p] = $i * 0x20000;
+            $pp = $p;
+            $p += $chunks[$p];
+        }
+
+        while ($p < $size) {
+            $chunks[$p] = 0x100000;
+            $pp = $p;
+            $p += $chunks[$p];
+        }
+
+        $chunks[$pp] = ($size - $pp);
+        if (!$chunks[$pp]) {
+            unset($chunks[$pp]);
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * Downloads file from megaupload as a stream (useful if you want to implement megaupload proxy)
+     * @param string $as_attachment Download file as attachment, default true
+     * @param string $local_path Save file to specified by $local_path folder
+     * @return boolean True
+     */
+    function stream_download($as_attachment = true, $local_path = null) {
+
+        //$data = $this->aes_ctr_decrypt($data_enc, $this->a32_to_str($this->f['k']), $this->a32_to_str($this->f['iv']));
+        if ($as_attachment) {
+            header("Content-Disposition: attachment;filename=\"{$this->f['attr']['n']}\"");
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header("Content-Transfer-Encoding: binary");
+            header("Content-Length: " . $this->f['size']);
+            header('Pragma: no-cache');
+            header('Expires: 0');
+        } else {
+            $destfile = fopen($local_path . DIRECTORY_SEPARATOR . $this->f['attr']['n'], 'wb');
+        }
+        $cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', 'ctr', '');
+
+        mcrypt_generic_init($cipher, $this->a32_to_str($this->f['k']), $this->a32_to_str($this->f['iv']));
+
+        $chunks = $this->get_chunks($this->f['size']);
+
+        $protocol = parse_url($this->f['binary_url'], PHP_URL_SCHEME);
+
+        $opts = array(
+            $protocol => array(
+                'method' => 'GET'
+            )
+        );
+
+        $context = stream_context_create($opts);
+        $stream = fopen($this->f['binary_url'], 'rb', false, $context);
+
+        $info = stream_get_meta_data($stream);
+        $end = !$info['eof'];
+        foreach ($chunks as $length) {
+
+            $bytes = strlen($buffer);
+            while ($bytes < $length && $end) {
+                $data = fread($stream, min(1024, $length - $bytes));
+                $buffer .= $data;
+
+                $bytes = strlen($buffer);
+                $info = stream_get_meta_data($stream);
+                $end = !$info['eof'] && $data;
+            }
+
+            $chunk = substr($buffer, 0, $length);
+            $buffer = $bytes > $length ? substr($buffer, $length) : '';
+
+            $chunk = mdecrypt_generic($cipher, $chunk);
+            if ($as_attachment) {
+                print $chunk;
+                ob_flush();
+                }
+            else
+                fwrite($destfile, $chunk);
+        }
+
+        // Terminate decryption handle and close module
+        mcrypt_generic_deinit($cipher);
+        mcrypt_module_close($cipher);
+        fclose($stream);
+        if (!$as_attachment)
+            fclose($destfile);
+
+        return true;
+        /* $file_mac = cbc_mac($data, $k, $iv);
+          print "\nchecking mac\n";
+          if (array($file_mac[0] ^ $file_mac[1], $file_mac[2] ^ $file_mac[3]) != $meta_mac) {
+          echo "MAC mismatch";
+          } */
+    }
+
+    private function mega_get_file_info($hash) {
+        preg_match('/\!(.*?)\!(.*)/', $hash, $matches);
+        $id = $matches[1];
+        $key = $matches[2];
+        $key = $this->base64_to_a32($key);
+        $k = array($key[0] ^ $key[4], $key[1] ^ $key[5], $key[2] ^ $key[6], $key[3] ^ $key[7]);
+        $iv = array_merge(array_slice($key, 4, 2), array(0, 0));
+        $meta_mac = array_slice($key, 6, 2);
+        $info = $this->mega_api_req(array('a' => 'g', 'g' => 1, 'p' => $id));
+        if (!$info['g']) die('No such file on mega. Maybe it was deleted.');
+        return array('id' => $id, 'key' => $key, 'k' => $k, 'iv' => $iv, 'meta_mac' => $meta_mac, 'binary_url' => $info['g'], 'attr' => $this->mega_dec_attr($this->base64urldecode($info['at']), $k), 'size' => $info['s']);
+    }
+
+    /**
+     * Returns file information
+     * @return array File information
+     */
+    function file_info() {
+        return $this->f;
+    }
+
+}
 ?>
