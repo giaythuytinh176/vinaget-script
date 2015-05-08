@@ -93,6 +93,7 @@ function get(obj) {
 
 function ajaxget(id,url,type){
 	var param = $("form[name=formlink]").serialize();
+	var proxy = $("#proxy").val();
 	captcha = 'none';
 	if (type =='reget'){
 		$("#link"+id).html("<font color=#FFFF99><b>"+url+"</b></font> <img src='images/"+loadimg+"' />"); 
@@ -107,7 +108,7 @@ function ajaxget(id,url,type){
 		$.ajax({
 			type: "POST",
 			url: "index.php?rand="+ Math.random(),
-			data: "urllist="+encodeURIComponent(url)+'&captcha='+captcha+"&"+param,
+			data: "urllist="+encodeURIComponent(url)+'&captcha='+captcha+'&proxy='+proxy+"&"+param,
 			success: function(html) {
 				/* limit ip for mod  */
 				if (errorlogin === true) return;

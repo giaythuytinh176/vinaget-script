@@ -157,11 +157,13 @@
 								<?php if($obj->isadmin()){
 									$obj->last_version = $obj->getversion();
 									if($obj->last_version > $obj->current_version)
-										echo '<br><font color="#dbac58"><b>'.sprintf($obj->lang['update1']).'</b> - <a href="http://www.rapidleech.com/index.php/topic/14663-dev-vinaget-v270-beta/">'.sprintf($obj->lang['update2'],$obj->last_version).'</a></font>'; 
+										echo '<br><font color="#dbac58"><b>'.sprintf($obj->lang['update1']).'</b> - <a href="http://rapidleech.com/forum/viewtopic.php?f=36&t=559">'.sprintf($obj->lang['update2'],$obj->last_version).'</a></font>'; 
 								}
 								?>
 								<br><font face=Arial size=1><span style="font-familty: Arial; color: #FFFFFF; font-size: 10px">Example: http://www.megaupload.com/?d=ABCDEXYZ<font size="3">|</font>password</span></font><BR>
 								<textarea id='links' style='width:550px;height:100px;' name='links'></textarea><BR>
+								<b>Proxy (host:port) or (host:port|user:pass)</b><BR>
+								<input id='proxy' name='proxy' placeholder='proxy' style='width:300px;'><BR><BR>
 								<input type="submit"  id ='submit' value='<?php printf($obj->lang['sbdown']); ?>'/>&nbsp;&nbsp;&nbsp;
 								<input type="button" onclick="reseturl();return false;" value="Reset">&nbsp;&nbsp;&nbsp;
 								<input type="checkbox" name="autoreset" id="autoreset" checked>&nbsp;Auto reset&nbsp;&nbsp;&nbsp;

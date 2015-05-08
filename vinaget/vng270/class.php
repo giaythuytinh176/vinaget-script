@@ -112,13 +112,14 @@ class getinfo
 		$this->longurl = $this->config['longurl'];
 		$this->display_error = $this->config['display_error'];
 		$this->proxy = false;
+		$this->prox = $_POST['proxy'];
 		$this->bbcode = $this->config['bbcode'];
 	}
 	function isadmin(){
 		return (isset($_COOKIE['secureid']) && $_COOKIE['secureid'] == md5($this->config['admin']) ? true : $this->admin);
 	}
 	function getversion(){
-		$version = $this->cut_str($this->curl("https://code.google.com/p/vinaget-script/source/list", "", ""), '"detail?r=','"');
+		$version = $this->cut_str($this->curl("https://github.com/giaythuytinh176/vinaget-script", "", ""), '<span class="num text-emphasized">','</span>');
 		return intval($version);
 	}
 	function notice($id="notice")
@@ -545,28 +546,7 @@ class stream_get extends getinfo
 			die($this->lang['errordl']);
 		}
 		if ($this->get_load() > $this->max_load) sleep(15);
-		$link = '';
-		$filesize = $job['size'];
-		$filename = $this->download_prefix . Tools_get::convert_name($job['filename']) . $this->download_suffix;
-		$directlink = urldecode($job['directlink']['url']);
-		$this->cookie = $job['directlink']['cookies'];
-		$link = $directlink;
-		$link = str_replace(" ", "%20", $link);
-		if (!$link) {
-			sleep(15);
-			header("HTTP/1.1 404 Not Found");
-			$this->error1('erroracc');
-		}
-		if ($job['proxy'] != 0 && $this->redirdl == true) {
-			list($ip, ) = explode(":", $job['proxy']);
-			if($_SERVER['REMOTE_ADDR'] != $ip) { 
-				$this->wrong_proxy($job['proxy']);
-			}
-			else {
-				header('Location: '.$link);
-				die;
-			}
-		}
+		
 		$megafile = new MEGA(urldecode($job['url'])); 
 		$megafile->stream_download(); 
 	}
@@ -827,14 +807,13 @@ class stream_get extends getinfo
 		if (empty($url)) return;
 		$Original = $url;
 		$link = '';
-		$user = '';
-		$pass = '';
 		$cookie = '';
 		$report = false;
 		
 		if (!$link) {
 			$site = $this->using;
 			$this->proxy = isset($this->acc[$site]['proxy']) ? $this->acc[$site]['proxy'] : false;
+			$this->proxy = isset($this->prox) ? $this->prox : false;
 			if($this->get_account($site) != ""){
 				require_once ('hosts/' . $this->list_host[$site]['file']);
 				$download = new $this->list_host[$site]['class']($this, $this->list_host[$site]['site']);
@@ -852,12 +831,14 @@ class stream_get extends getinfo
 				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);
 				$site = $this->list_host[$domain]['site'];
 				$this->proxy = isset($this->acc[$site]['proxy']) ? $this->acc[$site]['proxy'] : false;
+				$this->proxy = isset($this->prox) ? $this->prox : false;
 				$link = $download->General($url);
 			}
 		}
 		
 		if (!$link) {
-			$this->proxy = false;
+			$this->proxy = isset($this->acc[$site]['proxy']) ? $this->acc[$site]['proxy'] : false;
+			$this->proxy = isset($this->prox) ? $this->prox : false;
 			$size_name = Tools_get::size_name($Original, "");
 			$filesize = $size_name[0];
 			$filename = $size_name[1];
@@ -1077,9 +1058,7 @@ class stream_get extends getinfo
 		
 		if (empty($url)) return;
 		$Original = $url;
-		$link = '';
-		$user = '';
-		$pass = '';
+		$link = ''; 
 		$cookie = '';
 		$report = false; 
 		
@@ -1252,22 +1231,10 @@ class stream_get extends getinfo
 		else $lik = $linkdown;
 		
 		if($this->bbcode){
-			if($this->proxy != false && $this->redirdl == true) {
-				if(strpos($this->proxy, "|")){
-					list($prox, $userpass) = explode("|", $this->proxy);
-					list($ip, $port) = explode(":", $prox);
-					list($user, $pass) = explode(":", $userpass);
-				}
-				else list($ip, $port) = explode(":", $this->proxy);
-				echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize})[/color]  [/b][/url][b] [br] ([color=green]You must add this proxy[/color] ".(strpos($this->proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').")[/b][/center]' onClick='this.select()'>";
-				echo "<br>"; 
-			}
-			else {
-				echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize}) [/color][/url][/b][/center]' onClick='this.select()'>";
-				echo "<br>"; 
-			}
+			echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize}) [/color][/url][/b][/center]' onClick='this.select()'>";
+			echo "<br>"; 
 		}
-		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl && !$this->acc[$site]['direct'] ? "<a href='{$link}'>Direct<a> " : ""). "</a>" .($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : ""). "</b>".(($this->proxy != false && $this->redirdl == true) ? "<br/><b><font color=\"green\">You must add proxy or you can not download this link</font></b>" : "");
+		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ";
 		return $dlhtml;
 	}
 	
@@ -1677,6 +1644,7 @@ class Tools_get extends getinfo
 		elseif (strpos($url, "up.4share.vn")  || strpos($url, "4share.vn"))  $site = "4ShareVN";
 		elseif (strpos($url, "share.vnn.vn"))   $site = "share.vnn.vn";
 		elseif (strpos($url, "upfile.vn"))   $site = "UpfileVN";
+		elseif (strpos($url, "mega.co.nz"))   $site = "MEGA";
 		else {
 			$schema = parse_url($url);
 			$site = preg_replace("/(www\.|\.com|\.net|\.biz|\.info|\.org|\.us|\.vn|\.jp|\.fr|\.in|\.to)/", "", $schema['host']);

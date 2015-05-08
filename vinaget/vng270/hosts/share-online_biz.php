@@ -11,7 +11,7 @@ class dl_share_online_biz extends Download {
     }
     
     public function Login($user, $pass){
-		$data = $this->lib->curl("https://www.share-online.biz/user/login", "animations=1;newsscrl=1;page_language=english", "user={$user}&pass={$pass}&l_rememberme=0&submit=Log%20in");
+		$data = $this->lib->curl("https://www.share-online.biz/user/login", "animations=1;newsscrl=1;page_language=english", "user={$user}&pass={$pass}&l_rememberme=1&submit=Log%20in");
         $cookie = "animations=1;newsscrl=1;page_language=english;{$this->lib->GetCookies($data)}";
 		return $cookie;
     }
@@ -19,14 +19,11 @@ class dl_share_online_biz extends Download {
     public function Leech($url) {
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		$this->save($this->lib->GetCookies($data)); 
-		if(stristr($data, 'The requested file is not available'))   $this->error("dead", true, false, 2);
-		if(!preg_match('/var dl="(.*)";var file/', $data, $en64)) $this->error("Cannot get base64_encode", true, false);	
-		else { 	
+		if(stristr($data, 'The requested file is not available')) $this->error("dead", true, false, 2);
+		elseif(preg_match('/var dl="(.*)";var file/', $data, $en64)) {
 			$link = base64_decode($en64[1]);
 			return trim($link);
 		}
-		//$enlink = $this->lib->cut_str($data, 'var dl="', '";var file;');
-		//return trim(base64_decode($enlink));
 		return false;
     }
 	
