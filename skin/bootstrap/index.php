@@ -238,7 +238,7 @@
 
 						<script type="text/javascript" language="javascript" src="ajax.js?ver=1.0"></script> 
 					<!-- Copyright please don't remove-->
-						<STRONG><SPAN class='powered' style="font-size: 12px;">Code LeechViet. Developed by ..:: [H] ::..<br/>Powered by <a href='http://www.rapidleech.com/index.php/topic/14663-dev-vinaget-v270-beta/'><?php printf($obj->lang['version']); ?> Revision <?php printf($obj->current_version); ?></a> by [FZ]. Skin by Rhuan Gonzaga</SPAN><br/>
+						<STRONG><SPAN class='powered' style="font-size: 12px;">Code LeechViet. Developed by ..:: [H] ::..<br/>Powered by <a href='http://rapidleech.com/forum/viewforum.php?f=23'><?php printf($obj->lang['version']); ?> Revision <?php printf($obj->current_version); ?></a> by [FZ]. Skin by Rhuan Gonzaga</SPAN><br/>
 						<SPAN class='copyright' style="font-size: 12px;">Copyright 2009-<?php echo date('Y');?> by <a href='http://vinaget.us/'>http://vinaget.us</a>. All rights reserved. </SPAN><br /><br />
 					<!-- Copyright please don't remove-->	
 					</div>

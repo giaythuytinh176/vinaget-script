@@ -1066,7 +1066,7 @@ class stream_get extends getinfo
 		
 		$info = $megafile->file_info();
 		
-		$link = $info['binary_url'];
+		$link = 'https://mega.co.nz/';
 		 
 		$filesize = $info['size'];
 		$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : Tools_get::convert_name($info['attr']['n']);
@@ -2102,7 +2102,7 @@ class MEGA {
         $iv = array_merge(array_slice($key, 4, 2), array(0, 0));
         $meta_mac = array_slice($key, 6, 2);
         $info = $this->mega_api_req(array('a' => 'g', 'g' => 1, 'p' => $id));
-        if (!$info['g']) die('No such file on mega. Maybe it was deleted.');
+        if (!$info['g']) die('<b><font color=red>No such file on mega. Maybe it was deleted.</font></b>');
         return array('id' => $id, 'key' => $key, 'k' => $k, 'iv' => $iv, 'meta_mac' => $meta_mac, 'binary_url' => $info['g'], 'attr' => $this->mega_dec_attr($this->base64urldecode($info['at']), $k), 'size' => $info['s']);
     }
 

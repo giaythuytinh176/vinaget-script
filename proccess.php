@@ -50,9 +50,19 @@ switch ($page) {
 				$obj->acc[$_POST['type']]['proxy'] = '';
 				$obj->acc[$_POST['type']]['direct'] = false;
 			}
-			$_POST['account'] = str_replace(' ', '', $_POST['account']);
-			$obj->save_account($_POST['type'], $_POST['account']);
-			$msg = $_POST['type'] . 'Account Added!';
+			$account = explode("\n", $_POST['account']);
+			$maxacc = count($account); 
+			if (($maxacc == 2 && $account[1] == '') || $maxacc == 1) {
+				$_POST['account'] = $account[0];
+				$obj->save_account($_POST['type'], $_POST['account']);
+			}
+			else {
+				for ($i=0; $i < $maxacc; $i++) {
+					$_POST['account'] = $account[$i];
+					$obj->save_account($_POST['type'], $_POST['account']);
+				}
+			}
+			$msg =  count($account). ' Account '.$_POST['type'].' Added!';
 		} elseif (isset($_GET['del']) && !empty($_GET['host'])) {
 			$acc = $obj->acc[$_GET['host']]['accounts'];
 			unset($obj->acc[$_GET['host']]['accounts']);
