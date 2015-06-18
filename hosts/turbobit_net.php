@@ -1,7 +1,7 @@
 <?php
 
 class dl_turbobit_net extends Download {
-
+	/*
     public function CheckAcc($cookie) {
         $data = $this->lib->curl("http://turbobit.net", "user_lang=en;".$cookie, "");
         if (stristr($data, '<u>Turbo Access</u> to')) {
@@ -12,9 +12,9 @@ class dl_turbobit_net extends Download {
 		else if(stristr($data, '<u>Turbo Access</u> denied.')) return array(false, "accfree");
 		else return array(false, "accinvalid");
     }
-         
+    */   
     public function Login($user, $pass){
-        $data = $this->lib->curl("http://turbobit.net/user/login", "user_lang=en", "user[login]={$user}&user[pass]={$pass}&user[memory]=1&user[submit]=Login");
+        $data = $this->lib->curl("http://turbobit.net/user/login", "user_lang=en", "user[login]=".urlencode($user)."&user[pass]=".urlencode($pass)."&user[memory]=1&user[submit]=Login");
         $cookie = "user_lang=en;".$this->lib->GetCookies($data);
         return $cookie;
     }

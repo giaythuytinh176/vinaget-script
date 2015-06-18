@@ -36,10 +36,10 @@ switch ($page) {
 	case 'cookie':
 		if (!empty($_POST['type']) && !empty($_POST['cookie'])) {
 			$obj->save_cookies($_POST['type'], $_POST['cookie']);
-			$msg = $_POST['type'] . 'Cookie Added!';
+			$msg = $_POST['type'] . ' Cookie Added!';
 		} elseif (!empty($_GET['del'])) {
 			$obj->save_cookies($_GET['del'], '');
-			$msg = $_GET['del'] . 'Cookie Deleted!';
+			$msg = $_GET['del'] . ' Cookie Deleted!';
 		}
 		break;
 
@@ -51,16 +51,21 @@ switch ($page) {
 				$obj->acc[$_POST['type']]['direct'] = false;
 			}
 			$account = explode("\n", $_POST['account']);
+			
 			$maxacc = count($account); 
-			if (($maxacc == 2 && $account[1] == '') || $maxacc == 1) {
-				$_POST['account'] = $account[0];
+			for ($i=0; $i < $maxacc; $i++) {
+				$account[$i] = str_replace(array("\r", "\n", "\t", "\s", " "), "", trim($account[$i]));
+				if (empty($account[$i])) unset($account[$i]);
+			} 
+			
+			$account = array_unique($account);
+			$account = array_values($account);
+			//$account = array_filter(explode("\n", preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $_POST['account'])));
+			
+			$maxacc = count($account); 
+			for ($i=0; $i < $maxacc; $i++) {
+				$_POST['account'] = $account[$i];
 				$obj->save_account($_POST['type'], $_POST['account']);
-			}
-			else {
-				for ($i=0; $i < $maxacc; $i++) {
-					$_POST['account'] = $account[$i];
-					$obj->save_account($_POST['type'], $_POST['account']);
-				}
 			}
 			$msg =  count($account). ' Account '.$_POST['type'].' Added!';
 		} elseif (isset($_GET['del']) && !empty($_GET['host'])) {
@@ -71,7 +76,7 @@ switch ($page) {
 				$obj->acc[$_GET['host']]['accounts'][] = $val;
 			}
 			$obj->save_json($obj->fileaccount, $obj->acc);
-			$msg = $_GET['host'] . 'Account Deleted!';
+			$msg = $_GET['host'] . ' Account Deleted!';
 		}
 		break;
 
