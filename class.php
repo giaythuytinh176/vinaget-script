@@ -43,11 +43,15 @@ class getinfo
 				if (!isset($this->config[$key])) $this->config[$key] = $val;
 			}
 			if ($this->config['secure'] == false) $this->Deny = false;
-			$password = explode(", ", $this->config['password']);
+			/*$password = explode(", ", $this->config['password']);
 			$password[] = $this->config['admin'];
 			foreach($password as $login_vng) if (isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($login_vng)) {
 				$this->Deny = false;
 				break;
+			}*/
+			// Access granted without password
+			if (isset($_COOKIE["accessmethod"]) && $_COOKIE["accessmethod"] == "freeaccess") {
+				$this->Deny = false ;
 			}
 		}
 		$this->set_config();

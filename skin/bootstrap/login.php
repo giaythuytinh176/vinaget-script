@@ -39,6 +39,14 @@
 				<td><b><?php printf($obj->lang['password']); ?></b></div></td>
 				<td>:</td>
 				<td><input style="margin-bottom: 0px;" type="password" name="secure"/></td>
+				</tr><tr>
+				<td><b></b></div></td>
+				<td></td>
+				<td><input type="button" value="<?php printf($obj->lang['free_access']); ?>" onClick="window.location.href='login.php?method=freeaccess'"></td>
+				</tr><tr>
+				<td><b></b></div></td>
+				<td></td>
+				<td><input type="button" value="<?php printf($obj->lang['connect_logboost']); ?>" onClick="window.location.href='login.php?method=logboost'"></td>
 				</tr></table>
 			</div>
 			<div class="modal-footer">

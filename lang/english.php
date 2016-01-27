@@ -111,7 +111,10 @@ $lang = array (
 'notsupportacc'	=> 'Not support account, use cookie instead',
 'notsupportpass'=> 'Not support password currently for %1$s',
 'checkacc'		=> 'Check %1$s account',
-'noplugin'		=> 'You don\'t have %s account checker.<br/>Ask someone to make it'
+'noplugin'		=> 'You don\'t have %s account checker.<br/>Ask someone to make it',
+
+'free_access'   => 'Free access',
+'connect_logboost' => 'Connect with logboost'
 );
 /*
 * Open Source Project

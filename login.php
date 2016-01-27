@@ -9,8 +9,13 @@ date_default_timezone_set('Asia/Jakarta');
 $data = json_decode(file_get_contents("data/config.dat"), true);
 if ($_GET['go']=='logout') {
 	setcookie("secureid", "owner", time());
-} 
-else {
+	setcookie("accessmethod", "owner", time()) ;
+} else if($_GET['method']=='freeaccess') {
+	$login = true;
+	setcookie("accessmethod","freeaccess",time()+3600*24*7);
+} else if($_GET['method']=='logboost') {
+	setcookie("accessmethod","logboost",time()+3600*24*7);
+} else {
 	$login = false;
 	$password = explode(", ", $data['password']);
 	$password[] = $data['admin'];
