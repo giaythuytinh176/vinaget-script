@@ -137,7 +137,9 @@ elseif($page == 'host'){
 			<thead><tr>
 				<td align="center"><B>Host</B></td>
 				<td align="center"><B>Max Size</B></td>
+				<td align="center"><B>Max Size Logboost</B></td>
 				<td align="center"><B>Proxy</B></td>
+				<td align="center"><B>LB only</B></td>
 				<td align="center"><B>Direct</B></td>
 			</tr></thead>
 		';
@@ -145,7 +147,9 @@ elseif($page == 'host'){
 		echo '<tr class="flistmouseoff">
 				<td><B>'.$ckey.'</B></td>
 				<td><input type="text" name="host['.$ckey.'][max_size]" value="'.$val['max_size'].'"/></td>
+				<td><input type="text" name="host['.$ckey.'][logboost_max_size]" value="'.$val['logboost_max_size'].'"/></td>
 				<td><input type="text" name="host['.$ckey.'][proxy]" value="'.$val['proxy'].'"/></td>
+				<td><input type="checkbox" name="host['.$ckey.'][logboost_only]" value="ON" '.($val['logboost_only'] ? 'checked' : '').'/></td>
 				<td><input type="checkbox" name="host['.$ckey.'][direct]" value="ON" '.($val['direct'] ? 'checked' : '').'/></td>
 			</tr>';
 	}

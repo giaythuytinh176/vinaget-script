@@ -1,1 +1,1 @@
-<meta HTTP-EQUIV="Refresh" CONTENT="0; URL=http://vinaget.us">
+<meta HTTP-EQUIV="Refresh" CONTENT="0; URL=http://">

@@ -114,6 +114,7 @@ class getinfo
 		$this->proxy = false;
 		$this->prox = $_POST['proxy'];
 		$this->bbcode = $this->config['bbcode'];
+		$this->logboost_max_size_default = $this->config['logboost_max_size_default'];
 	}
 	function isadmin(){
 		return (isset($_COOKIE['secureid']) && $_COOKIE['secureid'] == md5($this->config['admin']) ? true : $this->admin);
@@ -255,7 +256,9 @@ class getinfo
 			if(!$host['alias']){
 				if(empty($this->acc[$site]['proxy'])) $this->acc[$site]['proxy'] = "";
 				if(empty($this->acc[$site]['direct'])) $this->acc[$site]['direct'] = false;
+				if(empty($this->acc[$site]['logboost_only'])) $this->acc[$site]['logboost_only'] = false;
 				if(empty($this->acc[$site]['max_size'])) $this->acc[$site]['max_size'] = $this->max_size_default;
+				if(empty($this->acc[$site]['logboost_max_size'])) $this->acc[$site]['logboost_max_size'] = $this->logboost_max_size_default;
 				if(empty($this->acc[$site]['accounts'])) $this->acc[$site]['accounts'] = array();
 			}
 		}		
