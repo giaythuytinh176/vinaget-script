@@ -1,4 +1,5 @@
 <?php
+include("lib/logboost-api-php/LogboostAPI.php") ;
 /*
 * Home page: http://vinaget.us
 * Blog:	http://blog.vinaget.us
@@ -15,6 +16,7 @@
 */
 $using = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'default';
 $using = isset($_REQUEST['using']) ? $_REQUEST['using'] : $using;
+session_start() ;
 setcookie('using', $using);
 ob_start();
 ob_implicit_flush(TRUE);

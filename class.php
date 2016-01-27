@@ -22,6 +22,7 @@ class getinfo
 		$this->self = 'http://' . $_SERVER['HTTP_HOST'] . preg_replace('/\?.*$/', '', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF']);
 		$this->Deny = true;
 		$this->admin = false;
+		$this->logboostSession = null ;
 		$this->fileinfo_dir = "data";
 		$this->filecookie = "/cookie.dat";
 		$this->fileconfig = "/config.dat";
@@ -48,11 +49,19 @@ class getinfo
 			foreach($password as $login_vng) if (isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($login_vng)) {
 				$this->Deny = false;
 				break;
-			}
+			} else 
 			// Access granted without password
 			if (isset($_COOKIE["accessmethod"]) && $_COOKIE["accessmethod"] == "freeaccess") {
 				$this->Deny = false ;
+			} else
+			// Access granted to Logboost users
+			if (isset($_COOKIE["accessmethod"]) && $_COOKIE["accessmethod"] == "logboost" && isset($_SESSION['LOGBOOST'])) {
+				$this->logboostSession = unserialize($_SESSION['LOGBOOST']) ;
+				if($this->logboostSession->sid != null) {
+					$this->Deny = false ;
+				}
 			}
+			
 		}
 		$this->set_config();
 		if (!file_exists($this->fileinfo_dir)) {

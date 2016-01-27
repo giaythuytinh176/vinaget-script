@@ -16,6 +16,7 @@ class LogboostSession
 			throw new UnableToConnectException('Client id or secret id not specified') ;
 
 		$this->oidc = new OpenIDConnectClient('http://logboost.com/',$GLOBALS['Logboost_clientID'],$GLOBALS['Logboost_clientSecret']);
+
 		$this->oidc->addScope("openid profile payment") ;
 		if($redirect != null) {
 			$this->oidc->setRedirectURL($redirect);
@@ -75,6 +76,7 @@ class LogboostSession
   	}
 
   	function handleSession() {
+  		$this->oidc->authenticate();
   		$this->sid = session_id() ;		
 		$this->username = $this->oidc->requestUserInfo('preferred_username');
 		$this->ip = $_SERVER['REMOTE_ADDR'] ;
