@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('UTC');
 /*
 * Home page: http://vinaget.us
 * Blog:	http://blog.vinaget.us
@@ -128,6 +129,17 @@ class getinfo
 		$this->prox = $_POST['proxy'];
 		$this->bbcode = $this->config['bbcode'];
 		$this->logboost_max_size_default = $this->config['logboost_max_size_default'];
+		if(isset($this->logboostSession) && $this->logboostSession->isPremium()) {
+			$this->max_jobs_per_ip = $this->config['logboost_max_jobs_per_ip'];
+			$this->max_size_default = $this->config['logboost_max_size_default'];
+			$this->file_size_limit = $this->config['logboost_file_size_limit'];
+			$this->limitPERIP = $this->config['logboost_limitPERIP'];
+			$this->limitMBIP = $this->config['logboost_limitMBIP'];
+			$this->max_jobs = $this->config['logboost_max_jobs'];
+			$this->max_load = $this->config['logboost_max_load'];
+			$this->logboost_secret = $this->config['logboost_secret'];
+			$this->logboost_client_id = $this->config['logboost_client_id'];
+		}
 	}
 	function isadmin(){
 		return (isset($_COOKIE['secureid']) && $_COOKIE['secureid'] == md5($this->config['admin']) ? true : $this->admin);
