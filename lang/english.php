@@ -116,7 +116,9 @@ $lang = array (
 'free_access'   => 'Free access',
 'connect_logboost' => 'Connect with logboost',
 'please_login' => 'Please login',
-'please_choose_plan' => 'Please choose your plan'
+'please_choose_plan' => 'Please choose your plan',
+'logboost_not_activated' => 'Your Logboost account is not activated, activate your logboost account and reconnect to use premium features.',
+'warning' => 'Warning'
 );
 /*
 * Open Source Project

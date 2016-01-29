@@ -74,7 +74,15 @@
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 				</div>
 			</div>
-			
+	
+	<?
+	if(isset($obj->logboostSession) && !$obj->logboostSession->isPremium()) {
+	?>
+	<div class="alert">
+	  <button type="button" class="close" data-dismiss="alert">&times;</button>
+	  <strong><?php printf($obj->lang['warning']); ?>!</strong> <?php printf($obj->lang['logboost_not_activated']); ?>
+	</div>
+	<? } ?>
 
     <div class="container-fluid">
 		<div class="row-fluid">
