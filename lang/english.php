@@ -114,7 +114,8 @@ $lang = array (
 'noplugin'		=> 'You don\'t have %s account checker.<br/>Ask someone to make it',
 
 'free_access'   => 'Free access',
-'connect_logboost' => 'Connect with logboost'
+'connect_logboost' => 'Connect with logboost',
+'please_login' => 'Please login'
 );
 /*
 * Open Source Project

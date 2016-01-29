@@ -5,7 +5,11 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="keywords" content="<?php printf($obj->lang['version']); ?>, download, get, vinaget, file, generator, premium, link, sharing, bitshare.com, crocko.com, depositfiles.com, extabit.com, filefactory.com, filepost.com, filesmonster.com, freakshare.com, gigasize.com, hotfile.com, jumbofiles.com, letitbit.net, mediafire.com, megashares.com, netload.in, oron.com, rapidgator.net, rapidshare.com, ryushare.com, sendspace.com, share-online.biz, shareflare.net, uploaded.to, uploading.com" />
 	<meta author="Code by [FZ] && Bootstrap Skin by Rhuan Gonzaga" />
+	<link href="http://logboost.com/resources/css/lbbutton.css" rel="stylesheet" />
+    <link href="http://logboost.com/resources/iconmoon/style.css" rel="stylesheet" />
+    <link href="<?php echo $skin;?>/css/style.css" rel="stylesheet" />
 	<link href="<?php echo $skin;?>/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="<?php echo $skin;?>/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 </head>
 <body>	
 <script type="text/javascript" language="javascript" src="images/jquery-1.7.1.min.js"></script>
@@ -28,32 +32,55 @@
 		<h1><?php printf($obj->lang['sitetile']) ?></h1>
 		<strong><p><?php printf($obj->lang['welcome'],$obj->lang['homepage']); ?></p></strong>
 	</div>
-	<form action="login.php" method="POST" style="margin:0px;">
-		<div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="false" style="display: block; top:30%">
-			<div class="modal-header">
-				<h3 id="loginLabel"><?php printf($obj->lang['login']); ?></h3>
+	<? if(isset($_GET['admin'])) { ?>
+		<form action="login.php" method="POST" style="margin:0px;">
+			<div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="false" style="display: block; top:30%">
+				<div class="modal-header">
+					<h3 id="loginLabel"><?php printf($obj->lang['login']); ?></h3>
+				</div>
+				<div class="modal-body">
+					<br/><br/>
+					<table class="table" style="border-bottom: 1px solid #dddddd;"><tr>
+					<td><b><?php printf($obj->lang['password']); ?></b></div></td>
+					<td>:</td>
+					<td><input style="margin-bottom: 0px;" type="password" name="secure"/></td>
+					</tr></table>
+				</div>
+				<div class="modal-footer">
+					<input class="btn" aria-hidden="true" name="submit" type="submit" value="Submit"/>
+				</div>
 			</div>
-			<div class="modal-body">
-				<br/><br/>
-				<table class="table" style="border-bottom: 1px solid #dddddd;"><tr>
-				<td><b><?php printf($obj->lang['password']); ?></b></div></td>
-				<td>:</td>
-				<td><input style="margin-bottom: 0px;" type="password" name="secure"/></td>
-				</tr><tr>
-				<td><b></b></div></td>
-				<td></td>
-				<td><input type="button" value="<?php printf($obj->lang['free_access']); ?>" onClick="window.location.href='login.php?method=freeaccess'"></td>
-				</tr><tr>
-				<td><b></b></div></td>
-				<td></td>
-				<td><input type="button" value="<?php printf($obj->lang['connect_logboost']); ?>" onClick="window.location.href='login.php?method=logboost'"></td>
-				</tr></table>
+		</form>
+	<? } else { ?>
+			<div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="false" style="display: block; top:30%">
+				<div class="modal-header">
+					<h3 id="loginLabel"><?php printf($obj->lang['please_login']); ?></h3>
+				</div>
+				<div class="modal-body">
+					<br/><br/>
+					<table class="table" style="border-bottom: 1px solid #dddddd;">
+					<tr>
+					<td colspan="3" style="text-align:center">
+						<button type="button" class="lbbtn lbbtn-lg lbbtn-freeaccess" onClick="window.location.href = 'login.php?method=freeaccess'">
+	                        <i class="fa fa-unlock"></i>
+	                        <span> Free access</span>
+	                    </button>
+					</td>
+					</tr><tr>
+					</tr><tr>
+						<td colspan="3" style="text-align:center">or</td>
+					</tr><tr>
+					<td colspan="3" style="text-align:center">
+	                    <button type="button" class="lbbtn lbbtn-lg lbbtn-woodcub" onClick="window.location.href = 'login.php?method=logboost'">
+	                        <i class="iconmoon-logboost"></i>
+	                        <span> Connect with Logboost</span>
+	                    </button>
+	   				</td>
+					</tr></table>
+				</div>
 			</div>
-			<div class="modal-footer">
-				<input class="btn" aria-hidden="true" name="submit" type="submit" value="Submit"/>
-			</div>
-		</div>
-	</form>
+	<? } ?>
+
 	<!-- Bootstrap skin by Rhuan Gonzaga (rhuangonzaga[@]gmail.com)-->	
 	<script type="text/javascript" language="javascript" src="ajax.js?ver=1.0"></script> 
 	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>

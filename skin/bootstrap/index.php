@@ -5,6 +5,8 @@
 			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 			<meta name="keywords" content="<?php printf($obj->lang['version']); ?>, download, get, vinaget, file, generator, premium, link, sharing, bitshare.com, crocko.com, depositfiles.com, extabit.com, filefactory.com, filepost.com, filesmonster.com, freakshare.com, gigasize.com, hotfile.com, jumbofiles.com, letitbit.net, mediafire.com, megashares.com, netload.in, oron.com, rapidgator.net, rapidshare.com, ryushare.com, sendspace.com, share-online.biz, shareflare.net, uploaded.to, uploading.com" />
 			<meta author="Code by [FZ] && Bootstrap Skin by Rhuan Gonzaga" />
+			<link href="http://logboost.com/resources/css/lbbutton.css" rel="stylesheet" />
+        	<link href="http://logboost.com/resources/iconmoon/style.css" rel="stylesheet" />
 			<link href="<?php echo $skin;?>/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 		</head>
 		<body>

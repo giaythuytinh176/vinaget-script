@@ -1,0 +1,17 @@
+.lbbtn {
+	width:350px ;
+}
+
+.lbbtn i {
+	float:left;
+}
+
+.lbbtn-freeaccess {
+	background-color: white ;
+	color: black;
+	width:350px ;
+}
+
+.lbbtn-freeaccess:hover {
+	background-color: #EEE ;
+}
