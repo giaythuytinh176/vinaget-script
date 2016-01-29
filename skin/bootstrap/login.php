@@ -32,7 +32,7 @@
 		<h1><?php printf($obj->lang['sitetile']) ?></h1>
 		<strong><p><?php printf($obj->lang['welcome'],$obj->lang['homepage']); ?></p></strong>
 	</div>
-	<? if(isset($_GET['admin'])) { ?>
+	<? if(isset($login_showadmin)) { ?>
 		<form action="login.php" method="POST" style="margin:0px;">
 			<div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="false" style="display: block; top:30%">
 				<div class="modal-header">

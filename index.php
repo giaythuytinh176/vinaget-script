@@ -33,7 +33,10 @@ setcookie('msg', '');
 $host = $obj->list_host;
 $skin = "skin/{$obj->skin}";
 error_reporting($obj->display_error ? E_ALL : 0);
-if ($obj->Deny == false){
+if(!$obj->isAdmin() && $_GET['id'] == "admin") {
+	$login_showadmin=true ;
+	include("{$skin}/login.php");
+} else if ($obj->Deny == false) {
 	require_once("{$skin}/function.php");
 	if (isset($_POST['urllist'])) $obj->main();
 	elseif (isset($_GET['infosv'])) showStat();

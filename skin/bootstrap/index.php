@@ -191,8 +191,11 @@
 						
 						#---------------------------- begin admin  ---------------------------#
 						else if (isset($_GET['id']) && $_GET['id']=='admin'){
-							if($obj->isadmin()) include("admin.php");
-							else echo "<BR><BR><font color=red size=2>".$obj->lang['notaccess']."</b></font>";
+							if($obj->isadmin()) {
+								include("admin.php");
+							} else {
+								echo "<BR><BR><font color=red size=2>".$obj->lang['notaccess']."</b></font>";
+							}
 						}
 						#---------------------------- end admin  ------------------------------#
 						
