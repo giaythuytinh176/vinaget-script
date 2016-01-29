@@ -115,7 +115,8 @@ $lang = array (
 
 'free_access'   => 'Free access',
 'connect_logboost' => 'Connect with logboost',
-'please_login' => 'Please login'
+'please_login' => 'Please login',
+'please_choose_plan' => 'Please choose your plan'
 );
 /*
 * Open Source Project

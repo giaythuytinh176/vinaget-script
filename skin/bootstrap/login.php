@@ -52,13 +52,42 @@
 			</div>
 		</form>
 	<? } else { ?>
-			<div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="false" style="display: block; top:30%">
+			<div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="false" style="display: block; top:30%;width:800px ;">
 				<div class="modal-header">
-					<h3 id="loginLabel"><?php printf($obj->lang['please_login']); ?></h3>
+					<h3 id="loginLabel"><?php printf($obj->lang['please_choose_plan']); ?></h3>
 				</div>
 				<div class="modal-body">
 					<br/><br/>
+					<div style="width:49%;display:inline-block">
 					<table class="table" style="border-bottom: 1px solid #dddddd;">
+					<th>
+							Free access
+					</th>
+					<tr>
+						<td>
+							<i class="fa fa-remove fa-red"></i> Ads
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-remove fa-red"></i> 100 gb max
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-remove fa-red"></i> 3 parallels jobs
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-remove fa-red"></i> 5 hosters available
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-remove fa-red"></i> Shared download limit
+						</td>
+					</tr>
 					<tr>
 					<td colspan="3" style="text-align:center">
 						<button type="button" class="lbbtn lbbtn-lg lbbtn-freeaccess" onClick="window.location.href = 'login.php?method=freeaccess'">
@@ -67,16 +96,50 @@
 	                    </button>
 					</td>
 					</tr><tr>
-					</tr><tr>
-						<td colspan="3" style="text-align:center">or</td>
-					</tr><tr>
+					</tr>
+					</table>
+					</div>
+					<div style="width:49%;display:inline-block">
+					<table class="table" style="border-bottom: 1px solid #dddddd;">
+					<th>
+							Premium access
+					</th>
+					<tr>
+						<td>
+							<i class="fa fa-check fa-green"></i> No ads
+						</td>
+						<tr>
+						<td>
+							<i class="fa fa-check fa-green"></i> 500 gb max
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-check fa-green"></i> 10 parallels jobs
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-check fa-green"></i> 13 hosters available
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<i class="fa fa-check fa-green"></i> No shared download limit
+						</td>
+					</tr>
+					</tr>
+					<tr>
 					<td colspan="3" style="text-align:center">
 	                    <button type="button" class="lbbtn lbbtn-lg lbbtn-woodcub" onClick="window.location.href = 'login.php?method=logboost'">
 	                        <i class="iconmoon-logboost"></i>
 	                        <span> Connect with Logboost</span>
 	                    </button>
 	   				</td>
-					</tr></table>
+					</tr><tr>
+					</tr>
+					</table>
+					</div>
 				</div>
 			</div>
 	<? } ?>

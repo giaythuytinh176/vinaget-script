@@ -884,7 +884,12 @@ class stream_get extends getinfo
 		if (!isset($filesize)) {
 			$this->error2('notsupport', $Original);
 		}
-		$this->max_size = $this->acc[$site]['max_size'];
+		// If user use a logboost acount, use specific max size by default
+		if(isset($this->logboostSession) && $this->logboostSession->isPremium()) {
+			$this->max_size = $this->acc[$site]['logboost_max_size'];
+		} else {
+			$this->max_size = $this->acc[$site]['max_size'];
+		}
 		if (!isset($this->max_size)) $this->max_size = $this->max_size_other_host;
 		$msize = Tools_get::convertmb($filesize);
 		$hash = md5($_SERVER['REMOTE_ADDR'] . $Original);

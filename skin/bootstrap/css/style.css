@@ -15,3 +15,23 @@
 .lbbtn-freeaccess:hover {
 	background-color: #EEE ;
 }
+
+#login th {
+	text-align:center;
+}
+
+#login button {
+	margin-top:40px;
+}
+
+#login h3 {
+	text-align:center;
+}
+
+.fa-green {
+	color:green;
+}
+
+.fa-red {
+	color:red ;
+}
