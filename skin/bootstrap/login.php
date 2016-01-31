@@ -1,3 +1,4 @@
+<? include("function.php") ; ?>
 <!DOCTYPE html>
 <head>
 	<link rel="SHORTCUT ICON" href="images/vngicon.png" type="image/x-icon" />
@@ -52,7 +53,7 @@
 			</div>
 		</form>
 	<? } else { ?>
-			<div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="false" style="display: block; top:30%;width:800px ;">
+			<div id="login" class="modal modal-login hide fade in" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="false" style="display: block; top:30%;width:800px ;">
 				<div class="modal-header">
 					<h3 id="loginLabel"><?php printf($obj->lang['please_choose_plan']); ?></h3>
 				</div>
@@ -70,17 +71,17 @@
 					</tr>
 					<tr>
 						<td>
-							<i class="fa fa-remove fa-red"></i> 100 gb max
+							<i class="fa fa-remove fa-red"></i> <? printf($obj->config['limitMBIP']); ?> Mb max
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<i class="fa fa-remove fa-red"></i> 3 parallels jobs
+							<i class="fa fa-remove fa-red"></i> <? printf($obj->config['max_jobs_per_ip']); ?> parallels jobs
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<i class="fa fa-remove fa-red"></i> 5 hosters available
+							<i class="fa fa-remove fa-red"></i> <? printf("a") ; ?> hosters available
 						</td>
 					</tr>
 					<tr>
@@ -110,12 +111,12 @@
 						</td>
 						<tr>
 						<td>
-							<i class="fa fa-check fa-green"></i> 500 gb max
+							<i class="fa fa-check fa-green"></i> <? printf($obj->config['logboost_limitMBIP']); ?> Mb max
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<i class="fa fa-check fa-green"></i> 10 parallels jobs
+							<i class="fa fa-check fa-green"></i> <? printf($obj->config['logboost_max_jobs_per_ip']); ?> parallels jobs
 						</td>
 					</tr>
 					<tr>

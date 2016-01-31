@@ -38,4 +38,22 @@ function showPlugin(){
 	}
 	return false;
 }
+function countPlugin(){
+	global $obj;
+	$premiumcount = 0;
+	$freecount = 0 ;
+	
+	foreach($obj->acc as $host => $value) {
+		$xout = array('');
+		$xout = $obj->acc[$host]['accounts'];
+		$max_size = $obj->acc[$host]['max_size'];
+		if (empty($xout[0]) == false && empty($host) == false) {
+			if($obj->acc[$host]['logboost_only'] && $obj->acc[$host]['logboost_only'] == true) {
+				$premiumcount ++ ;
+			}
+			$freecount ++;
+		}
+	}
+	return "abcd" ;
+}
 ?>

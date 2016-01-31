@@ -42,6 +42,8 @@ if(!$obj->isAdmin() && $_GET['id'] == "admin") {
 	elseif (isset($_GET['infosv'])) showStat();
 	elseif (!isset($_POST['urllist'])) include("{$skin}/index.php");
 }
-else include("{$skin}/login.php");
+else {
+	include("{$skin}/login.php");
+}
 ob_end_flush();
 ?>
