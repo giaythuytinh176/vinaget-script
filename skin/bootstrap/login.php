@@ -71,7 +71,7 @@
 					</tr>
 					<tr>
 						<td>
-							<i class="fa fa-remove fa-red"></i> <? printf($obj->config['limitMBIP']); ?> Mb max
+							<i class="fa fa-remove fa-red"></i> <? printf(($obj->config['limitMBIP']/1024)); ?> Gb max
 						</td>
 					</tr>
 					<tr>
@@ -81,7 +81,7 @@
 					</tr>
 					<tr>
 						<td>
-							<i class="fa fa-remove fa-red"></i> <? printf("a") ; ?> hosters available
+							<i class="fa fa-remove fa-red"></i> <? countFreePlugin() ; ?> hosters available
 						</td>
 					</tr>
 					<tr>
@@ -111,7 +111,7 @@
 						</td>
 						<tr>
 						<td>
-							<i class="fa fa-check fa-green"></i> <? printf($obj->config['logboost_limitMBIP']); ?> Mb max
+							<i class="fa fa-check fa-green"></i> <? printf(($obj->config['logboost_limitMBIP']/1024)); ?> Gb max
 						</td>
 					</tr>
 					<tr>
@@ -121,7 +121,7 @@
 					</tr>
 					<tr>
 						<td>
-							<i class="fa fa-check fa-green"></i> 13 hosters available
+							<i class="fa fa-check fa-green"></i> <? countPremiumPlugin() ?> hosters available
 						</td>
 					</tr>
 					<tr>

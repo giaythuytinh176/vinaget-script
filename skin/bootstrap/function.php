@@ -38,8 +38,16 @@ function showPlugin(){
 	}
 	return false;
 }
-function countPlugin(){
-	global $obj;
+function countFreePlugin() {
+	countPlugin(false) ;
+}
+
+function countPremiumPlugin() {
+	countPlugin(true) ;
+}
+
+function countPlugin($premium){
+	global $obj ;
 	$premiumcount = 0;
 	$freecount = 0 ;
 	
@@ -48,12 +56,17 @@ function countPlugin(){
 		$xout = $obj->acc[$host]['accounts'];
 		$max_size = $obj->acc[$host]['max_size'];
 		if (empty($xout[0]) == false && empty($host) == false) {
-			if($obj->acc[$host]['logboost_only'] && $obj->acc[$host]['logboost_only'] == true) {
-				$premiumcount ++ ;
+			if($obj->acc[$host]['logboost_only'] && $obj->acc[$host]['logboost_only'] == false) {
+				$freecount ++ ;
 			}
-			$freecount ++;
+			$premiumcount ++;
 		}
 	}
-	return "abcd" ;
+	if($premium) {
+		echo $premiumcount ;
+	} else {
+		echo $freecount ;
+	}
+	
 }
 ?>
