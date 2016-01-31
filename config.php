@@ -45,12 +45,12 @@ $config['skin'] = "default";
 
 // Logboost config 
 
-$config['logboost_max_jobs_per_ip'] = 100;
+$config['logboost_max_jobs_per_ip'] = 1000;
 $config['logboost_max_size_default'] = 2048;
 $config['logboost_file_size_limit'] = 2050;
-$config['logboost_limitPERIP'] = 10;
-$config['logboost_limitMBIP'] = 100 * 1024;
-$config['logboost_max_jobs'] = 500;
+$config['logboost_limitPERIP'] = 100;
+$config['logboost_limitMBIP'] = 1000 * 1024;
+$config['logboost_max_jobs'] = 5000;
 $config['logboost_max_load'] = 50 ;
 $config['logboost_secret'] = "";
 $config['logboost_client_id'] = "" ;
