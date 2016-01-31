@@ -10,7 +10,7 @@ function showDonate(){
 function showStat(){
 	global $obj;
 	echo "<b>{$obj->notice("yourip")}</b><span class='label label-info'>{$_SERVER['REMOTE_ADDR']}</span><br/> <b>{$obj->notice("yourjob")}</b><span class='label label-info'>{$obj->notice("userjobs")}</span><br/> <b>{$obj->notice("youused")}</b><span class='label label-info'>{$obj->notice("used")}</span><br/>";
-	echo "<b>{$obj->notice("sizelimit")}</b><span class='label label-info'>{$obj->notice("maxsize")}</span><br/> <b>{$obj->notice("totjob")}</b><span class='label label-info'>{$obj->notice("totjobs")}</span><br/> <b>{$obj->notice("serverload")}</b><span class='label label-info'>{$obj->notice("maxload")}</span><br/> <b>{$obj->notice("uonline")}</b><span class='label label-info'>{$obj->notice("useronline")}</span><br/>";
+	echo "<b>{$obj->notice("sizelimit")}</b><span class='label label-info'>{$obj->notice("maxsize")}</span><br/> <b>{$obj->notice("totjob")}</b><span class='label label-info'>{$obj->notice("totjobs")}</span><br/> <b>{$obj->notice("serverload")}</b><span class='label label-info'>{$obj->notice("maxload")}</span><br/> <b>{$obj->notice("uonline")}</b><span class='label label-info'>{$obj->notice("useronline")}</span><br/><b>{$obj->notice("total")}</b><span class='label label-info'>{$obj->notice("totalall")}</span>";
 }
 function showNotice(){
 	global $obj;

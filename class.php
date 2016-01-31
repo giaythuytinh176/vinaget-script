@@ -153,6 +153,7 @@ class getinfo
 		if($id=="notice") return sprintf($this->lang['notice'], Tools_get::convert_time($this->ttl * 60) , $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60));
 		else {
 			$this->CheckMBIP();
+			$totalall = Tools_get::convertmb($this->totalMB * 1024 * 1024);
 			$MB1IP = Tools_get::convertmb($this->countMBIP * 1024 * 1024);
 			$thislimitMBIP = Tools_get::convertmb($this->limitMBIP * 1024 * 1024);
 			$maxsize = Tools_get::convertmb($this->max_size_other_host * 1024 * 1024);
@@ -169,6 +170,8 @@ class getinfo
 			if($id=="maxload") return' '.$this->get_load().' (max '.$this->max_load.') ';
 			if($id=="uonline") return $this->lang['uonline'];
 			if($id=="useronline") return Tools_get::useronline();
+			if($id=="total") return $this->lang['total'] ;
+			if($id=="totalall") return $totalall ;
 		}
 	}
 	function load_jobs()
@@ -812,6 +815,7 @@ class stream_get extends getinfo
 		$this->reserved = array();
 		$this->CheckMBIP();
 		$dlhtml = '';
+
 		if (count($this->jobs) >= $this->max_jobs) {
 			$this->error1('manyjob');
 		}
@@ -849,6 +853,7 @@ class stream_get extends getinfo
 			}
 		}
 		
+		
 		if (!$link) {
 			$domain = str_replace("www.", "", $this->cut_str($Original, "://", "/"));
 			if(strpos($domain, "1fichier.com")) $domain = "1fichier.com";
@@ -862,6 +867,12 @@ class stream_get extends getinfo
 				$this->proxy = isset($this->prox) ? $this->prox : false;
 				$link = $download->General($url);
 			}
+		}
+
+
+		// If user use a free account and account is premium only
+		if((!isset($this->logboostSession) || !$this->logboostSession->isPremium()) && $this->acc[$site]['logboost_only']) {
+			$this->error2('premium_only', $Original);
 		}
 		
 		if (!$link) {
@@ -879,6 +890,7 @@ class stream_get extends getinfo
 			$filesize = $size_name[0];
 			$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : $size_name[1];
 		}
+
 		
 		$hosting = Tools_get::site_hash($Original);
 		if (!isset($filesize)) {
@@ -890,6 +902,7 @@ class stream_get extends getinfo
 		} else {
 			$this->max_size = $this->acc[$site]['max_size'];
 		}
+
 		if (!isset($this->max_size)) $this->max_size = $this->max_size_other_host;
 		$msize = Tools_get::convertmb($filesize);
 		$hash = md5($_SERVER['REMOTE_ADDR'] . $Original);
