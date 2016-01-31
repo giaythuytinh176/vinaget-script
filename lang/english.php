@@ -119,7 +119,8 @@ $lang = array (
 'please_choose_plan' => 'Please choose your plan',
 'logboost_not_activated' => 'Your Logboost account is not activated, activate your logboost account and reconnect to use premium features.',
 'warning' => 'Warning',
-'premium_only' => 'Premium only'
+'premium_only' => 'Premium only',
+'total_consumed' => 'Total consumed:' 
 );
 /*
 * Open Source Project

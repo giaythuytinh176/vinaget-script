@@ -170,7 +170,7 @@ class getinfo
 			if($id=="maxload") return' '.$this->get_load().' (max '.$this->max_load.') ';
 			if($id=="uonline") return $this->lang['uonline'];
 			if($id=="useronline") return Tools_get::useronline();
-			if($id=="total") return $this->lang['total'] ;
+			if($id=="total") return $this->lang['total_consumed'] ;
 			if($id=="totalall") return $totalall ;
 		}
 	}
