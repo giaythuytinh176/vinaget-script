@@ -113,14 +113,27 @@ $lang = array (
 'checkacc'		=> 'Check %1$s account',
 'noplugin'		=> 'You don\'t have %s account checker.<br/>Ask someone to make it',
 
+'connect_logboost' => 'Connect with logboost',
 'free_access'   => 'Free access',
+'premium_access' => 'Premium access',
+'ads' => 'Ads',
+'no_ads' => 'No ads',
+'gb_max' => 'Gb max',
+'parralel_jobs' => 'Parallel jobs',
+'hosters_available' => 'Hosters available',
+'shared_download_limit' => 'Shared download limit',
+'no_shared_download_limit' => 'No shared download limit',
 'connect_logboost' => 'Connect with logboost',
 'please_login' => 'Please login',
 'please_choose_plan' => 'Please choose your plan',
 'logboost_not_activated' => 'Your Logboost account is not activated, activate your logboost account and reconnect to use premium features.',
 'warning' => 'Warning',
 'premium_only' => 'Premium only',
-'total_consumed' => 'Total consumed:' 
+'total_consumed' => 'Total consumed:',
+'all_hosters' => 'All Hosters',
+'stats' => 'stats',
+'available_free' => 'Available for free',
+'available_premium' => 'Available for premium only'
 );
 /*
 * Open Source Project
