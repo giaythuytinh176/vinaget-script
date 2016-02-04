@@ -113,6 +113,7 @@ $lang = array (
 'checkacc'		=> 'Check %1$s account',
 'noplugin'		=> 'You don\'t have %s account checker.<br/>Ask someone to make it',
 
+'download_limit_reached' => 'Download limit reached for this host',
 'connect_logboost' => 'Connect with logboost',
 'free_access'   => 'Free access',
 'premium_access' => 'Premium access',

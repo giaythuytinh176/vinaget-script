@@ -286,6 +286,7 @@ class getinfo
 				if(empty($this->acc[$site]['direct'])) $this->acc[$site]['direct'] = false;
 				if(empty($this->acc[$site]['logboost_only'])) $this->acc[$site]['logboost_only'] = false;
 				if(empty($this->acc[$site]['max_size'])) $this->acc[$site]['max_size'] = $this->max_size_default;
+				if(empty($this->acc[$site]['download_limit'])) $this->acc[$site]['download_limit'] = 0;
 				if(empty($this->acc[$site]['logboost_max_size'])) $this->acc[$site]['logboost_max_size'] = $this->logboost_max_size_default;
 				if(empty($this->acc[$site]['accounts'])) $this->acc[$site]['accounts'] = array();
 			}
@@ -584,23 +585,28 @@ class stream_get extends getinfo
 	
 	function CheckMBIP()
 	{
+		$this->countMBSiteIP = [] ;
+		$this->totalMBSite = [] ;
 		$this->countMBIP = 0;
 		$this->totalMB = 0;
 		$this->timebw = 0;
 		$timedata = time();
 		foreach($this->jobs as $job) {
 			if ($job['ip'] == $_SERVER['REMOTE_ADDR']) {
+				$this->countMbSiteIP[$job['site']] += $job['size'] / 1024 / 1024;
 				$this->countMBIP = $this->countMBIP + $job['size'] / 1024 / 1024;
 				if ($job['mtime'] < $timedata) $timedata = $job['mtime'];
 				$this->timebw = $this->ttl * 60 + $timedata - time();
 			}
 
 			if ($this->privatef == false) {
+				$this->totalMBSite[$job['site']] += $job['size'] / 1024 / 1024;
 				$this->totalMB = $this->totalMB + $job['size'] / 1024 / 1024;
 				$this->totalMB = round($this->totalMB);
 			}
 			else {
 				if ($job['owner'] == $this->owner) {
+					$this->totalMBSite[$job['site']] += $job['size'] / 1024 / 1024;
 					$this->totalMB = $this->totalMB + $job['size'] / 1024 / 1024;
 					$this->totalMB = round($this->totalMB);
 				}
@@ -869,6 +875,10 @@ class stream_get extends getinfo
 			}
 		}
 
+		// If download limit reached for this host
+		if($this->acc[$site]['download_limit'] > 0 && $this->totalMBSite[$site] > $this->acc[$site]['download_limit']) {
+			$this->error2('download_limit_reached', $Original);
+		}
 
 		// If user use a free account and account is premium only
 		if((!isset($this->logboostSession) || !$this->logboostSession->isPremium()) && $this->acc[$site]['logboost_only']) {
@@ -891,7 +901,6 @@ class stream_get extends getinfo
 			$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : $size_name[1];
 		}
 
-		
 		$hosting = Tools_get::site_hash($Original);
 		if (!isset($filesize)) {
 			$this->error2('notsupport', $Original);
@@ -939,6 +948,7 @@ class stream_get extends getinfo
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'type' => 'direct',
 			'proxy' => $this->proxy == false ? 0 : $this->proxy,
+			'site' => $site,
 			'directlink' => array(
 				'url' => urlencode($link) ,
 				'cookies' => $this->cookie,
@@ -1158,6 +1168,7 @@ class stream_get extends getinfo
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'type' => 'direct',
 			'proxy' => 0,
+			'site' => $site,
 			'directlink' => array(
 				'url' => urlencode($link) ,
 				'cookies' => $this->cookie,
@@ -1329,6 +1340,7 @@ class stream_get extends getinfo
 				urldecode($job['filename']) ,
 				$job['size'],
 				$job['ip'],
+				$job['site'],
 				$job['msize'],
 				urldecode($job['directlink']['url']) ,
 				$job['proxy']
@@ -1483,6 +1495,7 @@ class stream_get extends getinfo
 								'owner' => $job['owner'],
 								'ip' => $job['ip'],
 								'type' => 'direct',
+								'site' => $site,
 								'directlink' => array(
 									'url' => $job['directlink']['url'],
 									'cookies' => $job['directlink']['cookies'],

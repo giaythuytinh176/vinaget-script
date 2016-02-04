@@ -85,6 +85,7 @@ switch ($page) {
 			foreach ($_POST['host'] as $key => $val) {
 				$obj->acc[$key]['max_size'] = $val['max_size'];
 				$obj->acc[$key]['logboost_max_size'] = $val['logboost_max_size'];
+				$obj->acc[$key]['download_limit'] = $val['download_limit'];
 				$obj->acc[$key]['proxy'] = !empty($val['proxy']) ? $val['proxy'] : '';
 				$obj->acc[$key]['logboost_only'] = (isset($val['logboost_only']) && $val['logboost_only'] == 'ON' ? true : false);
 				$obj->acc[$key]['direct'] = (isset($val['direct']) && $val['direct'] == 'ON' ? true : false);
