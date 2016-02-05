@@ -1,6 +1,7 @@
 <?php
-include("lib/logboost-api-php/LogboostAPI.php") ;
 ob_start();
+
+include("lib/logboost-api-php/LogboostAPI.php") ;
 if( !ini_get('safe_mode') ){
 	set_time_limit(60);
 } 

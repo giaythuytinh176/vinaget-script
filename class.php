@@ -408,6 +408,7 @@ class stream_get extends getinfo
 	}
 	function download($hash)
 	{
+		session_write_close() ;
 		error_reporting(0);
 		$job = $this->lookup_job($hash);
 		if (!$job) {

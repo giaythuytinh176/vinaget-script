@@ -1,4 +1,6 @@
 <?php
+ob_start();
+
 include("lib/logboost-api-php/LogboostAPI.php") ;
 /*
 * Home page: http://vinaget.us
@@ -16,9 +18,7 @@ include("lib/logboost-api-php/LogboostAPI.php") ;
 */
 $using = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'default';
 $using = isset($_REQUEST['using']) ? $_REQUEST['using'] : $using;
-session_start() ;
 setcookie('using', $using);
-ob_start();
 ob_implicit_flush(TRUE);
 ignore_user_abort(0);
 if (!ini_get('safe_mode')) set_time_limit(30);
