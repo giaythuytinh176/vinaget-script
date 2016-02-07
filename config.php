@@ -34,6 +34,10 @@ $config['display_error'] = false;
 $config['ziplink'] = false;
 $config['apiadf'] = "http://api.adf.ly/api.php?key=94793cf6c45d36ed3d008d098fcfb964&uid=343503&advert_type=int&domain=adf.ly&url="; //http://adfoc.us/api/?key=31d0604803eec636ed3ffac5a1364c6e&url=
 $config['apirutgon'] = "http://bc.vc/api.php?key=10bf5c6f0db2a00780a91aaa18745a14&uid=37018&url=";
+// Additional config
+$config['useads'] = false ;
+$config['apiads'] = "" ;
+
 $config['Googlzip'] = false;
 $config['googleapikey'] = 'AIzaSyBzbeSDQoOYKUDLr1v5FOuZRtKwnqEOXxM';
 $config['bitly'] = false;	
@@ -54,4 +58,5 @@ $config['logboost_max_jobs'] = 5000;
 $config['logboost_max_load'] = 50 ;
 $config['logboost_secret'] = "";
 $config['logboost_client_id'] = "" ;
+
 ?>

@@ -104,6 +104,8 @@ class getinfo
 		$this->file_size_limit = $this->config['file_size_limit'];
 		$this->zlink = $this->config['ziplink'];
 		$this->link_zip = $this->config['apiadf'];
+		$this->use_ads = $this->config['useads'];
+		$this->link_ads = $this->config['apiads'];
 		$this->link_rutgon = $this->config['apirutgon'];	
 		$this->Googlzip = $this->config['Googlzip'];
 		$this->googlapikey = $this->config['googleapikey'];
@@ -860,7 +862,7 @@ class stream_get extends getinfo
 			}
 		}
 		
-		
+
 		if (!$link) {
 			$domain = str_replace("www.", "", $this->cut_str($Original, "://", "/"));
 			if(strpos($domain, "1fichier.com")) $domain = "1fichier.com";
@@ -967,6 +969,15 @@ class stream_get extends getinfo
 			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
+
+		// Create ads link before to zip it (free account only)
+		if(!isset($this->logboostSession) || !$this->logboostSession->isPremium()) {
+			if($this->use_ads && !empty($this->link_ads)) {
+				$datalink = $this->curl($this->link_ads . $linkdown, '', '', 0);
+				if (preg_match('%(http:\/\/.++)%U', $datalink, $adslik)) $linkdown = trim($adslik[1]);
+			}
+		}
+
 		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
 		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false && empty($this->bitly) == true) {
 			$datalink = $this->Googlzip($linkdown);
@@ -1187,6 +1198,15 @@ class stream_get extends getinfo
 			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
+
+		// Create ads link before to zip it (free account only)
+		if(!isset($this->logboostSession) || !$this->logboostSession->isPremium()) {
+			if($this->use_ads && !empty($this->link_ads)) {
+				$datalink = $this->curl($this->link_ads . $linkdown, '', '', 0);
+				if (preg_match('%(http:\/\/.++)%U', $datalink, $adslik)) $linkdown = trim($adslik[1]);
+			}
+		}
+		
 		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
 		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false && empty($this->bitly) == true) {
 			$datalink = $this->Googlzip($linkdown);
