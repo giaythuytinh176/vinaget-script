@@ -15,7 +15,7 @@ class LogboostSession
 		if(!isset($GLOBALS['Logboost_clientID']) || !isset($GLOBALS['Logboost_clientSecret']))
 			throw new UnableToConnectException('Client id or secret id not specified') ;
 
-		$this->oidc = new OpenIDConnectClient('http://logboost.com/',$GLOBALS['Logboost_clientID'],$GLOBALS['Logboost_clientSecret']);
+		$this->oidc = new OpenIDConnectClient('https://logboost.com/',$GLOBALS['Logboost_clientID'],$GLOBALS['Logboost_clientSecret']);
 
 		$this->oidc->addScope("openid profile payment") ;
 		if($redirect != null) {
