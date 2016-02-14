@@ -44,7 +44,7 @@
 					<table class="table" style="border-bottom: 1px solid #dddddd;"><tr>
 					<td><b><?php printf($obj->lang['password']); ?></b></div></td>
 					<td>:</td>
-					<td><input style="margin-bottom: 0px;" type="password" name="secure"/></td>
+					<td><input class="form-control" style="margin-bottom: 0px;" type="password" name="secure"/></td>
 					</tr></table>
 				</div>
 				<div class="modal-footer">
