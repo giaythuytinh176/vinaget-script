@@ -39,8 +39,8 @@ if($page == 'config'){
 	unset($obj->config['language']);
 	foreach($obj->config as $ckey => $cval){
 		echo '<tr><td><i><b>'.$ckey.'</b></i></td><td style="text-align:lef">';
-		if(gettype($cval) == 'string' || gettype($cval) == 'integer') echo '<input size="40" type="text" name="config['.$ckey.']" value="'.$cval.'">';
-		elseif(gettype($cval) == 'boolean') echo '<label for="config['.$ckey.'][\'on\']"><input type="radio" id="config['.$ckey.'][\'on\']" value="on" name="config['.$ckey.']"'.($cval ? ' checked="checked"' : '').'/> On</label> <label for="config['.$ckey.'][\'off\']"><input type="radio" id="config['.$ckey.'][\'off\']" value="off" name="config['.$ckey.']"'.(!$cval ? ' checked="checked"' : '').'/> Off</label>';
+		if(gettype($cval) == 'string' || gettype($cval) == 'integer') echo '<input class="form-control" size="40" type="text" name="config['.$ckey.']" value="'.$cval.'">';
+		elseif(gettype($cval) == 'boolean') echo '<label for="config['.$ckey.'][\'on\']"><input class="form-control" type="radio" id="config['.$ckey.'][\'on\']" value="on" name="config['.$ckey.']"'.($cval ? ' checked="checked"' : '').'/> On</label> <label for="config['.$ckey.'][\'off\']"><input class="form-control" type="radio" id="config['.$ckey.'][\'off\']" value="off" name="config['.$ckey.']"'.(!$cval ? ' checked="checked"' : '').'/> Off</label>';
 		echo '</td></tr>';
 	}
 	
@@ -72,7 +72,7 @@ elseif($page == 'cookie'){
 	</select>
 	</td>
 	<td>
-		&nbsp; &nbsp; &nbsp; <input type="text" name="cookie" id="accounts" value="" size="50"><br />
+		&nbsp; &nbsp; &nbsp; <input class="form-control" type="text" name="cookie" id="accounts" value="" size="50"><br />
 	</td>
 	<td>
 		&nbsp; &nbsp; &nbsp; <button class="btn btn-primary" type="submit">Submit</button>
@@ -108,7 +108,7 @@ elseif($page == 'account'){
 	</select>
 	</td>
 	<td>
-		&nbsp; &nbsp; &nbsp; <textarea type="text" name="account" id="accounts" value="" rows="5" cols="50"></textarea><br />
+		&nbsp; &nbsp; &nbsp; <textarea class="form-control" type="text" name="account" id="accounts" value="" rows="5" cols="50"></textarea><br />
 	</td>
 	<td>
 		&nbsp; &nbsp; &nbsp; <button class="btn btn-primary" type="submit">Submit</button>
@@ -146,11 +146,11 @@ elseif($page == 'host'){
 	foreach ($obj->acc as $ckey=>$val){
 		echo '<tr class="flistmouseoff">
 				<td><B>'.$ckey.'</B></td>
-				<td><input type="text" name="host['.$ckey.'][max_size]" value="'.$val['max_size'].'"/></td>
-				<td><input type="text" name="host['.$ckey.'][logboost_max_size]" value="'.$val['logboost_max_size'].'"/></td>
-				<td><input type="text" name="host['.$ckey.'][proxy]" value="'.$val['proxy'].'"/></td>
-				<td><input type="checkbox" name="host['.$ckey.'][logboost_only]" value="ON" '.($val['logboost_only'] ? 'checked' : '').'/></td>
-				<td><input type="checkbox" name="host['.$ckey.'][direct]" value="ON" '.($val['direct'] ? 'checked' : '').'/></td>
+				<td><input class="form-control" type="text" name="host['.$ckey.'][max_size]" value="'.$val['max_size'].'"/></td>
+				<td><input class="form-control" type="text" name="host['.$ckey.'][logboost_max_size]" value="'.$val['logboost_max_size'].'"/></td>
+				<td><input class="form-control" type="text" name="host['.$ckey.'][proxy]" value="'.$val['proxy'].'"/></td>
+				<td><input class="form-control" type="checkbox" name="host['.$ckey.'][logboost_only]" value="ON" '.($val['logboost_only'] ? 'checked' : '').'/></td>
+				<td><input class="form-control" type="checkbox" name="host['.$ckey.'][direct]" value="ON" '.($val['direct'] ? 'checked' : '').'/></td>
 			</tr>';
 	}
 	echo "</table>";
@@ -159,13 +159,13 @@ elseif($page == 'host'){
 elseif($page == 'debug'){
 ?>
 <table style="width:70%;">
-	<tr><td>URL </td><td> : </td><td><input type="text" id="link" name="link" style="width:100%;"></td></tr>
-	<tr><td>POST</td><td> : </td><td><input type="text" id="post" name="post" style="width:100%;"></td></tr>
-	<tr><td>COOKIE</td><td> : </td><td><input type="text" id="cookie" name="cookie" style="width:100%;"></td></tr>
-	<tr><td>PROXY</td><td> : </td><td><input type="text" id="proxy" name="proxy" style="width:100%;"></td></tr>
+	<tr><td>URL </td><td> : </td><td><input class="form-control" type="text" id="link" name="link" style="width:100%;"></td></tr>
+	<tr><td>POST</td><td> : </td><td><input class="form-control" type="text" id="post" name="post" style="width:100%;"></td></tr>
+	<tr><td>COOKIE</td><td> : </td><td><input class="form-control" type="text" id="cookie" name="cookie" style="width:100%;"></td></tr>
+	<tr><td>PROXY</td><td> : </td><td><input class="form-control" type="text" id="proxy" name="proxy" style="width:100%;"></td></tr>
 </table>
-<input type='submit' value='Debug'>
-<input type='button' onClick="form.reset()" value='Reset'>
+<input class="form-control" type='submit' value='Debug'>
+<input class="form-control" type='button' onClick="form.reset()" value='Reset'>
 </form>
 <br/>
 <iframe name="debug" width="700" height="400" style="background:white" src="debug.php"></iframe>
