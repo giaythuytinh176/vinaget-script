@@ -1,0 +1,42 @@
+.lbbtn {
+	width:350px ;
+}
+
+.lbbtn i {
+	float:left;
+}
+
+.lbbtn-freeaccess {
+	background-color: white ;
+	color: black;
+	width:350px ;
+}
+
+.lbbtn-freeaccess:hover {
+	background-color: #EEE ;
+}
+
+#login th {
+	text-align:center;
+}
+
+#login button {
+	margin-top:40px;
+}
+
+#login h3 {
+	text-align:center;
+}
+
+.fa-green {
+	color:green;
+}
+
+.fa-red {
+	color:red ;
+}
+
+.modal-login {
+	margin-left:-400px!important;
+	margin-top:-100px!important;
+}

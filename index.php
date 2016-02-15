@@ -1,4 +1,7 @@
 <?php
+ob_start();
+
+include("lib/logboost-api-php/LogboostAPI.php") ;
 /*
 * Home page: http://vinaget.us
 * Blog:	http://blog.vinaget.us
@@ -16,7 +19,6 @@
 $using = isset($_COOKIE['using']) ? $_COOKIE['using'] : 'default';
 $using = isset($_REQUEST['using']) ? $_REQUEST['using'] : $using;
 setcookie('using', $using);
-ob_start();
 ob_implicit_flush(TRUE);
 ignore_user_abort(0);
 if (!ini_get('safe_mode')) set_time_limit(30);
@@ -31,12 +33,17 @@ setcookie('msg', '');
 $host = $obj->list_host;
 $skin = "skin/{$obj->skin}";
 error_reporting($obj->display_error ? E_ALL : 0);
-if ($obj->Deny == false){
+if(!$obj->isAdmin() && $_GET['id'] == "admin") {
+	$login_showadmin=true ;
+	include("{$skin}/login.php");
+} else if ($obj->Deny == false) {
 	require_once("{$skin}/function.php");
 	if (isset($_POST['urllist'])) $obj->main();
 	elseif (isset($_GET['infosv'])) showStat();
 	elseif (!isset($_POST['urllist'])) include("{$skin}/index.php");
 }
-else include("{$skin}/login.php");
+else {
+	include("{$skin}/login.php");
+}
 ob_end_flush();
 ?>

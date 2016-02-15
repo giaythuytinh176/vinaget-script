@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('UTC');
 /*
 * Home page: http://vinaget.us
 * Blog:	http://blog.vinaget.us
@@ -22,6 +23,7 @@ class getinfo
 		$this->self = 'http://' . $_SERVER['HTTP_HOST'] . preg_replace('/\?.*$/', '', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF']);
 		$this->Deny = true;
 		$this->admin = false;
+		$this->logboostSession = null ;
 		$this->fileinfo_dir = "data";
 		$this->filecookie = "/cookie.dat";
 		$this->fileconfig = "/config.dat";
@@ -48,7 +50,19 @@ class getinfo
 			foreach($password as $login_vng) if (isset($_COOKIE["secureid"]) && $_COOKIE["secureid"] == md5($login_vng)) {
 				$this->Deny = false;
 				break;
+			} else 
+			// Access granted without password
+			if (isset($_COOKIE["accessmethod"]) && $_COOKIE["accessmethod"] == "freeaccess") {
+				$this->Deny = false ;
+			} else
+			// Access granted to Logboost users
+			if (isset($_COOKIE["accessmethod"]) && $_COOKIE["accessmethod"] == "logboost" && isset($_SESSION['LOGBOOST'])) {
+				$this->logboostSession = unserialize($_SESSION['LOGBOOST']) ;
+				if($this->logboostSession->sid != null) {
+					$this->Deny = false ;
+				}
 			}
+			
 		}
 		$this->set_config();
 		if (!file_exists($this->fileinfo_dir)) {
@@ -90,6 +104,8 @@ class getinfo
 		$this->file_size_limit = $this->config['file_size_limit'];
 		$this->zlink = $this->config['ziplink'];
 		$this->link_zip = $this->config['apiadf'];
+		$this->use_ads = $this->config['useads'];
+		$this->link_ads = $this->config['apiads'];
 		$this->link_rutgon = $this->config['apirutgon'];	
 		$this->Googlzip = $this->config['Googlzip'];
 		$this->googlapikey = $this->config['googleapikey'];
@@ -114,6 +130,18 @@ class getinfo
 		$this->proxy = false;
 		$this->prox = $_POST['proxy'];
 		$this->bbcode = $this->config['bbcode'];
+		$this->logboost_max_size_default = $this->config['logboost_max_size_default'];
+		if(isset($this->logboostSession) && $this->logboostSession->isPremium()) {
+			$this->max_jobs_per_ip = $this->config['logboost_max_jobs_per_ip'];
+			$this->max_size_default = $this->config['logboost_max_size_default'];
+			$this->file_size_limit = $this->config['logboost_file_size_limit'];
+			$this->limitPERIP = $this->config['logboost_limitPERIP'];
+			$this->limitMBIP = $this->config['logboost_limitMBIP'];
+			$this->max_jobs = $this->config['logboost_max_jobs'];
+			$this->max_load = $this->config['logboost_max_load'];
+			$this->logboost_secret = $this->config['logboost_secret'];
+			$this->logboost_client_id = $this->config['logboost_client_id'];
+		}
 	}
 	function isadmin(){
 		return (isset($_COOKIE['secureid']) && $_COOKIE['secureid'] == md5($this->config['admin']) ? true : $this->admin);
@@ -127,6 +155,7 @@ class getinfo
 		if($id=="notice") return sprintf($this->lang['notice'], Tools_get::convert_time($this->ttl * 60) , $this->limitPERIP, Tools_get::convert_time($this->ttl_ip * 60));
 		else {
 			$this->CheckMBIP();
+			$totalall = Tools_get::convertmb($this->totalMB * 1024 * 1024);
 			$MB1IP = Tools_get::convertmb($this->countMBIP * 1024 * 1024);
 			$thislimitMBIP = Tools_get::convertmb($this->limitMBIP * 1024 * 1024);
 			$maxsize = Tools_get::convertmb($this->max_size_other_host * 1024 * 1024);
@@ -143,6 +172,8 @@ class getinfo
 			if($id=="maxload") return' '.$this->get_load().' (max '.$this->max_load.') ';
 			if($id=="uonline") return $this->lang['uonline'];
 			if($id=="useronline") return Tools_get::useronline();
+			if($id=="total") return $this->lang['total_consumed'] ;
+			if($id=="totalall") return $totalall ;
 		}
 	}
 	function load_jobs()
@@ -255,7 +286,10 @@ class getinfo
 			if(!$host['alias']){
 				if(empty($this->acc[$site]['proxy'])) $this->acc[$site]['proxy'] = "";
 				if(empty($this->acc[$site]['direct'])) $this->acc[$site]['direct'] = false;
+				if(empty($this->acc[$site]['logboost_only'])) $this->acc[$site]['logboost_only'] = false;
 				if(empty($this->acc[$site]['max_size'])) $this->acc[$site]['max_size'] = $this->max_size_default;
+				if(empty($this->acc[$site]['download_limit'])) $this->acc[$site]['download_limit'] = 0;
+				if(empty($this->acc[$site]['logboost_max_size'])) $this->acc[$site]['logboost_max_size'] = $this->logboost_max_size_default;
 				if(empty($this->acc[$site]['accounts'])) $this->acc[$site]['accounts'] = array();
 			}
 		}		
@@ -376,6 +410,7 @@ class stream_get extends getinfo
 	}
 	function download($hash)
 	{
+		session_write_close() ;
 		error_reporting(0);
 		$job = $this->lookup_job($hash);
 		if (!$job) {
@@ -553,23 +588,28 @@ class stream_get extends getinfo
 	
 	function CheckMBIP()
 	{
+		$this->countMBSiteIP = [] ;
+		$this->totalMBSite = [] ;
 		$this->countMBIP = 0;
 		$this->totalMB = 0;
 		$this->timebw = 0;
 		$timedata = time();
 		foreach($this->jobs as $job) {
 			if ($job['ip'] == $_SERVER['REMOTE_ADDR']) {
+				$this->countMbSiteIP[$job['site']] += $job['size'] / 1024 / 1024;
 				$this->countMBIP = $this->countMBIP + $job['size'] / 1024 / 1024;
 				if ($job['mtime'] < $timedata) $timedata = $job['mtime'];
 				$this->timebw = $this->ttl * 60 + $timedata - time();
 			}
 
 			if ($this->privatef == false) {
+				$this->totalMBSite[$job['site']] += $job['size'] / 1024 / 1024;
 				$this->totalMB = $this->totalMB + $job['size'] / 1024 / 1024;
 				$this->totalMB = round($this->totalMB);
 			}
 			else {
 				if ($job['owner'] == $this->owner) {
+					$this->totalMBSite[$job['site']] += $job['size'] / 1024 / 1024;
 					$this->totalMB = $this->totalMB + $job['size'] / 1024 / 1024;
 					$this->totalMB = round($this->totalMB);
 				}
@@ -784,6 +824,7 @@ class stream_get extends getinfo
 		$this->reserved = array();
 		$this->CheckMBIP();
 		$dlhtml = '';
+
 		if (count($this->jobs) >= $this->max_jobs) {
 			$this->error1('manyjob');
 		}
@@ -821,6 +862,7 @@ class stream_get extends getinfo
 			}
 		}
 		
+
 		if (!$link) {
 			$domain = str_replace("www.", "", $this->cut_str($Original, "://", "/"));
 			if(strpos($domain, "1fichier.com")) $domain = "1fichier.com";
@@ -834,6 +876,16 @@ class stream_get extends getinfo
 				$this->proxy = isset($this->prox) ? $this->prox : false;
 				$link = $download->General($url);
 			}
+		}
+
+		// If download limit reached for this host
+		if($this->acc[$site]['download_limit'] > 0 && $this->totalMBSite[$site] > $this->acc[$site]['download_limit']) {
+			$this->error2('download_limit_reached', $Original);
+		}
+
+		// If user use a free account and account is premium only
+		if((!isset($this->logboostSession) || !$this->logboostSession->isPremium()) && $this->acc[$site]['logboost_only']) {
+			$this->error2('premium_only', $Original);
 		}
 		
 		if (!$link) {
@@ -851,12 +903,18 @@ class stream_get extends getinfo
 			$filesize = $size_name[0];
 			$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : $size_name[1];
 		}
-		
+
 		$hosting = Tools_get::site_hash($Original);
 		if (!isset($filesize)) {
 			$this->error2('notsupport', $Original);
 		}
-		$this->max_size = $this->acc[$site]['max_size'];
+		// If user use a logboost acount, use specific max size by default
+		if(isset($this->logboostSession) && $this->logboostSession->isPremium()) {
+			$this->max_size = $this->acc[$site]['logboost_max_size'];
+		} else {
+			$this->max_size = $this->acc[$site]['max_size'];
+		}
+
 		if (!isset($this->max_size)) $this->max_size = $this->max_size_other_host;
 		$msize = Tools_get::convertmb($filesize);
 		$hash = md5($_SERVER['REMOTE_ADDR'] . $Original);
@@ -893,6 +951,7 @@ class stream_get extends getinfo
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'type' => 'direct',
 			'proxy' => $this->proxy == false ? 0 : $this->proxy,
+			'site' => $site,
 			'directlink' => array(
 				'url' => urlencode($link) ,
 				'cookies' => $this->cookie,
@@ -910,6 +969,15 @@ class stream_get extends getinfo
 			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
+
+		// Create ads link before to zip it (free account only)
+		if(!isset($this->logboostSession) || !$this->logboostSession->isPremium()) {
+			if($this->use_ads && !empty($this->link_ads)) {
+				$datalink = $this->curl($this->link_ads . $linkdown, '', '', 0);
+				if (preg_match('%(http:\/\/.++)%U', $datalink, $adslik)) $linkdown = trim($adslik[1]);
+			}
+		}
+
 		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
 		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false && empty($this->bitly) == true) {
 			$datalink = $this->Googlzip($linkdown);
@@ -1112,6 +1180,7 @@ class stream_get extends getinfo
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'type' => 'direct',
 			'proxy' => 0,
+			'site' => $site,
 			'directlink' => array(
 				'url' => urlencode($link) ,
 				'cookies' => $this->cookie,
@@ -1129,6 +1198,15 @@ class stream_get extends getinfo
 			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
+
+		// Create ads link before to zip it (free account only)
+		if(!isset($this->logboostSession) || !$this->logboostSession->isPremium()) {
+			if($this->use_ads && !empty($this->link_ads)) {
+				$datalink = $this->curl($this->link_ads . $linkdown, '', '', 0);
+				if (preg_match('%(http:\/\/.++)%U', $datalink, $adslik)) $linkdown = trim($adslik[1]);
+			}
+		}
+		
 		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
 		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false && empty($this->bitly) == true) {
 			$datalink = $this->Googlzip($linkdown);
@@ -1283,6 +1361,7 @@ class stream_get extends getinfo
 				urldecode($job['filename']) ,
 				$job['size'],
 				$job['ip'],
+				$job['site'],
 				$job['msize'],
 				urldecode($job['directlink']['url']) ,
 				$job['proxy']
@@ -1437,6 +1516,7 @@ class stream_get extends getinfo
 								'owner' => $job['owner'],
 								'ip' => $job['ip'],
 								'type' => 'direct',
+								'site' => $site,
 								'directlink' => array(
 									'url' => $job['directlink']['url'],
 									'cookies' => $job['directlink']['cookies'],

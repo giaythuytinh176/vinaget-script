@@ -5,6 +5,8 @@
 			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 			<meta name="keywords" content="<?php printf($obj->lang['version']); ?>, download, get, vinaget, file, generator, premium, link, sharing, bitshare.com, crocko.com, depositfiles.com, extabit.com, filefactory.com, filepost.com, filesmonster.com, freakshare.com, gigasize.com, hotfile.com, jumbofiles.com, letitbit.net, mediafire.com, megashares.com, netload.in, oron.com, rapidgator.net, rapidshare.com, ryushare.com, sendspace.com, share-online.biz, shareflare.net, uploaded.to, uploading.com" />
 			<meta author="Code by [FZ] && Bootstrap Skin by Rhuan Gonzaga" />
+			<link href="https://logboost.com/resources/css/lbbutton.css" rel="stylesheet" />
+        	<link href="https://logboost.com/resources/iconmoon/style.css" rel="stylesheet" />
 			<link href="<?php echo $skin;?>/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 		</head>
 		<body>
@@ -39,7 +41,7 @@
 </div>
 <div class="modal-body">
 
-<div id="listlinks"><textarea rows="20" cols="10" id="textarea"></textarea></div>
+<div id="listlinks"><textarea class="form-control" rows="20" cols="10" id="textarea"></textarea></div>
 
 </div>
 <div class="modal-footer ">
@@ -72,7 +74,15 @@
 					<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 				</div>
 			</div>
-			
+	
+	<?
+	if(isset($obj->logboostSession) && !$obj->logboostSession->isPremium()) {
+	?>
+	<div class="alert">
+	  <button type="button" class="close" data-dismiss="alert">&times;</button>
+	  <strong><?php printf($obj->lang['warning']); ?>!</strong> <?php printf($obj->lang['logboost_not_activated']); ?>
+	</div>
+	<? } ?>
 
     <div class="container-fluid">
 		<div class="row-fluid">
@@ -172,7 +182,7 @@
 												}
 												?>
 												</select>
-												&nbsp; &nbsp; &nbsp; <input type="text" name="accounts" id="accounts" value="" size="50"><br />
+												&nbsp; &nbsp; &nbsp; <input class="form-control" type="text" name="accounts" id="accounts" value="" size="50"><br />
 											<button class="btn btn-primary" id="submit" type="submit"><?php printf($obj->lang['sbdonate']); ?></button>
 								</form>
 								<div id="check"><font color=#FF6600>user:pass</font> or <font color=#FF6600>cookie</font></div><br />
@@ -189,8 +199,11 @@
 						
 						#---------------------------- begin admin  ---------------------------#
 						else if (isset($_GET['id']) && $_GET['id']=='admin'){
-							if($obj->isadmin()) include("admin.php");
-							else echo "<BR><BR><font color=red size=2>".$obj->lang['notaccess']."</b></font>";
+							if($obj->isadmin()) {
+								include("admin.php");
+							} else {
+								echo "<BR><BR><font color=red size=2>".$obj->lang['notaccess']."</b></font>";
+							}
 						}
 						#---------------------------- end admin  ------------------------------#
 						
@@ -206,13 +219,13 @@
 								}
 								?>
 								<br /><?php printf($obj->lang['homepage']);?></font> - <?php printf($obj->lang['welcome']);?><br>
-								<textarea id='links' style='width:550px;height:100px;' name='links'></textarea><BR>
+								<textarea class="form-control" id='links' style='width:550px;height:100px;' name='links'></textarea><BR>
 								<font face=Arial size=1><span style="font-familty: Arial; color: #000000; font-size: 10px">Example: http://www.megaupload.com/?d=ABCDEXYZ<font size="3">|</font>password</span></font><BR>
 								<b>Proxy (host:port) or (host:port|user:pass)</b><BR>
-								<input id='proxy' name='proxy' placeholder='proxy' style='width:300px;'><BR><BR>
+								<input class="form-control" id='proxy' name='proxy' placeholder='proxy' style='width:300px;'><BR><BR>
 								<button class="btn btn-primary" id="submit" type="submit"><?php printf($obj->lang['sbdown']); ?></button>&nbsp;&nbsp;&nbsp;
 								<button class="btn" onclick="reseturl();return false;">Reset</button>&nbsp;&nbsp;&nbsp;
-								<input type="checkbox" name="autoreset" id="autoreset" checked>&nbsp;Auto reset&nbsp;&nbsp;&nbsp;
+								<input class="form-control" type="checkbox" name="autoreset" id="autoreset" checked>&nbsp;Auto reset&nbsp;&nbsp;&nbsp;
 							</form><BR><BR>
 							<div id="dlhere" align="left" style="display: none;">
 								<BR><hr /><small style="color:#55bbff"><?php printf($obj->lang['dlhere']); ?></small>

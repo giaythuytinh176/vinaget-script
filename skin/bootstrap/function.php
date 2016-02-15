@@ -10,7 +10,7 @@ function showDonate(){
 function showStat(){
 	global $obj;
 	echo "<b>{$obj->notice("yourip")}</b><span class='label label-info'>{$_SERVER['REMOTE_ADDR']}</span><br/> <b>{$obj->notice("yourjob")}</b><span class='label label-info'>{$obj->notice("userjobs")}</span><br/> <b>{$obj->notice("youused")}</b><span class='label label-info'>{$obj->notice("used")}</span><br/>";
-	echo "<b>{$obj->notice("sizelimit")}</b><span class='label label-info'>{$obj->notice("maxsize")}</span><br/> <b>{$obj->notice("totjob")}</b><span class='label label-info'>{$obj->notice("totjobs")}</span><br/> <b>{$obj->notice("serverload")}</b><span class='label label-info'>{$obj->notice("maxload")}</span><br/> <b>{$obj->notice("uonline")}</b><span class='label label-info'>{$obj->notice("useronline")}</span><br/>";
+	echo "<b>{$obj->notice("sizelimit")}</b><span class='label label-info'>{$obj->notice("maxsize")}</span><br/> <b>{$obj->notice("totjob")}</b><span class='label label-info'>{$obj->notice("totjobs")}</span><br/> <b>{$obj->notice("serverload")}</b><span class='label label-info'>{$obj->notice("maxload")}</span><br/> <b>{$obj->notice("uonline")}</b><span class='label label-info'>{$obj->notice("useronline")}</span><br/><b>{$obj->notice("total")}</b><span class='label label-info'>{$obj->notice("totalall")}</span>";
 }
 function showNotice(){
 	global $obj;
@@ -37,5 +37,36 @@ function showPlugin(){
 		if (count($hosts) > 4) echo "<a onclick=\"showOrHide();\" href=\"javascript:void(0)\" style='TEXT-DECORATION: none'><font color=#FF6600><div id='moreacc'>" . $obj->lang['moreacc'] . "</div></font></a>";
 	}
 	return false;
+}
+function countFreePlugin() {
+	countPlugin(false) ;
+}
+
+function countPremiumPlugin() {
+	countPlugin(true) ;
+}
+
+function countPlugin($premium){
+	global $obj ;
+	$premiumcount = 0;
+	$freecount = 0 ;
+	
+	foreach($obj->acc as $host => $value) {
+		$xout = array('');
+		$xout = $obj->acc[$host]['accounts'];
+		$max_size = $obj->acc[$host]['max_size'];
+		if (empty($xout[0]) == false && empty($host) == false) {
+			if($obj->acc[$host]['logboost_only'] && $obj->acc[$host]['logboost_only'] == false) {
+				$freecount ++ ;
+			}
+			$premiumcount ++;
+		}
+	}
+	if($premium) {
+		echo $premiumcount ;
+	} else {
+		echo $freecount ;
+	}
+	
 }
 ?>
