@@ -112,7 +112,7 @@ class getinfo
 		$this->longurl = $this->config['longurl'];
 		$this->display_error = $this->config['display_error'];
 		$this->proxy = false;
-		$this->prox = $_POST['proxy'];
+		$this->prox = isset($_POST['proxy']) ? $_POST['proxy'] : '';
 		$this->bbcode = $this->config['bbcode'];
 	}
 	function isadmin(){
