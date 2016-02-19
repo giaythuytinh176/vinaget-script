@@ -61,10 +61,11 @@
 					else $plugin[$val['site']] = "{$key}\n";
 				}
 				foreach($plugin as $key=>$val){		// Thanks to shahril@rapidleech.com  - Fixed lag when loading new vng
-				  $val = substr($val, 0, -1);
-				  $icon = "./skin/bootstrap/icons/{$key}.png";
-				  if(file_exists($icon)) echo "<img src='{$icon}' title='{$val}' alt='{$val}'/> ";
-				  echo $val.'<br>';
+					$val = substr($val, 0, -1);
+					$icon = "./skin/bootstrap/icons/{$key}.png";
+					if(file_exists($icon)) echo "<img src='{$icon}' title='{$val}' alt='{$val}'/> ";
+					else echo "<img src='https://www.google.com/s2/favicons?domain=www." . $key . "' title='{$val}' alt='{$val}'/> ";
+					echo $val.'<br>';
 				}
 				?>
 				</div>
