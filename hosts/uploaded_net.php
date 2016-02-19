@@ -23,7 +23,9 @@ class dl_uploaded_net extends Download {
 		$dt = $this->lib->curl("http://uploaded.net/file/wojimfnt", $cookie, ""); 
 		if(stristr($dt, 'You used too many different IPs')) return array(true, "blockAcc");
 		elseif(stristr($dt, 'Hybrid-Traffic is completely exhausted')) return array(true, "LimitAcc");
-		elseif(stristr($data, '<a href="register"><em>Premium</em></a>')) return array(true, $this->lib->cut_str($this->lib->cut_str($data, "Duration:</td>", "/th>"), "<th>", "<"));
+		elseif(stristr($data, '<a href="register"><em>Premium</em></a>')) {
+			$bandwidth = $this->lib->cut_str($this->lib->cut_str($data, '<th colspan="2">','</th>'), '<b class="cB">','</b>');
+			return array(true, $this->lib->cut_str($this->lib->cut_str($data, "Duration:</td>", "/th>"), "<th>", "<"). "<br> Bandwidth available: ".$bandwidth);
 		elseif(stristr($data, '<li><a href="logout">Logout</a></li>')) return array(false, "accfree");
 		else return array(false, "accinvalid");
 	}
@@ -35,7 +37,7 @@ class dl_uploaded_net extends Download {
 	}
          
 	public function Leech($url) {
-		//$url = str_replace("http://", "https://", $url);
+		$url = str_replace("ul.to", "uploaded.net/file", $url);
 		$data = $this->lib->curl($url, $this->lib->cookie, ""); 
 		if (stristr($data,">Extend traffic<")) $this->error("LimitAcc");
 		elseif (stristr($data,"Hybrid-Traffic is completely exhausted")) $this->error("LimitAcc");
@@ -63,5 +65,6 @@ class dl_uploaded_net extends Download {
 * Fixed By djkristoph
 * Fixed download link By giaythuytinh176 [5.8.2013]
 * Fixed plugin by Steam [09, Feb 2014]
+* Show bandwidth available by hogeunk [4.3.2015]
 */
 ?>
