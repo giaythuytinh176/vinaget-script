@@ -2,9 +2,9 @@
 /*
 * Home page: http://vinaget.us
 * Blog:	http://blog.vinaget.us
-* Script Name: Vinaget 
+* Script Name: Vinaget
 * Version: 2.7.0 Final
-* Description: 
+* Description:
 	- Vinaget is script generator premium link that allows you to download files instantly and at the best of your Internet speed.
 	- Vinaget is your personal proxy host protecting your real IP to download files hosted on hosters like RapidShare, megaupload, hotfile...
 	- You can now download files with full resume support from filehosts using download managers like IDM etc
@@ -32,7 +32,7 @@ class getinfo
 		$this->UserAgent = 'Mozilla/5.0 (Windows NT 5.1; rv:12.0) Gecko/20100101 Firefox/27.0.1';
 		$this->config = $this->load_json($this->fileconfig);
 		include ("config.php");
-		if(count($this->config) == 0) {	
+		if(count($this->config) == 0) {
 			$this->config = $config;
 			$_GET['id'] = 'admin';
 			$this->Deny = false;
@@ -90,13 +90,13 @@ class getinfo
 		$this->file_size_limit = $this->config['file_size_limit'];
 		$this->zlink = $this->config['ziplink'];
 		$this->link_zip = $this->config['apiadf'];
-		$this->link_rutgon = $this->config['apirutgon'];	
+		$this->link_rutgon = $this->config['apirutgon'];
 		$this->Googlzip = $this->config['Googlzip'];
 		$this->googlapikey = $this->config['googleapikey'];
 		$this->bitly = $this->config['bitly'];
 		$this->BitLylogin = $this->config['BitLylogin'];
 		$this->BitLyApi = $this->config['BitLyApi'];
-		$this->badword = explode(", ", $this->config['badword']);	
+		$this->badword = explode(", ", $this->config['badword']);
 		$this->act = array('rename' => $this->config['rename'], 'delete' => $this->config['delete']);
 		$this->listfile = $this->config['listfile'];
 		$this->showlinkdown = $this->config['showlinkdown'];
@@ -258,10 +258,10 @@ class getinfo
 				if(empty($this->acc[$site]['max_size'])) $this->acc[$site]['max_size'] = $this->max_size_default;
 				if(empty($this->acc[$site]['accounts'])) $this->acc[$site]['accounts'] = array();
 			}
-		}		
+		}
 	}
 	function save_account($service, $acc){
-		foreach ($this->acc[$service]['accounts'] as $value) if ($acc == $value) return false; 
+		foreach ($this->acc[$service]['accounts'] as $value) if ($acc == $value) return false;
 		if(empty($this->acc[$service])) $this->acc[$service]['max_size'] = $this->max_size_default;
 		$this->acc[$_POST['type']]['accounts'][] = $_POST['account'];
 		$this->save_json($this->fileaccount, $this->acc);
@@ -344,7 +344,7 @@ class getinfo
 // #################################### Begin class stream_get ##################################
 
 class stream_get extends getinfo
-{ 
+{
 	function stream_get()
 	{
 		$this->config();
@@ -402,7 +402,7 @@ class stream_get extends getinfo
 		}
 		if ($job['proxy'] != 0 && $this->redirdl == true) {
 			list($ip, ) = explode(":", $job['proxy']);
-			if($_SERVER['REMOTE_ADDR'] != $ip) { 
+			if($_SERVER['REMOTE_ADDR'] != $ip) {
 				$this->wrong_proxy($job['proxy']);
 			}
 			else {
@@ -546,11 +546,11 @@ class stream_get extends getinfo
 			die($this->lang['errordl']);
 		}
 		if ($this->get_load() > $this->max_load) sleep(15);
-		
-		$megafile = new MEGA(urldecode($job['url'])); 
-		$megafile->stream_download(); 
+
+		$megafile = new MEGA(urldecode($job['url']));
+		$megafile->stream_download();
 	}
-	
+
 	function CheckMBIP()
 	{
 		$this->countMBIP = 0;
@@ -744,7 +744,7 @@ class stream_get extends getinfo
 		else $dlhtml = "<b><a href=" . $url . " style='TEXT-DECORATION: none'><font color=red face=Arial size=2><s>" . $url . "</s></font></a> <img src=images/chk_error.png width='15' alt='errorlink'> <font color=#ffcc33><B>" . $this->lang['errorlink'] . "</B></font><br />";
 		echo $dlhtml;
 	}
-	
+
 	function google($q){
 		$q = urldecode($q);
 		$q = str_replace(' ', '+', $q);
@@ -768,17 +768,17 @@ class stream_get extends getinfo
 		$new = htmlspecialchars_decode($new);
 		return $new;
 	}
-	
+
 	function getsize($link, $cookie=""){
 		$size_name = Tools_get::size_name($link, $cookie=="" ? $this->cookie : $cookie);
 		return $size_name[0];
 	}
-	
+
 	function getname($link, $cookie=""){
 		$size_name = Tools_get::size_name($link, $cookie=="" ? $this->cookie : $cookie);
 		return $size_name[1];
 	}
-	
+
 	function get($url)
 	{	
 		$this->reserved = array();
@@ -803,13 +803,13 @@ class stream_get extends getinfo
 		}
 
 		$url = trim($url);
-		
+
 		if (empty($url)) return;
 		$Original = $url;
 		$link = '';
 		$cookie = '';
 		$report = false;
-		
+
 		if (!$link) {
 			$site = $this->using;
 			$this->proxy = isset($this->acc[$site]['proxy']) ? $this->acc[$site]['proxy'] : false;
@@ -820,7 +820,7 @@ class stream_get extends getinfo
 				$link = $download->General($url);
 			}
 		}
-		
+
 		if (!$link) {
 			$domain = str_replace("www.", "", $this->cut_str($Original, "://", "/"));
 			if(strpos($domain, "1fichier.com")) $domain = "1fichier.com";
@@ -835,7 +835,7 @@ class stream_get extends getinfo
 				$link = $download->General($url);
 			}
 		}
-		
+
 		if (!$link) {
 			$this->proxy = isset($this->acc[$site]['proxy']) ? $this->acc[$site]['proxy'] : false;
 			$this->proxy = isset($this->prox) ? $this->prox : false;
@@ -851,7 +851,7 @@ class stream_get extends getinfo
 			$filesize = $size_name[0];
 			$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : $size_name[1];
 		}
-		
+
 		$hosting = Tools_get::site_hash($Original);
 		if (!isset($filesize)) {
 			$this->error2('notsupport', $Original);
@@ -910,107 +910,32 @@ class stream_get extends getinfo
 			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
-		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
-		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false && empty($this->bitly) == true) {
-			$datalink = $this->Googlzip($linkdown);
-			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-			else $lik = $linkdown;
-		}
-		elseif (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == true && empty($this->bitly) == false) {
-			$datalink = $this->bitly($linkdown);
-			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-			else $lik = $linkdown;
-		}
-		elseif (empty($this->zlink) == false && empty($link) == false) {
-			if (empty($this->Googlzip) == true && empty($this->bitly) == true) {
-				if (empty($this->link_zip) == false) {
-					if (empty($this->link_rutgon) == true) {
-						$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
-						if (preg_match('%(http:\/\/.++)%U', $apizip2, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
+		// ######### Begin short link ############
+		// - Short link by giaythuytinh176@rapidleech.com
+		// - Modified by hogeunk [2016/02/20]
+		if (!empty($link)) {
+			if (!empty($this->zlink)) {
+				if (!empty($this->link_zip)) {
+					$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
+					if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $linkdown = trim($shortlink[1]);
 				}
-				elseif (empty($this->link_zip) == true) {
-					if (empty($this->link_rutgon) == true) {
-						$lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$datalink = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
+				if (!empty($this->link_rutgon)) {
+					$datalink = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
+					if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $linkdown = trim($shortlink[1]);
 				}
 			}
-			elseif (empty($this->Googlzip) == false && empty($this->bitly) == true) {
-				if (empty($this->link_zip) == false) {
-					if (empty($this->link_rutgon) == true) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$datalink = $this->Googlzip($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
-						$datalink = $this->Googlzip($apizip2);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-				}
-				elseif (empty($this->link_zip) == true) {
-					if (empty($this->link_rutgon) == true) {
-						$datalink = $this->Googlzip($linkdown);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
-						$datalink = $this->Googlzip($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-				}
+			if (!empty($this->bitly)) {
+				$datalink = $this->bitly($linkdown);
+				if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $linkdown = trim($shortlink[1]);
 			}
-			elseif (empty($this->Googlzip) == true && empty($this->bitly) == false) {
-				if (empty($this->link_zip) == false) {
-					if (empty($this->link_rutgon) == true) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$datalink = $this->bitly($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
-						$datalink = $this->bitly($apizip2);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-				}
-				elseif (empty($this->link_zip) == true) {
-					if (empty($this->link_rutgon) == true) {
-						$datalink = $this->bitly($linkdown);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
-						$datalink = $this->bitly($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-				}
+			if (!empty($this->Googlzip)){
+				$datalink = $this->Googlzip($linkdown);
+				if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $linkdown = trim($shortlink[1]);
 			}
 		}
 		// ########### End short link  ##########
-		else $lik = $linkdown;
-		
+		$lik = $linkdown;
+
 		if($this->bbcode){
 			if($this->proxy != false && $this->redirdl == true) {
 				if(strpos($this->proxy, "|")){
@@ -1020,11 +945,11 @@ class stream_get extends getinfo
 				}
 				else list($ip, $port) = explode(":", $this->proxy);
 				echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize})[/color]  [/b][/url][b] [br] ([color=green]You must add this proxy[/color] ".(strpos($this->proxy, "|") ? 'IP: '.$ip.' Port: '.$port.' User: '.$user.' & Pass: '.$pass.'' : 'IP: '.$ip.' Port: '.$port.'').")[/b][/center]' onClick='this.select()'>";
-				echo "<br>"; 
+				echo "<br>";
 			}
 			else {
 				echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize}) [/color][/url][/b][/center]' onClick='this.select()'>";
-				echo "<br>"; 
+				echo "<br>";
 			}
 		}
 		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ".($this->directdl && !$this->acc[$site]['direct'] ? "<a href='{$link}'>Direct<a> " : ""). "</a>" .($this->proxy != false ? "<font id='proxy'>({$this->proxy})</font>" : ""). "</b>".(($this->proxy != false && $this->redirdl == true) ? "<br/><b><font color=\"green\">You must add proxy or you can not download this link</font></b>" : "");
@@ -1032,7 +957,7 @@ class stream_get extends getinfo
 	}
 
 	function mega($url)
-	{	
+	{
 		$this->reserved = array();
 		$this->CheckMBIP();
 		$dlhtml = '';
@@ -1055,22 +980,22 @@ class stream_get extends getinfo
 		}
 
 		$url = trim($url);
-		
+
 		if (empty($url)) return;
 		$Original = $url;
-		$link = ''; 
+		$link = '';
 		$cookie = '';
-		$report = false; 
-		
+		$report = false;
+
 		$megafile = new MEGA(urldecode($url));
-		
+
 		$info = $megafile->file_info();
-		
+
 		$link = 'https://mega.co.nz/';
-		 
+
 		$filesize = $info['size'];
 		$filename = isset($this->reserved['filename']) ? $this->reserved['filename'] : Tools_get::convert_name($info['attr']['n']);
-		
+
 		$hosting = Tools_get::site_hash($Original);
 		if (!isset($filesize)) {
 			$this->error2('notsupport', $Original);
@@ -1082,15 +1007,15 @@ class stream_get extends getinfo
 		if ($hash === false) {
 			$this->error1('cantjob');
 		}
-		
+
 		if ($filesize > $this->max_size * 1024 * 1024) {
 			$this->error2('filebig', $Original, $msize, Tools_get::convertmb($this->max_size * 1024 * 1024));
 		}
-		
+
 		if (($this->countMBIP + $filesize / (1024 * 1024)) >= $this->limitMBIP) {
 			$this->error1('countMBIP', Tools_get::convertmb($this->limitMBIP * 1024 * 1024) , Tools_get::convert_time($this->ttl * 60) , Tools_get::convert_time($this->timebw));
 		}
-		
+
 		/* check 2 */
 		$checkjobs = $this->Checkjobs();
 		$heute = $checkjobs[0];
@@ -1129,115 +1054,40 @@ class stream_get extends getinfo
 			else $linkdown = 'http://'.$sv_name.'index.php/'.$hosting.'/'.$job['hash'].'/'.urlencode($filename);
 		}
 		else $linkdown = 'http://'.$sv_name.'?file='.$job['hash'];
-		// #########Begin short link ############  //    Short link by giaythuytinh176@rapidleech.com
-		if (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == false && empty($this->bitly) == true) {
-			$datalink = $this->Googlzip($linkdown);
-			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-			else $lik = $linkdown;
-		}
-		elseif (empty($this->zlink) == true && empty($link) == false && empty($this->Googlzip) == true && empty($this->bitly) == false) {
-			$datalink = $this->bitly($linkdown);
-			if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-			else $lik = $linkdown;
-		}
-		elseif (empty($this->zlink) == false && empty($link) == false) {
-			if (empty($this->Googlzip) == true && empty($this->bitly) == true) {
-				if (empty($this->link_zip) == false) {
-					if (empty($this->link_rutgon) == true) {
-						$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
-						if (preg_match('%(http:\/\/.++)%U', $apizip2, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
+		// ######### Begin short link ############
+		// - Short link by giaythuytinh176@rapidleech.com
+		// - Modified by hogeunk [2016/02/20]
+		if (!empty($link)) {
+			if (!empty($this->zlink)) {
+				if (!empty($this->link_zip)) {
+					$datalink = $this->curl($this->link_zip . $linkdown, '', '', 0);
+					if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $linkdown = trim($shortlink[1]);
 				}
-				elseif (empty($this->link_zip) == true) {
-					if (empty($this->link_rutgon) == true) {
-						$lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$datalink = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
+				if (!empty($this->link_rutgon)) {
+					$datalink = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
+					if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $linkdown = trim($shortlink[1]);
 				}
 			}
-			elseif (empty($this->Googlzip) == false && empty($this->bitly) == true) {
-				if (empty($this->link_zip) == false) {
-					if (empty($this->link_rutgon) == true) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$datalink = $this->Googlzip($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
-						$datalink = $this->Googlzip($apizip2);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-				}
-				elseif (empty($this->link_zip) == true) {
-					if (empty($this->link_rutgon) == true) {
-						$datalink = $this->Googlzip($linkdown);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
-						$datalink = $this->Googlzip($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-				}
+			if (!empty($this->bitly)) {
+				$datalink = $this->bitly($linkdown);
+				if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $linkdown = trim($shortlink[1]);
 			}
-			elseif (empty($this->Googlzip) == true && empty($this->bitly) == false) {
-				if (empty($this->link_zip) == false) {
-					if (empty($this->link_rutgon) == true) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$datalink = $this->bitly($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_zip . $linkdown, '', '', 0);
-						$apizip2 = $this->curl($this->link_rutgon . $apizip, '', '', 0);
-						$datalink = $this->bitly($apizip2);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-				}
-				elseif (empty($this->link_zip) == true) {
-					if (empty($this->link_rutgon) == true) {
-						$datalink = $this->bitly($linkdown);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-					elseif (empty($this->link_rutgon) == false) {
-						$apizip = $this->curl($this->link_rutgon . $linkdown, '', '', 0);
-						$datalink = $this->bitly($apizip);
-						if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $lik = trim($shortlink[1]);
-						else $lik = $linkdown;
-					}
-				}
+			if (!empty($this->Googlzip)){
+				$datalink = $this->Googlzip($linkdown);
+				if (preg_match('%(http:\/\/.++)%U', $datalink, $shortlink)) $linkdown = trim($shortlink[1]);
 			}
 		}
 		// ########### End short link  ##########
-		else $lik = $linkdown;
-		
+		$lik = $linkdown;
+
 		if($this->bbcode){
 			echo "<input name='176' type='text' size='100' value='[center][b][URL={$lik}]{$this->title} | [color={$this->colorfn}]{$filename}[/color][color={$this->colorfs}] ({$msize}) [/color][/url][/b][/center]' onClick='this.select()'>";
-			echo "<br>"; 
+			echo "<br>";
 		}
 		$dlhtml = "<b><a title='click here to download' href='$lik' style='TEXT-DECORATION: none' target='$tiam'> <font color='#00CC00'>" . $filename . "</font> <font color='#FF66FF'>($msize)</font> ";
 		return $dlhtml;
 	}
-	
+
 	function datecmp($a, $b)
 	{
 		return ($a[1] < $b[1]) ? 1 : 0;
@@ -1313,9 +1163,9 @@ class stream_get extends getinfo
 			$hosting = substr(Tools_get::site_hash($file[0]) , 0, 15);
 			if($this->longurl){
 				if(function_exists("apache_get_modules") && in_array('mod_rewrite',@apache_get_modules())) $linkdown = Tools_get::site_hash($file[0])."/$file[2]/$file[3]";
-				else $linkdown = 'index.php/'.Tools_get::site_hash($file[0])."/$file[2]/$file[3]"; 
+				else $linkdown = 'index.php/'.Tools_get::site_hash($file[0])."/$file[2]/$file[3]";
 			}
-			else $linkdown = '?file='.$file[2]; 
+			else $linkdown = '?file='.$file[2];
 			$data.= "
       <tr class='flistmouseoff' align='center'>
         <td><input name='checkbox[]' value='$file[2]+++$file[3]' type='checkbox'></td>
@@ -1333,12 +1183,12 @@ class stream_get extends getinfo
 		$MB1IP = Tools_get::convertmb($this->countMBIP * 1024 * 1024);
 		$thislimitMBIP = Tools_get::convertmb($this->limitMBIP * 1024 * 1024);
 		$timereset = Tools_get::convert_time($this->ttl * 60);
-		if($this->config['showdirect'] == true)  
+		if($this->config['showdirect'] == true)
 		echo "</tbody><tbody><tr class='flisttblftr'><td>&nbsp;</td><td>" . $this->lang['total'] . ":</td><td></td><td></td><td>$totalall</td><td></td><td>&nbsp;</td></tr></tbody></table>
-				</div></form><center><b>" . $this->lang['used'] . " $MB1IP/$thislimitMBIP - " . $this->lang['reset'] . " $timereset</b>.</center><br/>"; 
-		
+				</div></form><center><b>" . $this->lang['used'] . " $MB1IP/$thislimitMBIP - " . $this->lang['reset'] . " $timereset</b>.</center><br/>";
+
 		else echo "</tbody><tbody><tr class='flisttblftr'><td>&nbsp;</td><td>" . $this->lang['total'] . ":</td><td></td><td>$totalall</td><td></td><td>&nbsp;</td></tr></tbody></table>
-				</div></form><center><b>" . $this->lang['used'] . " $MB1IP/$thislimitMBIP - " . $this->lang['reset'] . " $timereset</b>.</center><br/>"; 
+				</div></form><center><b>" . $this->lang['used'] . " $MB1IP/$thislimitMBIP - " . $this->lang['reset'] . " $timereset</b>.</center><br/>";
 	}
 
 	function deljob()
@@ -1477,7 +1327,7 @@ class stream_get extends getinfo
 			'longUrl' => $longUrl,
 			'key' => $GoogleApiKey,
 		);
-		$curlObj = curl_init(); 
+		$curlObj = curl_init();
 		curl_setopt($curlObj, CURLOPT_URL, "https://www.googleapis.com/urlshortener/v1/url?key={$GoogleApiKey}");
 		curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, 0);
@@ -1490,16 +1340,16 @@ class stream_get extends getinfo
 		curl_close($curlObj);
 		return $json['id'];
 	}
-	function bitly($url, $format='txt') 
+	function bitly($url, $format='txt')
 	{
 		$login = $this->BitLylogin;
 		$apikey = $this->BitLyApi;
 		$data = $this->curl("http://api.bit.ly/v3/shorten?login={$login}&apiKey={$apikey}&uri=".urlencode($url)."&format={$format}", "", "");
 		return $data;
 	}
-								// Credit to France10s  
-	function wrong_proxy($proxy) 		
-	{	
+								// Credit to France10s
+	function wrong_proxy($proxy)
+	{
 		if(strpos($proxy, "|")){
 			list($prox, $userpass) = explode("|", $proxy);
 			list($ip, $port) = explode(":", $prox);
@@ -1740,14 +1590,14 @@ class Download {
 		$this->lib = $lib;
 		$this->site = $site;
 	}
-	
+
 	public function error($msg, $force = false, $delcookie = true, $type = 1){
 		if(isset($this->lib->lang[$msg])) $msg = sprintf($this->lib->lang[$msg], $this->site, $this->url);
 		$msg = sprintf($this->lib->lang["error{$type}"], $msg, $this->url);
 		if($delcookie) $this->save();
 		if($force || $this->last) die($msg);
 	}
-	
+
 	public function filter_cookie($cookie, $del = array('', '""', 'deleted')){
 		$cookie = explode(";", $cookie);
 		$cookies = "";
@@ -1767,18 +1617,18 @@ class Download {
 		}
 		return $cookies;
 	}
-	
+
 	public function save($cookies = "", $save = true){
 		$cookie = $cookies != "" ? $this->filter_cookie(($this->lib->cookie ? $this->lib->cookie.";" : "").$cookies) : "";
 		if($save) $this->lib->save_cookies($this->site, $cookie);
 		$this->lib->cookie = $cookie;
 	}
-	
+
 	public function exploder($del, $data, $i){
 		$a = explode($del, $data);
 		return $a[$i];
 	}
-	
+
 	public function isredirect($data){
 		if (preg_match('/ocation: (.*)/',$data,$match)) {
 			$this->redirect = trim($match[1]);
@@ -1786,7 +1636,7 @@ class Download {
 		}
 		else return false;
 	}
-	
+
 	public function getredirect($link, $cookie=""){
 		$data = $this->lib->curl($link,$cookie,"",-1);
 		if (preg_match('/ocation: (.*)/',$data,$match)) $link = trim($match[1]);
@@ -1794,7 +1644,7 @@ class Download {
 		if($cookies != "") $this->save($cookies);
 		return $link;
 	}
-	
+
 	public function parseForm($data){
 		$post = array();
 		if(preg_match_all('/<input(.*)>/U', $data, $matches)){
@@ -1809,18 +1659,18 @@ class Download {
 		}
 		return $post;
 	}
-	
+
 	public function linkpassword($url){
 		$password = "";
 		if(strpos($url,"|")) {
-			$linkpass = explode('|', $url); 
-			$url = $linkpass[0]; 
+			$linkpass = explode('|', $url);
+			$url = $linkpass[0];
 			$password = $linkpass[1];
 		}
 		if (isset($_POST['password'])) $password = $_POST['password'];
 		return array($url, $password);
 	}
-	
+
 	public function forcelink($link, $a){
 		$link = str_replace(" ", "%20", $link);
 		for($i=0;$i<$a;$i++){
@@ -1829,10 +1679,10 @@ class Download {
 			}
 			else return $link;
 		}
-		$this->error("cantconnect", false, false); 
+		$this->error("cantconnect", false, false);
 		return false;
 	}
-	
+
 	public function General($url){
 		$this->url = $url;
 		$this->cookie = "";
