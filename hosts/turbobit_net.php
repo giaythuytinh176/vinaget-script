@@ -31,7 +31,7 @@ class dl_turbobit_net extends Download {
 		}
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
 		$this->save($this->lib->GetCookies($data));
-		if(strpos($data,'site is temporarily unavailable') || strpos($data,'This document was not found in System' || strpos($data,'Please wait, searching file')) {
+		if(strpos($data,'site is temporarily unavailable') || strpos($data,'This document was not found in System') || strpos($data,'Please wait, searching file')) {
 			$this->error("dead", true, false, 2);
 		} elseif(strpos($data, 'limit of premium downloads')) {
 			$this->error("LimitAcc");
