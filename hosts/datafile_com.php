@@ -55,14 +55,6 @@ class dl_datafile_com extends Download {
 				$link = $json2["download_url"];
 				$data = $this->lib->curl($link, "", "", -1);
 				if(strpos($data, "404 Not Found") !== false) $this->error("dead", true, false, 2);
-				for($i = 0; $i < 3 ; $i++){
-					$fname = $this->lib->curl($url, "", "");
-					if(!$this->isredirect($fname)){
-						if(strpos($fname, 'file-name">') !== false) $this->lib->reserved['filename'] = $this->lib->cut_str($fname, 'file-name">', '<');
-						break;
-					}
-					$url = "http://www.datafile.com" . $this->redirect; 
-				}
 				return $link;
 			} elseif($json2["code"] === 704) {
 				$this->error("LimitAcc");
@@ -89,5 +81,6 @@ class dl_datafile_com extends Download {
 * Fix check account by hogeunk [4.3.2015]
 * Made API version by hogeunk [2016/01/08]
 * Check deleted file, Fix filename process [2016/02/14]
+* Remove filename process [2016/02/24]
 */
 ?>
