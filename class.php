@@ -119,7 +119,7 @@ class getinfo
 		return (isset($_COOKIE['secureid']) && $_COOKIE['secureid'] == md5($this->config['admin']) ? true : $this->admin);
 	}
 	function getversion(){
-		$version = $this->cut_str($this->curl("https://github.com/giaythuytinh176/vinaget-script", "", ""), '<span class="num text-emphasized">','</span>');
+		$version = $this->cut_str($this->curl("https://github.com/hogeunk/vng270_hoge", "", ""), 'Revision ','<');
 		return intval($version);
 	}
 	function notice($id="notice")
