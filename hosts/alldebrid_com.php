@@ -1,6 +1,6 @@
 <?php
 
-class dl_faststore_org extends Download {
+class dl_alldebrid_com extends Download {
 	
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("https://www.alldebrid.com/account/", $cookie, "");
