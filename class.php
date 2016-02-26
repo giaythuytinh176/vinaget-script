@@ -1507,10 +1507,10 @@ class Tools_get extends getinfo
 	{
 		$filesize = str_replace(",", ".", $filesize);
 		if (preg_match('/^([0-9]{1,4}+(\.[0-9]{1,2})?)/', $filesize, $value)) {
-			if (stristr($filesize, "TB")) $value = $value[1] * 1024 * 1024 * 1024 * 1024;
-			elseif (stristr($filesize, "GB")) $value = $value[1] * 1024 * 1024 * 1024;
-			elseif (stristr($filesize, "MB")) $value = $value[1] * 1024 * 1024;
-			elseif (stristr($filesize, "KB")) $value = $value[1] * 1024;
+			if (srtipos($filesize, "TB")||srtipos($filesize, "TiB")) $value = $value[1] * 1024 * 1024 * 1024 * 1024;
+			elseif (srtipos($filesize, "GB")||srtipos($filesize, "GiB")) $value = $value[1] * 1024 * 1024 * 1024;
+			elseif (srtipos($filesize, "MB")||srtipos($filesize, "MiB")) $value = $value[1] * 1024 * 1024;
+			elseif (srtipos($filesize, "KB")||srtipos($filesize, "KiB")) $value = $value[1] * 1024;
 			else $value = $value[1];
 		}
 		else $value = 0;
@@ -1525,13 +1525,12 @@ class Tools_get extends getinfo
 			$filesize = abs($filesize);
 			$soam = true;
 		}
-
-		if ($filesize >= 1024 * 1024 * 1024 * 1024) $value = ($soam ? "-" : "") . round($filesize / (1024 * 1024 * 1024 * 1024) , 2) . " TB";
-		elseif ($filesize >= 1024 * 1024 * 1024) $value = ($soam ? "-" : "") . round($filesize / (1024 * 1024 * 1024) , 2) . " GB";
-		elseif ($filesize >= 1024 * 1024) $value = ($soam ? "-" : "") . round($filesize / (1024 * 1024) , 2) . " MB";
-		elseif ($filesize >= 1024) $value = ($soam ? "-" : "") . round($filesize / (1024) , 2) . " KB";
-		else $value = ($soam ? "-" : "") . $filesize . " Bytes";
-		return $value;
+		if ($filesize >= 1024 * 1024 * 1024 * 1024) $value = round($filesize / (1024 * 1024 * 1024 * 1024) , 2) . " TiB";
+		elseif ($filesize >= 1024 * 1024 * 1024) $value = round($filesize / (1024 * 1024 * 1024) , 2) . " GiB";
+		elseif ($filesize >= 1024 * 1024) $value = round($filesize / (1024 * 1024) , 2) . " MiB";
+		elseif ($filesize >= 1024) $value = round($filesize / (1024) , 2) . " KiB";
+		else $value = $filesize . " Bytes";
+		return ($soam ? "-" : "") . $value;
 	}
 
 	function uft8html2utf8($s)
