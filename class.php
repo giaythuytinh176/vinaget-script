@@ -1458,11 +1458,11 @@ class Tools_get extends getinfo
 		else $filesize = - 1;
 		if (!is_numeric($filesize)) $filesize = - 1;
 		$filename = "";
-		if (stristr($header, "filename")) {
-			$filename = trim($this->cut_str($header, "filename", "\n"));
+		if (preg_match('@filename=\"?([^"\'><\r\n\t]+)@i', $header, $matches)) {
+			$filename = $matches[1];
 		}
 		else $filename = substr(strrchr($link, '/') , 1);
-		$filename = self::convert_name($filename);
+		$filename = self::convert_name(trim($filename));
 		return array(
 			$filesize,
 			$filename
@@ -1565,7 +1565,7 @@ class Tools_get extends getinfo
 	{
 		$filename = urldecode($filename);
 		$filename = Tools_get::uft8html2utf8($filename);
-		$filename = preg_replace("/(\]|\[|\@|\"\;\?\=|\"|=|\*|UTF-8|\')/", "", $filename);
+		$filename = preg_replace("/(\]|\[|\@|\"\;\?\=|\"|=|\*|UTF-8|\')/i", "", $filename);
 		$filename = preg_replace("/(HTTP|http|WWW|www|\.html|\.htm)/i", "", $filename);
 		$filename = str_replace($this->banned, '.xxx', $filename);
 		if (empty($filename) == true) $filename = substr(md5(time() . $url) , 0, 10);
