@@ -3,26 +3,34 @@
 class dl_depfile_com extends Download {
 
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("https://depfile.com/", "sdlanguageid=2;{$cookie}", "");
-		if(stristr($data, '<div class=exit>')) return array(true, "Until ".$this->lib->cut_str($data, "space/premium'>", '<img src='));
-		else return array(false, "accinvalid");
+		$data = $this->lib->curl("https://depfile.com/N7szA6dyNgu", "sdlanguageid=2; {$cookie}", "");
+		if (strpos($data, 'You spent limit on urls/files per 24 hours')) {
+			return [true, "LimitAcc"];
+		} elseif (strpos($data, '/myspace/space/premium')) {
+			return [true, "Until ".$this->lib->cut_str($data, "space/premium'>", '<img')];
+		} elseif (strpos($data, "<div class=exit><a href='/uploads/logout'>")) {
+			return [false, "accfree"];
+		}
+		return [false, "accinvalid"];
 	}
 
 	public function Login($user, $pass){
 		$data = $this->lib->curl("https://depfile.com/", "sdlanguageid=2", "login=login&loginemail={$user}&loginpassword={$pass}&submit=login&rememberme=on");
-		$cookie = "sdlanguageid=2;{$this->lib->GetCookies($data)}";
+		$cookie = "sdlanguageid=2; {$this->lib->GetCookies($data)}";
 		return $cookie;
 	}
 
 	public function Leech($url) {
-		if(!stristr($url, "https")) {
-			$url = str_replace('http', 'https', $url);
+		if(strpos($url, "http://") !== false) {
+			$url = str_replace('http://', 'https://', $url);
 		}
 		$data = $this->lib->curl($url, $this->lib->cookie, "");
-		if(stristr($data,'Page Not Found!') || stristr($data,'File was not found in the') || stristr($data,'Provided link contains errors')) {
+		if (stripos($data, 'Page Not Found!') || stripos($data, 'File was not found in the') || stripos($data, 'Provided link contains errors')) {
 			$this->error("dead", true, false, 2);
-		} elseif(preg_match('@https?:\/\/[a-z]+\.depcloud\.com\/premdw\/\d+\/[a-z0-9]+\/[^"\'<>\r\n\t]+@i', $data, $giay)) {
-			return trim($giay[0]);
+		} elseif (preg_match('@onclick="this.select\(\);" value="(https?:\/\/[^"\'<>\r\n\t]+)@i', $data, $matches)) {
+			return $matches[1];
+		} elseif (strpos($data, 'You spent limit on urls/files per 24 hours')) {
+			$this->error("LimitAcc");
 		}
 		return false;
 	}
@@ -36,7 +44,10 @@ class dl_depfile_com extends Download {
 * depfile.com Download Plugin
 * Downloader Class By [FZ]
 * Download plugin by giaythuytinh176 [11.8.2013]
-* Fixed by Naztek - 26.11.2015
-* [Naztek.tk]
+* Fixed by Naztek - 26.11.2015 [Naztek.tk]
+* Fixed by hogeunk [2016/03/01]
+*  - Checking what reached to daily limit (150 links/day)
+*  - Beautifying the code
+* Fix getting download link by hogeunk [2016/03/04]
 */
 ?>
