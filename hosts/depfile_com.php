@@ -4,9 +4,7 @@ class dl_depfile_com extends Download {
 
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("https://depfile.com/N7szA6dyNgu", "sdlanguageid=2; {$cookie}", "");
-		if (strpos($data, 'You spent limit on urls/files per 24 hours')) {
-			return [true, "LimitAcc"];
-		} elseif (strpos($data, '/myspace/space/premium')) {
+		if (strpos($data, '/myspace/space/premium') && strpos($data, 'i_premium_end.png') === false) {
 			return [true, "Until ".$this->lib->cut_str($data, "space/premium'>", '<img')];
 		} elseif (strpos($data, "<div class=exit><a href='/uploads/logout'>")) {
 			return [false, "accfree"];
@@ -49,5 +47,6 @@ class dl_depfile_com extends Download {
 *  - Checking what reached to daily limit (150 links/day)
 *  - Beautifying the code
 * Fix getting download link by hogeunk [2016/03/04]
+* Fix account check by hogeunk [2016/03/07]
 */
 ?>
