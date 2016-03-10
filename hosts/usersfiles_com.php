@@ -4,9 +4,10 @@ class dl_usersfiles_com extends Download {
 
 	public function FreeLeech($url) {
 		$data = $this->lib->curl($url,"lang=english","");
+		$this->lib->cookie = $this->lib->GetCookies($data);
 		if (strpos($data,'Download File')) {
 			$post = $this->parseForm($data);
-			$data = $this->lib->curl($url, "", $post);
+			$data = $this->lib->curl($url, $cookie, $post);
 			if($this->isredirect($data)) return $this->redirect;
 		} else {
 			$this->error("dead", true, false, 2);
