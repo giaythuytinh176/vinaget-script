@@ -820,8 +820,11 @@ class stream_get extends getinfo
 		if (!$link) {
 			$domain = str_replace("www.", "", $this->cut_str($Original, "://", "/"));
 			if(strpos($domain, "1fichier.com")) $domain = "1fichier.com";
+			if(strpos($domain, "facebook.com")) $domain = "facebook.com";
 			if(strpos($domain, "letitbit.net"))   $domain = "letitbit.net";
 			if(strpos($domain, "shareflare.net")) $domain = "shareflare.net";
+			if(strpos($domain, "xhamster.com")) $domain = "xhamster.com";
+			if(strpos($domain, "xvideos.com")) $domain = "xvideos.com";
 			if(isset($this->list_host[$domain])){
 				require_once ('hosts/' . $this->list_host[$domain]['file']);
 				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);
