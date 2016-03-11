@@ -880,7 +880,7 @@ class stream_get extends getinfo
 		}
 		/* /check 2 */
 		$job = array(
-			'hash' => substr(md5($hash) , 0, 10) ,
+			'hash' => substr(md5($hash . $this->config['admin']), 0, 10) ,
 			'path' => substr(md5(rand()) , 0, 5) ,
 			'filename' => urlencode($filename) ,
 			'size' => $filesize,
@@ -1024,7 +1024,7 @@ class stream_get extends getinfo
 		}
 		/* /check 2 */
 		$job = array(
-			'hash' => "mega_".substr(md5($hash) , 0, 10) ,
+			'hash' => "mega_".substr(md5($hash . $this->config['admin']), 0, 10) ,
 			'path' => substr(md5(rand()) , 0, 5) ,
 			'filename' => urlencode($filename) ,
 			'size' => $filesize,
