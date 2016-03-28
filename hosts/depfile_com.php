@@ -3,7 +3,7 @@
 class dl_depfile_com extends Download {
 
 	public function CheckAcc($cookie){
-		$data = $this->lib->curl("https://depfile.com/N7szA6dyNgu", "sdlanguageid=2; {$cookie}", "");
+		$data = $this->lib->curl("https://depfile.com/", "sdlanguageid=2; {$cookie}", "");
 		if (strpos($data, '/myspace/space/premium') && strpos($data, 'i_premium_end.png') === false) {
 			return [true, "Until ".$this->lib->cut_str($data, "space/premium'>", '<img')];
 		} elseif (strpos($data, "<div class=exit><a href='/uploads/logout'>")) {
@@ -27,7 +27,7 @@ class dl_depfile_com extends Download {
 			$this->error("dead", true, false, 2);
 		} elseif (preg_match('@onclick="this.select\(\);" value="(https?:\/\/[^"\'<>\r\n\t]+)@i', $data, $matches)) {
 			return $matches[1];
-		} elseif (strpos($data, 'You spent limit on urls/files per 24 hours')) {
+		} elseif (strpos($data, 'limit on urls/files per 24 hours')) {
 			$this->error("LimitAcc");
 		}
 		return false;
@@ -48,5 +48,6 @@ class dl_depfile_com extends Download {
 *  - Beautifying the code
 * Fix getting download link by hogeunk [2016/03/04]
 * Fix account check by hogeunk [2016/03/07]
+* Fix account check and LimitAcc (Message was changed) by hogeunk [2016/03/29]
 */
 ?>
