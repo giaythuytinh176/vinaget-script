@@ -825,6 +825,7 @@ class stream_get extends getinfo
 			if(strpos($domain, "shareflare.net")) $domain = "shareflare.net";
 			if(strpos($domain, "xhamster.com")) $domain = "xhamster.com";
 			if(strpos($domain, "xvideos.com")) $domain = "xvideos.com";
+			if(strpos($domain, "zippyshare.com")) $domain = "zippyshare.com";
 			if(isset($this->list_host[$domain])){
 				require_once ('hosts/' . $this->list_host[$domain]['file']);
 				$download = new $this->list_host[$domain]['class']($this, $this->list_host[$domain]['site']);
