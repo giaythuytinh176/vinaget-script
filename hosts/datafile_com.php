@@ -1,37 +1,74 @@
 <?php
 
 class dl_datafile_com extends Download {
-  
-	public function CheckAcc($cookie){
-		$data = $this->lib->curl("http://www.datafile.com/profile.html", "lang=en;{$cookie}", "");
-		if(stristr($data, '>Premium Expires:<')) return array(true, "Until " .$this->lib->cut_str($data, '<td class="el" >',  '&nbsp; ('). "<br/>On the left today: " .$this->lib->cut_str($this->lib->cut_str($data, 'On the left today:</td>',  '</tr>'), '<td>', '</td>'));
-		else if(stristr($data, '">Upgrade</a></span>)')) return array(false, "accfree"); 
-		else return array(false, "accinvalid"); 
-	}
-  
-	public function Login($user, $pass){
-		$data = $this->lib->curl("https://www.datafile.com/login.html", "lang=en", "login={$user}&password={$pass}&remember_me=1");
-		$cookie = "lang=en;".$this->lib->GetCookies($data);
-		return $cookie;
-	}
-  
-	public function Leech($url) {
-		$data = $this->lib->curl($url,$this->lib->cookie,"");
-		if($this->isredirect($data)) {
-			$link = trim("http://www.datafile.com" .$this->redirect);
-			$data = $this->lib->curl($link,$this->lib->cookie,"");
-			if(stristr($data, "ErrorCode 6: Download limit in")) $this->error("LimitAcc", true, false);
-			if($this->isredirect($data)) $redir = trim($this->redirect); 
-			$name = $this->lib->getname($redir, $this->lib->cookie);
-			$tach = explode(';', $name);
-			$this->lib->reserved['filename'] = $tach[0];
-			return $redir;
+
+	public function PreLeech($url){
+		if(stristr($url, "/f/")) {
+			$data = $this->lib->curl($url, "lang=en;", "");
+			$data = $this->lib->cut_str($data, 'first file-name', '</table');
+			$FID = explode('row-size', $data);
+			$maxfile = count($FID) - 1;
+			if($maxfile >= 1) echo "Your link is folder link<br>";
+			else echo "Your link is folder but no files there<br>";
+			for ($i = 0; $i < $maxfile; $i++) {
+				$link = $this->lib->cut_str($FID[$i], 'href="', '"');
+				$list = "<a href={$link}>{$link}</a><br/>";
+				echo $list;
+			}
+			exit;
 		}
-		elseif(stristr($data,'ErrorCode 0: Invalid Link')) $this->error("dead", true, false, 2); 
-		return false;
 	}
-	
+
+	public function CheckAcc($cookie){
+		$data = $this->lib->cut_str($cookie, '=', ';');
+		$json = json_decode($data, true);
+		if(isset($json["code"]) && $json["code"] === 200) {
+			if($json["userdata"]["premium_till"] === 0) {
+				return [false, "accfree"];
+			} elseif($json["userdata"]["traffic_left"] <= 0) {
+				return [false, "LimitAcc"];
+			} elseif(isset($json["userdata"]["token"])) {
+				$date = date("Y/m/d H:i:s", $json["userdata"]["premium_till"]);
+				$left = Tools_get::convertmb($json["userdata"]["traffic_left"]);
+				return [true, "Expiry Date:{$date}, Bandwidth:{$left}, Token:{$json["userdata"]["token"]}"];
+			}
+		} elseif(isset($json["message"])) {
+			return [false, $json["message"]];
+		}
+		return [false, "accinvalid"];
+	}
+
+	public function Login($user, $pass){
+		$data = $this->lib->curl("https://api.datafile.com/users/auth?login={$user}&password={$pass}&accesskey=cddce1a5-a6dd-4300-9c08-eb70909de7c6", "", "", 0);
+		return "dummy={$data}; ";
+	}
+
+	public function Leech($url) {
+		global $lib;
+		$data = $this->lib->cut_str($this->lib->cookie, '=', ';');
+		$json = json_decode($data, true);
+		if(isset($json["userdata"]["token"])) {
+			$this->lib->cookie = '';
+			$data = $this->lib->curl("https://api.datafile.com/files/download?file={$url}&token={$json["userdata"]["token"]}","","",0);
+			$json2 = json_decode($data, true);
+			if(isset($json2["download_url"])) {
+				$link = $json2["download_url"];
+				$data = $this->lib->curl($link, "", "", -1);
+				if(strpos($data, "404 Not Found") !== false) $this->error("dead", true, false, 2);
+				return $link;
+			} elseif($json2["code"] === 704) {
+				$this->error("LimitAcc");
+			} elseif($json2["code"] === 703) {
+				$this->error("dead", true, false, 2);
+			}
+		} else {
+			$this->error("accinvalid");
+		}
+		return false;
+    }
+
 }
+
 /*
 * Open Source Project
 * Vinaget by ..::[H]::..
@@ -41,5 +78,9 @@ class dl_datafile_com extends Download {
 * Date: 20.7.2013
 * Fix check account by giaythuytinh176 [21.7.2013]
 * Fix check account by giaythuytinh176 [6.8.2013]
+* Fix check account by hogeunk [4.3.2015]
+* Made API version by hogeunk [2016/01/08]
+* Check deleted file, Fix filename process [2016/02/14]
+* Remove filename process [2016/02/24]
 */
 ?>

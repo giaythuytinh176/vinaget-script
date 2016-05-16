@@ -23,7 +23,9 @@ function showPlugin(){
 		$xout = $obj->acc[$host]['accounts'];
 		$max_size = $obj->acc[$host]['max_size'];
 		if (empty($xout[0]) == false && empty($host) == false) {
-			$hosts[] = '<img src="skin/bootstrap/icons/' . $host . '.png" /> ' . $host . ' <span class="badge badge-success">' . count($xout) . '</span><br/>';
+			$icon = "./skin/bootstrap/icons/{$host}.png";
+			if(file_exists($icon)) $hosts[] = '<img src="skin/bootstrap/icons/' . $host . '.png" /> ' . $host . ' <span class="badge badge-success">' . count($xout) . '</span><br/>';
+			else $hosts[] = '<img src="https://www.google.com/s2/favicons?domain=' . $host . '" /> ' . $host . ' <span class="badge badge-success">' . count($xout) . '</span><br/>';
 		}
 	}
 	if (isset($hosts)) {

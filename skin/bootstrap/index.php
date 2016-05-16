@@ -61,10 +61,11 @@
 					else $plugin[$val['site']] = "{$key}\n";
 				}
 				foreach($plugin as $key=>$val){		// Thanks to shahril@rapidleech.com  - Fixed lag when loading new vng
-				  $val = substr($val, 0, -1);
-				  $icon = "./skin/bootstrap/icons/{$key}.png";
-				  if(file_exists($icon)) echo "<img src='{$icon}' title='{$val}' alt='{$val}'/> ";
-				  echo $val.'<br>';
+					$val = substr($val, 0, -1);
+					$icon = "./skin/bootstrap/icons/{$key}.png";
+					if(file_exists($icon)) echo "<img src='{$icon}' title='{$val}' alt='{$val}'/> ";
+					else echo "<img src='https://www.google.com/s2/favicons?domain=" . $key . "' title='{$val}' alt='{$val}'/> ";
+					echo $val.'<br>';
 				}
 				?>
 				</div>
@@ -202,7 +203,7 @@
 								<?php if($obj->isadmin()){
 									$obj->last_version = $obj->getversion();
 									if($obj->last_version > $obj->current_version)
-										echo '<br><font color="#dbac58"><b>'.sprintf($obj->lang['update1']).'</b> - <a href="http://rapidleech.com/forum/viewtopic.php?f=36&t=559">'.sprintf($obj->lang['update2'],$obj->last_version).'</a></font>'; 
+										echo '<br><font color="#dbac58"><b>'.sprintf($obj->lang['update1']).'</b> - <a href="http://rapidleech.com/forum/viewtopic.php?f=37&t=991">'.sprintf($obj->lang['update2'],$obj->last_version).'</a></font>'; 
 								}
 								?>
 								<br /><?php printf($obj->lang['homepage']);?></font> - <?php printf($obj->lang['welcome']);?><br>

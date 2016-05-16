@@ -1,27 +1,34 @@
-# vinaget-script
-http://vinaget.us/
-######################################
-- How to use:
-   - CHMOD the folder "data" to 777
-   - CHMOD file "data/account.dat" to 666.
-   - CHMOD file "data/config.dat" to 666.
-   - CHMOD file "data/cookie.dat" to 666.
-   - CHMOD file "data/online.dat" to 666.
-   - CHMOD file "data/log.txt" to 666.
-   - Password default: demo
-######################################
+Vinaget 2.7.0 Mod by hogeunk
+============================
+Revision 104
 
-Description: 	
-* Home page: http://vinaget.us
-* Version: VinaGet v2.7.0 Final
-* Description: 
- - Vinaget is script generator premium link that allows you to download files instantly and at the best of your Internet speed.
- - Vinaget is your personal proxy host protecting your real IP to download files hosted on hosters like RapidShare, bitshare.com , hotfile...
- - You can now download files with full resume support from filehosts using download managers like IDM etc
- - Vinaget is a Free Open Source, supported by a growing community.
-* Code LeechViet by VinhNhaTrang
-* Developed by ..:: [H] ::.., [FZ]
+Information
+-----------
+- Official: http://vinaget.us
+- Code LeechViet by VinhNhaTrang
+- Developed by ..:: [H] ::.., [FZ]
+- Based Version: Vinaget 270 r94 by giaythuytinh176
+  https://github.com/giaythuytinh176/vinaget-script
 
+Description
+-----------
+- Vinaget is script generator premium link that allows you to download files instantly and at the best of your Internet speed.
+- Vinaget is your personal proxy host protecting your real IP to download files hosted on hosters like RapidShare, bitshare.com , hotfile...
+- You can now download files with full resume support from filehosts using download managers like IDM etc
+- Vinaget is a Free Open Source, supported by a growing community.
+
+How to use
+----------
+- CHMOD the folder "data" to 777
+- CHMOD file "data/account.dat" to 666.
+- CHMOD file "data/config.dat" to 666.
+- CHMOD file "data/cookie.dat" to 666.
+- CHMOD file "data/online.dat" to 666.
+- CHMOD file "data/log.txt" to 666.
+- Password default: admin
+
+Features
+--------
 - Admin Panel
 - Proxy Support
 - Easy to get multi link and make list in one go.
