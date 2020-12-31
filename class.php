@@ -14,10 +14,12 @@
 			   - [FZ]
 */
 // #################################### Begin class getinfo #####################################
-class getinfo
+class getinfo extends Tools_get
 
 {
-	function config()
+    public $config;
+
+    function config()
 	{
 		$this->self = 'http://' . $_SERVER['HTTP_HOST'] . preg_replace('/\?.*$/', '', isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF']);
 		$this->Deny = true;
@@ -112,7 +114,7 @@ class getinfo
 		$this->longurl = $this->config['longurl'];
 		$this->display_error = $this->config['display_error'];
 		$this->proxy = false;
-		$this->prox = $_POST['proxy'];
+		$this->prox = !empty($_POST['proxy']) ? $_POST['proxy'] : false;
 		$this->bbcode = $this->config['bbcode'];
 	}
 	function isadmin(){
@@ -344,8 +346,8 @@ class getinfo
 // #################################### Begin class stream_get ##################################
 
 class stream_get extends getinfo
-{ 
-	function stream_get()
+{
+	function __construct()
 	{
 		$this->config();
 		$this->max_size_other_host = $this->file_size_limit;
@@ -1513,7 +1515,7 @@ class stream_get extends getinfo
 // #################################### End class stream_get ###################################
 // #################################### Begin class Tools_get ###################################
 
-class Tools_get extends getinfo
+class Tools_get
 
 {
 	function useronline()
