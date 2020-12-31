@@ -5,10 +5,10 @@ class dl_rapidgator_net extends Download {
 	public function CheckAcc($cookie){
 		$data = $this->lib->curl("http://rapidgator.net/profile/index", "lang=en;{$cookie}", "");
 		if(stristr($data, '<a href="/article/premium">Free</a>')) return array(false, "accfree");
-		elseif(stristr($data, 'Premium till')) {
+		elseif(stristr($data, '<a href="/article/premium">Premium</a>')) {
 			$oob = $this->lib->curl("http://rapidgator.net/file/79674811", "lang=en;{$cookie}", "");
-			if(stristr($oob, 'You have reached quota of downloaded information')) return array(true, "Until ".$this->lib->cut_str($data, 'Premium till','<span'). "<br> Account out of BW");
-			else return array(true, "Until ".$this->lib->cut_str($data, 'Premium till','<span')." <br/>Bandwith available:" .$this->lib->cut_str($this->lib->cut_str($data, 'Bandwith available</td>','<div style='), '<td>','</br>'));
+			if(stristr($oob, 'You have reached quota of downloaded information')) return array(true, "Until ".$this->lib->cut_str($data, ' ">Premium','</a></li>'). "<br> Account out of BW");
+			else return array(true, "Until ".$this->lib->cut_str($data, 'Premium services will end on ','<br/>If')." <br/>Bandwith available:" .$this->lib->cut_str($this->lib->cut_str($data, 'Bandwith available</td>','<div style='), '<td>','</br>'));
 		}
 		else return array(false, "accinvalid");
 	}
@@ -37,5 +37,6 @@ class dl_rapidgator_net extends Download {
 * Rapidgator Download Plugin 
 * Downloader Class By [FZ]
 * Add check account by giaythuytinh176 19.7.2013
+* Fix check account by rayyan2005 24.4.2014
 */
 ?>
